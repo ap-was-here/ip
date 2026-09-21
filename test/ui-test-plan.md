@@ -113,6 +113,66 @@ Here are the tasks in your list:
 See you later. Complete your tasks on time!
 ```
 
+## Test case 5: Delete a task
+
+Aim: Verify that `delete N` removes the selected task, shifts later task numbers, and reports the updated task count.
+
+Inputs:
+
+```text
+todo read book
+deadline return book /by Sunday
+event project meeting /from Mon 2pm /to 4pm
+list
+delete 2
+list
+bye
+```
+
+Expected output:
+
+```text
+1.[T][ ] read book
+2.[D][ ] return book (by: Sunday)
+3.[E][ ] project meeting (from: Mon 2pm to: 4pm)
+Noted. I've removed this task:
+[D][ ] return book (by: Sunday)
+Now you have 2 tasks in the list.
+1.[T][ ] read book
+2.[E][ ] project meeting (from: Mon 2pm to: 4pm)
+See you later. Complete your tasks on time!
+```
+
+### 2026-09-21 deletion session
+
+Test case 5: PASS
+
+Console input:
+
+```text
+todo read book
+todo return book
+event meeting /from 2pm /to 4pm
+list
+delete 3
+list
+bye
+```
+
+Console output:
+
+```text
+1.[T][ ] read book
+2.[T][ ] return book
+3.[E][ ] meeting (from: 2pm to: 4pm)
+Noted. I've removed this task:
+  [E][ ] meeting (from: 2pm to: 4pm)
+Now you have 2 tasks in the list.
+1.[T][ ] read book
+2.[T][ ] return book
+See you later. Complete your tasks on time!
+```
+
 Test case 2: PASS
 
 Console input:

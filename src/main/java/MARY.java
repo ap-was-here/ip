@@ -1,10 +1,10 @@
+import java.util.ArrayList;
 import java.util.Scanner;
 
 public class MARY {
     public static void main(String[] args) {
         String separator = "____________________________________________________________";
-        Task[] tasks = new Task[100];
-        int taskCount = 0;
+        ArrayList<Task> tasks = new ArrayList<>();
         String banner = "███╗   ███╗ █████╗ ██████╗ ██╗   ██╗\n"
                 + "████╗ ████║██╔══██╗██╔══██╗╚██╗ ██╔╝\n"
                 + "██╔████╔██║███████║██████╔╝ ╚████╔╝\n"
@@ -35,15 +35,36 @@ public class MARY {
                 }
 
                 if (command.equals("list")) {
-                if (taskCount == 0) {
+                if (tasks.isEmpty()) {
                     System.out.println(" MARY has no saved tasks yet.");
                 } else {
                     System.out.println(" Here are the tasks in your list:");
-                    for (int i = 0; i < taskCount; i++) {
-                        System.out.println(" " + (i + 1) + "." + tasks[i]);
+                    for (int i = 0; i < tasks.size(); i++) {
+                        System.out.println(" " + (i + 1) + "." + tasks.get(i));
                     }
                 }
-                } else if (command.startsWith("mark") || command.startsWith("unmark")) {
+                } else if (command.startsWith("delete") ) {
+                    String numberText = command.startsWith("delete ")
+                            ? command.substring(7).trim() : "";
+                    if (numberText.isEmpty()) {
+                        throw new MaryException("use 'delete N', where N is a task number.");
+                    }
+                    try {
+                        int taskNumber = Integer.parseInt(numberText);
+                        int taskIndex = taskNumber - 1;
+                        if (taskIndex < 0 || taskIndex >= tasks.size()) {
+                            throw new MaryException("task " + taskNumber
+                                    + " does not exist; use 'list' to see valid task numbers.");
+                        }
+                        Task removedTask = tasks.remove(taskIndex);
+                        System.out.println(" Noted. I've removed this task:");
+                        System.out.println("   " + removedTask);
+                        System.out.println(" Now you have " + tasks.size() + " tasks in the list.");
+                    } catch (NumberFormatException exception) {
+                        throw new MaryException("'" + numberText
+                                + "' is not a valid task number; use a positive whole number.");
+                    }
+            } else if (command.startsWith("mark") || command.startsWith("unmark")) {
                 boolean markDone = command.startsWith("mark ");
                 int prefixLength = markDone ? 5 : 7;
                 if (!command.startsWith(markDone ? "mark " : "unmark ")
@@ -56,21 +77,21 @@ public class MARY {
                     int taskNumber = Integer.parseInt(numberText);
                     int taskIndex = taskNumber - 1;
 
-                    if (taskIndex < 0 || taskIndex >= taskCount) {
+                    if (taskIndex < 0 || taskIndex >= tasks.size()) {
                         throw new MaryException("task " + taskNumber
                                 + " does not exist; use 'list' to see valid task numbers.");
                     } else {
                         if (markDone) {
-                            tasks[taskIndex].markAsDone();
+                            tasks.get(taskIndex).markAsDone();
                         } else {
-                            tasks[taskIndex].markAsNotDone();
+                            tasks.get(taskIndex).markAsNotDone();
                         }
                         if (markDone) {
                             System.out.println(" Nice! I've marked this task as done:");
                         } else {
                             System.out.println(" OK, I've marked this task as not done yet:");
                         }
-                        System.out.println("   " + tasks[taskIndex]);
+                        System.out.println("   " + tasks.get(taskIndex));
                     }
                 } catch (NumberFormatException exception) {
                     throw new MaryException("'" + numberText
@@ -78,15 +99,11 @@ public class MARY {
                 }
                 } else if (command.startsWith("todo") || command.startsWith("deadline")
                         || command.startsWith("event")) {
-                    if (taskCount >= tasks.length) {
-                        throw new MaryException("the task list is full; remove a task before adding another.");
-                    }
                     Task newTask = createTask(command);
-                    tasks[taskCount] = newTask;
-                    taskCount++;
+                    tasks.add(newTask);
                     System.out.println(" Got it. I've added this task:");
                     System.out.println("   " + newTask);
-                    System.out.println(" Now you have " + taskCount + " tasks in the list.");
+                    System.out.println(" Now you have " + tasks.size() + " tasks in the list.");
                 } else {
                     throw new MaryException("I don't recognize that command; use todo, deadline, event, list, mark, unmark, or bye.");
                 }
