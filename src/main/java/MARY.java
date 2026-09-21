@@ -3,8 +3,7 @@ import java.util.Scanner;
 public class MARY {
     public static void main(String[] args) {
         String separator = "____________________________________________________________";
-        String[] tasks = new String[100];
-        boolean[] completed = new boolean[100];
+        Task[] tasks = new Task[100];
         int taskCount = 0;
         String banner = "███╗   ███╗ █████╗ ██████╗ ██╗   ██╗\n"
                 + "████╗ ████║██╔══██╗██╔══██╗╚██╗ ██╔╝\n"
@@ -36,8 +35,8 @@ public class MARY {
                 } else {
                     System.out.println(" Here are the tasks in your list:");
                     for (int i = 0; i < taskCount; i++) {
-                        String status = completed[i] ? "[X]" : "[ ]";
-                        System.out.println(" " + (i + 1) + "." + status + " " + tasks[i]);
+                        System.out.println(" " + (i + 1) + ".[" + tasks[i].getStatusIcon() + "] "
+                                + tasks[i].getDescription());
                     }
                 }
             } else if (command.startsWith("mark ") || command.startsWith("unmark ")) {
@@ -51,20 +50,24 @@ public class MARY {
                     if (taskIndex < 0 || taskIndex >= taskCount) {
                         System.out.println(" MARY could not find task " + taskNumber + ".");
                     } else {
-                        completed[taskIndex] = markDone;
-                        String status = markDone ? "[X]" : "[ ]";
+                        if (markDone) {
+                            tasks[taskIndex].markAsDone();
+                        } else {
+                            tasks[taskIndex].markAsNotDone();
+                        }
                         if (markDone) {
                             System.out.println(" Nice! I've marked this task as done:");
                         } else {
                             System.out.println(" OK, I've marked this task as not done yet:");
                         }
-                        System.out.println("   " + status + " " + tasks[taskIndex]);
+                        System.out.println("   [" + tasks[taskIndex].getStatusIcon() + "] "
+                                + tasks[taskIndex].getDescription());
                     }
                 } catch (NumberFormatException exception) {
                     System.out.println(" Please provide a valid task number.");
                 }
             } else if (taskCount < tasks.length) {
-                tasks[taskCount] = command;
+                tasks[taskCount] = new Task(command);
                 taskCount++;
                 System.out.println("added: " + command);
             } else {
