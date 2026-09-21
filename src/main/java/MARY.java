@@ -35,7 +35,7 @@ public class MARY {
                 } else {
                     System.out.println(" Here are the tasks in your list:");
                     for (int i = 0; i < taskCount; i++) {
-                        System.out.println(" " + (i + 1) + "." + tasks[i].getDisplayText());
+                        System.out.println(" " + (i + 1) + "." + tasks[i]);
                     }
                 }
             } else if (command.startsWith("mark ") || command.startsWith("unmark ")) {
@@ -59,7 +59,7 @@ public class MARY {
                         } else {
                             System.out.println(" OK, I've marked this task as not done yet:");
                         }
-                        System.out.println("   " + tasks[taskIndex].getDisplayText());
+                        System.out.println("   " + tasks[taskIndex]);
                     }
                 } catch (NumberFormatException exception) {
                     System.out.println(" Please provide a valid task number.");
@@ -69,7 +69,7 @@ public class MARY {
                 tasks[taskCount] = newTask;
                 taskCount++;
                 System.out.println(" Got it. I've added this task:");
-                System.out.println("   " + newTask.getDisplayText());
+                System.out.println("   " + newTask);
                 System.out.println(" Now you have " + taskCount + " tasks in the list.");
             } else {
                 System.out.println(" MARY's task list is full.");
@@ -87,17 +87,16 @@ public class MARY {
      */
     private static Task createTask(String command) {
         if (command.startsWith("todo ")) {
-            return new Task("T", command.substring(5).trim(), "");
+            return new Todo(command.substring(5).trim());
         }
 
         if (command.startsWith("deadline ")) {
             String content = command.substring(9).trim();
             int marker = content.indexOf(" /by ");
             if (marker >= 0) {
-                return new Task("D", content.substring(0, marker).trim(),
-                        "(by: " + content.substring(marker + 5).trim() + ")");
+                return new Deadline(content.substring(0, marker).trim(), content.substring(marker + 5).trim());
             }
-            return new Task("D", content, "");
+            return new Deadline(content, "");
         }
 
         if (command.startsWith("event ")) {
@@ -108,11 +107,11 @@ public class MARY {
                 String description = content.substring(0, fromMarker).trim();
                 String from = content.substring(fromMarker + 7, toMarker).trim();
                 String to = content.substring(toMarker + 5).trim();
-                return new Task("E", description, "(from: " + from + " to: " + to + ")");
+                return new Event(description, from, to);
             }
-            return new Task("E", content, "");
+            return new Event(content, "", "");
         }
 
-        return new Task("T", command, "");
+        return new Todo(command);
     }
 }

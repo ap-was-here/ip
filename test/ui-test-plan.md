@@ -58,7 +58,7 @@ Bye. Hope to see you again soon!
 
 ## Test case 3: Add todo, deadline, and event tasks
 
-Aim: Verify that MARY stores the three supported task types and preserves their date/time details.
+Aim: Verify that MARY stores todo, deadline, and event objects polymorphically in one task list and preserves their date/time details.
 
 Inputs:
 
@@ -167,3 +167,5 @@ Here are the tasks in your list:
 3.[E][ ] project meeting (from: Mon 2pm to: 4pm)
 See you later. Complete your tasks on time!
 ```
+
+Implementation note: The three task types are now represented by `Todo`, `Deadline`, and `Event` subclasses in separate files. They are stored together in `Task[]` and formatted through polymorphic `toString()` methods.
