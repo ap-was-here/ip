@@ -9,8 +9,8 @@ Aim: Verify that entered task text is stored and displayed by the `list` command
 Inputs:
 
 ```text
-read book
-return book
+todo read book
+todo return book
 list
 bye
 ```
@@ -36,7 +36,7 @@ Aim: Verify that `mark N` changes a task to done and `unmark N` changes it back 
 Inputs:
 
 ```text
-read book
+todo read book
 mark 1
 list
 unmark 1
@@ -91,8 +91,8 @@ Test case 1: PASS
 Console input:
 
 ```text
-read book
-return book
+todo read book
+todo return book
 list
 bye
 ```
@@ -169,3 +169,55 @@ See you later. Complete your tasks on time!
 ```
 
 Implementation note: The three task types are now represented by `Todo`, `Deadline`, and `Event` subclasses in separate files. They are stored together in `Task[]` and formatted through polymorphic `toString()` methods.
+
+## Test case 4: Explain invalid input
+
+Aim: Verify that invalid commands and malformed task commands produce specific correction guidance without terminating the session.
+
+Inputs:
+
+```text
+todo
+deadline homework
+event meeting /from 2pm
+mark abc
+blah
+bye
+```
+
+Expected output:
+
+```text
+Error: use 'todo description' to add a task without a date.
+Error: use 'deadline description /by date or time'.
+Error: use 'event description /from start /to end'.
+Error: 'abc' is not a valid task number; use a positive whole number.
+Error: I don't recognize that command; use todo, deadline, event, list, mark, unmark, or bye.
+See you later. Complete your tasks on time!
+```
+
+### 2026-09-21 error-handling session
+
+Test case 4: PASS
+
+Console input:
+
+```text
+todo
+deadline homework
+event meeting /from 2pm
+mark abc
+blah
+bye
+```
+
+Console output:
+
+```text
+Error: use 'todo description' to add a task without a date.
+Error: use 'deadline description /by date or time'.
+Error: use 'event description /from start /to end'.
+Error: 'abc' is not a valid task number; use a positive whole number.
+Error: I don't recognize that command; use todo, deadline, event, list, mark, unmark, or bye.
+See you later. Complete your tasks on time!
+```
