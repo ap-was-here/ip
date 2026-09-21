@@ -35,8 +35,7 @@ public class MARY {
                 } else {
                     System.out.println(" Here are the tasks in your list:");
                     for (int i = 0; i < taskCount; i++) {
-                        System.out.println(" " + (i + 1) + ".[" + tasks[i].getStatusIcon() + "] "
-                                + tasks[i].getDescription());
+                        System.out.println(" " + (i + 1) + "." + tasks[i].getDisplayText());
                     }
                 }
             } else if (command.startsWith("mark ") || command.startsWith("unmark ")) {
@@ -60,21 +59,60 @@ public class MARY {
                         } else {
                             System.out.println(" OK, I've marked this task as not done yet:");
                         }
-                        System.out.println("   [" + tasks[taskIndex].getStatusIcon() + "] "
-                                + tasks[taskIndex].getDescription());
+                        System.out.println("   " + tasks[taskIndex].getDisplayText());
                     }
                 } catch (NumberFormatException exception) {
                     System.out.println(" Please provide a valid task number.");
                 }
             } else if (taskCount < tasks.length) {
-                tasks[taskCount] = new Task(command);
+                Task newTask = createTask(command);
+                tasks[taskCount] = newTask;
                 taskCount++;
-                System.out.println("added: " + command);
+                System.out.println(" Got it. I've added this task:");
+                System.out.println("   " + newTask.getDisplayText());
+                System.out.println(" Now you have " + taskCount + " tasks in the list.");
             } else {
                 System.out.println(" MARY's task list is full.");
             }
 
             System.out.println(separator);
         }
+    }
+
+    /**
+     * Converts a user's task command into a Task object without using inheritance.
+     *
+     * @param command the complete command entered by the user
+     * @return the task represented by the command
+     */
+    private static Task createTask(String command) {
+        if (command.startsWith("todo ")) {
+            return new Task("T", command.substring(5).trim(), "");
+        }
+
+        if (command.startsWith("deadline ")) {
+            String content = command.substring(9).trim();
+            int marker = content.indexOf(" /by ");
+            if (marker >= 0) {
+                return new Task("D", content.substring(0, marker).trim(),
+                        "(by: " + content.substring(marker + 5).trim() + ")");
+            }
+            return new Task("D", content, "");
+        }
+
+        if (command.startsWith("event ")) {
+            String content = command.substring(6).trim();
+            int fromMarker = content.indexOf(" /from ");
+            int toMarker = content.indexOf(" /to ");
+            if (fromMarker >= 0 && toMarker > fromMarker) {
+                String description = content.substring(0, fromMarker).trim();
+                String from = content.substring(fromMarker + 7, toMarker).trim();
+                String to = content.substring(toMarker + 5).trim();
+                return new Task("E", description, "(from: " + from + " to: " + to + ")");
+            }
+            return new Task("E", content, "");
+        }
+
+        return new Task("T", command, "");
     }
 }
