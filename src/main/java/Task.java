@@ -19,6 +19,16 @@ public class Task {
         isDone = false;
     }
 
+    /** Sets the completion state when loading a saved task. */
+    public void setDone(boolean done) {
+        isDone = done;
+    }
+
+    /** Returns the portable record used for saving this task. */
+    public String toStorageRecord() {
+        return "T | " + (isDone ? "1" : "0") + " | " + description;
+    }
+
     /**
      * Returns the symbol used to display this task's status.
      *
