@@ -84,6 +84,77 @@ Bye. Hope to see you again soon!
 
 ## Test session record
 
+## Test case 6: Save and reload tasks
+
+Aim: Verify that task changes are saved to the relative current-folder file and loaded by a new chatbot process.
+
+Inputs for the first session:
+
+```text
+todo read book
+deadline return book /by Sunday
+mark 1
+bye
+```
+
+Expected output: The tasks are added and marked successfully, and a later session started in the same folder displays `[T][X] read book` and `[D][ ] return book (by: Sunday)` after `list`.
+
+Inputs for the second session:
+
+```text
+list
+bye
+```
+
+## Test case 7: Handle corrupted saved data
+
+Aim: Verify that malformed saved records produce a clear startup error and do not crash the chatbot.
+
+Setup: Replace `mary-data.txt` in the current folder with:
+
+```text
+not a valid task record
+```
+
+Inputs:
+
+```text
+list
+bye
+```
+
+Expected output includes:
+
+```text
+Error: the saved task data is corrupted: invalid record on line 1.
+MARY has no saved tasks yet.
+See you later. Complete your tasks on time!
+```
+
+The test must restore or remove the temporary data file after completion.
+
+### 2026-09-21 persistence session
+
+Test case 6: PASS
+
+The first session saved:
+
+```text
+T | 1 | read book
+D | 0 | return book | Sunday
+```
+
+A second process loaded both records and displayed:
+
+```text
+1.[T][X] read book
+2.[D][ ] return book (by: Sunday)
+```
+
+Test case 7: PASS
+
+Malformed records were reported as a corrupted-data error, and the chatbot continued to accept `list` and `bye`.
+
 ### 2026-09-21
 
 Test case 1: PASS
