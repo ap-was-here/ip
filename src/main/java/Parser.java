@@ -12,7 +12,7 @@ public class Parser {
         if (command.startsWith("todo") || command.startsWith("deadline") || command.startsWith("event")) {
             return new AddCommand(command);
         }
-        return null;
+        return new UnknownCommand(command);
     }
 
     /** Converts a todo, deadline, or event command into a task. */
