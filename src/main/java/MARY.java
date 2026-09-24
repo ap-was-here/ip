@@ -54,8 +54,6 @@ public class MARY {
                         System.out.println(" " + (i + 1) + "." + tasks.get(i));
                     }
                 }
-                } else if (command.startsWith("on")) {
-                    showTasksOnDate(command, tasks);
                 } else {
                     throw new MaryException("I don't recognize that command; use todo, deadline, event, on, list, mark, unmark, or bye.");
                 }
@@ -120,34 +118,6 @@ public class MARY {
         throw new MaryException("use 'todo description' to add a task without a date.");
     }
 
-    /** Displays deadlines and events that occur on the requested date. */
-    private static void showTasksOnDate(String command, TaskList tasks) throws MaryException {
-        if (!command.startsWith("on ") || command.substring(3).trim().isEmpty()) {
-            throw new MaryException("use 'on d/M/yyyy', for example 'on 2/12/2019'.");
-        }
-        LocalDate date;
-        try {
-            date = Task.parseDate(command.substring(3).trim());
-        } catch (DateTimeParseException exception) {
-            throw new MaryException("use date format d/M/yyyy, for example 2/12/2019.");
-        }
-        boolean found = false;
-        for (Task task : tasks.getTasks()) {
-            boolean occurs = task instanceof Deadline && ((Deadline) task).getBy().toLocalDate().equals(date)
-                    || task instanceof Event && (!((Event) task).getFrom().toLocalDate().isAfter(date)
-                    && !((Event) task).getTo().toLocalDate().isBefore(date));
-            if (occurs) {
-                if (!found) {
-                    System.out.println(" Tasks occurring on " + date + ":");
-                }
-                found = true;
-                System.out.println(" " + task);
-            }
-        }
-        if (!found) {
-            System.out.println(" No deadlines or events occur on " + date + ".");
-        }
-    }
 }
 
 

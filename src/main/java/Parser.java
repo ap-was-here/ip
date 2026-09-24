@@ -8,6 +8,7 @@ public class Parser {
         if (command.equals("list")) return new ListCommand();
         if (command.startsWith("delete")) return new DeleteCommand(command);
         if (command.startsWith("mark") || command.startsWith("unmark")) return new MarkCommand(command);
+        if (command.startsWith("on")) return new OnCommand(command);
         if (command.startsWith("todo") || command.startsWith("deadline") || command.startsWith("event")) {
             return new AddCommand(command);
         }
