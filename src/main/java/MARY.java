@@ -112,14 +112,6 @@ public class MARY {
                     throw new MaryException("'" + numberText
                             + "' is not a valid task number; use a positive whole number.");
                 }
-                } else if (command.startsWith("todo") || command.startsWith("deadline")
-                        || command.startsWith("event")) {
-                    Task newTask = Parser.parseTask(command);
-                    tasks.add(newTask);
-                    storage.save(tasks.getTasks());
-                    System.out.println(" Got it. I've added this task:");
-                    System.out.println("   " + newTask);
-                    System.out.println(" Now you have " + tasks.size() + " tasks in the list.");
                 } else {
                     throw new MaryException("I don't recognize that command; use todo, deadline, event, on, list, mark, unmark, or bye.");
                 }
