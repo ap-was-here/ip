@@ -6,40 +6,26 @@ import java.time.format.DateTimeParseException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
-import java.util.Scanner;
 
 public class MARY {
     private static final Path SAVE_FILE = Path.of("mary-data.txt");
 
     public static void main(String[] args) {
-        String separator = "____________________________________________________________";
+        Ui ui = new Ui();
         ArrayList<Task> tasks = new ArrayList<>();
         String loadError = loadTasks(tasks);
-        String banner = "███╗   ███╗ █████╗ ██████╗ ██╗   ██╗\n"
-                + "████╗ ████║██╔══██╗██╔══██╗╚██╗ ██╔╝\n"
-                + "██╔████╔██║███████║██████╔╝ ╚████╔╝\n"
-                + "██║╚██╔╝██║██╔══██║██╔══██╗  ╚██╔╝\n"
-                + "██║ ╚═╝ ██║██║  ██║██║  ██║   ██║\n"
-                + "╚═╝     ╚═╝╚═╝  ╚═╝╚═╝  ╚═╝   ╚═╝";
-
-        System.out.println(separator);
+        ui.showLine();
         if (loadError != null) {
-            System.out.println(" Error: " + loadError);
-            System.out.println(separator);
+            ui.showLoadingError(loadError);
         }
-        System.out.println(banner);
-        System.out.println("Hi! I'm MARY.");
-        System.out.println("What have you got for me today?");
-        System.out.println(separator);
+        ui.showWelcome();
 
-        Scanner scanner = new Scanner(System.in);
-        while (scanner.hasNextLine()) {
-            String command = scanner.nextLine();
+        String command;
+        while ((command = ui.readCommand()) != null) {
 
-            System.out.println(separator);
+            ui.showLine();
             if (command.equals("bye")) {
-                System.out.println("See you later. Complete your tasks on time!");
-                System.out.println(separator);
+                ui.showGoodbye();
                 break;
             }
 
@@ -127,10 +113,10 @@ public class MARY {
                     throw new MaryException("I don't recognize that command; use todo, deadline, event, on, list, mark, unmark, or bye.");
                 }
             } catch (MaryException exception) {
-                System.out.println(" Error: " + exception.getMessage());
+                ui.showError(exception.getMessage());
             }
 
-            System.out.println(separator);
+            ui.showLine();
         }
     }
 
