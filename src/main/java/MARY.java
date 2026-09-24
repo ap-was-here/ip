@@ -1,5 +1,8 @@
 import java.util.ArrayList;
 import java.io.IOException;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeParseException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
@@ -54,6 +57,8 @@ public class MARY {
                         System.out.println(" " + (i + 1) + "." + tasks.get(i));
                     }
                 }
+                } else if (command.startsWith("on")) {
+                    showTasksOnDate(command, tasks);
                 } else if (command.startsWith("delete") ) {
                     String numberText = command.startsWith("delete ")
                             ? command.substring(7).trim() : "";
@@ -119,7 +124,7 @@ public class MARY {
                     System.out.println("   " + newTask);
                     System.out.println(" Now you have " + tasks.size() + " tasks in the list.");
                 } else {
-                    throw new MaryException("I don't recognize that command; use todo, deadline, event, list, mark, unmark, or bye.");
+                    throw new MaryException("I don't recognize that command; use todo, deadline, event, on, list, mark, unmark, or bye.");
                 }
             } catch (MaryException exception) {
                 System.out.println(" Error: " + exception.getMessage());
@@ -151,7 +156,12 @@ public class MARY {
                     || content.substring(marker + 5).trim().isEmpty()) {
                 throw new MaryException("use 'deadline description /by date or time'.");
             }
-            return new Deadline(content.substring(0, marker).trim(), content.substring(marker + 5).trim());
+            try {
+                return new Deadline(content.substring(0, marker).trim(),
+                        Task.parseDateTime(content.substring(marker + 5).trim()));
+            } catch (DateTimeParseException exception) {
+                throw new MaryException("use date/time format d/M/yyyy HHmm, for example 2/12/2019 1800.");
+            }
         }
 
         if (command.startsWith("event ")) {
@@ -167,7 +177,11 @@ public class MARY {
             if (description.isEmpty() || from.isEmpty() || to.isEmpty()) {
                 throw new MaryException("event description, start time, and end time cannot be empty.");
             }
-            return new Event(description, from, to);
+            try {
+                return new Event(description, Task.parseDateTime(from), Task.parseDateTime(to));
+            } catch (DateTimeParseException exception) {
+                throw new MaryException("use event date/time format d/M/yyyy HHmm for both /from and /to.");
+            }
         }
 
         throw new MaryException("use 'todo description' to add a task without a date.");
@@ -226,11 +240,48 @@ public class MARY {
         if (fields[0].equals("T")) {
             task = new Todo(fields[2]);
         } else if (fields[0].equals("D")) {
-            task = new Deadline(fields[2], fields[3]);
+            try {
+                task = new Deadline(fields[2], LocalDateTime.parse(fields[3]));
+            } catch (DateTimeParseException exception) {
+                throw new MaryException("invalid deadline date/time on line " + lineNumber + ".");
+            }
         } else {
-            task = new Event(fields[2], fields[3], fields[4]);
+            try {
+                task = new Event(fields[2], LocalDateTime.parse(fields[3]), LocalDateTime.parse(fields[4]));
+            } catch (DateTimeParseException exception) {
+                throw new MaryException("invalid event date/time on line " + lineNumber + ".");
+            }
         }
         task.setDone(fields[1].equals("1"));
         return task;
+    }
+
+    /** Displays deadlines and events that occur on the requested date. */
+    private static void showTasksOnDate(String command, ArrayList<Task> tasks) throws MaryException {
+        if (!command.startsWith("on ") || command.substring(3).trim().isEmpty()) {
+            throw new MaryException("use 'on d/M/yyyy', for example 'on 2/12/2019'.");
+        }
+        LocalDate date;
+        try {
+            date = Task.parseDate(command.substring(3).trim());
+        } catch (DateTimeParseException exception) {
+            throw new MaryException("use date format d/M/yyyy, for example 2/12/2019.");
+        }
+        boolean found = false;
+        for (Task task : tasks) {
+            boolean occurs = task instanceof Deadline && ((Deadline) task).getBy().toLocalDate().equals(date)
+                    || task instanceof Event && (!((Event) task).getFrom().toLocalDate().isAfter(date)
+                    && !((Event) task).getTo().toLocalDate().isBefore(date));
+            if (occurs) {
+                if (!found) {
+                    System.out.println(" Tasks occurring on " + date + ":");
+                }
+                found = true;
+                System.out.println(" " + task);
+            }
+        }
+        if (!found) {
+            System.out.println(" No deadlines or events occur on " + date + ".");
+        }
     }
 }

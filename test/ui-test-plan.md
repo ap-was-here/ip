@@ -131,6 +131,56 @@ MARY has no saved tasks yet.
 See you later. Complete your tasks on time!
 ```
 
+## Test case 8: Parse and search dates and times
+
+Aim: Verify that deadline and event date/time text is parsed into date/time values and that `on d/M/yyyy` finds tasks occurring on that date.
+
+Inputs:
+
+```text
+deadline return book /by 2/12/2019 1800
+event project meeting /from 2/12/2019 1400 /to 2/12/2019 1600
+on 2/12/2019
+bye
+```
+
+Expected output includes:
+
+```text
+[D][ ] return book (by: 2 Dec 2019 18:00)
+[E][ ] project meeting (from: 2 Dec 2019 14:00 to: 2 Dec 2019 16:00)
+Tasks occurring on 2019-12-02:
+[D][ ] return book (by: 2 Dec 2019 18:00)
+[E][ ] project meeting (from: 2 Dec 2019 14:00 to: 2 Dec 2019 16:00)
+```
+
+## Test case 9: Reject invalid date/time input
+
+Aim: Verify that malformed deadline/event date-time values and malformed date searches receive specific correction messages.
+
+Inputs:
+
+```text
+deadline return book /by tomorrow
+event meeting /from 2/12/2019 /to 2/12/2019 1600
+on tomorrow
+bye
+```
+
+Expected output includes:
+
+```text
+Error: use date/time format d/M/yyyy HHmm, for example 2/12/2019 1800.
+Error: use event date/time format d/M/yyyy HHmm for both /from and /to.
+Error: use date format d/M/yyyy, for example 2/12/2019.
+```
+
+### 2026-09-25 date/time session
+
+Test cases 8 and 9: PASS
+
+The date/time parsing, `on` search, invalid-input messages, and reloading of ISO date-time records matched the expected results.
+
 The test must restore or remove the temporary data file after completion.
 
 ### 2026-09-21 persistence session

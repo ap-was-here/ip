@@ -1,5 +1,11 @@
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+
 /** Base class for all tasks. */
 public class Task {
+    protected static final DateTimeFormatter INPUT_DATE_TIME = DateTimeFormatter.ofPattern("d/M/uuuu HHmm");
+    protected static final DateTimeFormatter DISPLAY_DATE_TIME = DateTimeFormatter.ofPattern("d MMM uuuu HH:mm");
     protected String description;
     protected boolean isDone;
 
@@ -27,6 +33,21 @@ public class Task {
     /** Returns the portable record used for saving this task. */
     public String toStorageRecord() {
         return "T | " + (isDone ? "1" : "0") + " | " + description;
+    }
+
+    /** Parses the date/time format accepted by MARY commands. */
+    public static LocalDateTime parseDateTime(String value) {
+        return LocalDateTime.parse(value, INPUT_DATE_TIME);
+    }
+
+    /** Parses a date used by the date search command. */
+    public static LocalDate parseDate(String value) {
+        return LocalDate.parse(value, DateTimeFormatter.ofPattern("d/M/uuuu"));
+    }
+
+    /** Formats a date/time for display. */
+    public static String formatDateTime(LocalDateTime value) {
+        return value.format(DISPLAY_DATE_TIME);
     }
 
     /**
