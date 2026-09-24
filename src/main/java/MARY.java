@@ -56,40 +56,6 @@ public class MARY {
                 }
                 } else if (command.startsWith("on")) {
                     showTasksOnDate(command, tasks);
-            } else if (command.startsWith("mark") || command.startsWith("unmark")) {
-                boolean markDone = command.startsWith("mark ");
-                int prefixLength = markDone ? 5 : 7;
-                if (!command.startsWith(markDone ? "mark " : "unmark ")
-                        || command.substring(prefixLength).trim().isEmpty()) {
-                    throw new MaryException("use 'mark N' or 'unmark N', where N is a task number.");
-                }
-                String numberText = command.substring(prefixLength).trim();
-
-                try {
-                    int taskNumber = Integer.parseInt(numberText);
-                    int taskIndex = taskNumber - 1;
-
-                    if (taskIndex < 0 || taskIndex >= tasks.size()) {
-                        throw new MaryException("task " + taskNumber
-                                + " does not exist; use 'list' to see valid task numbers.");
-                    } else {
-                        if (markDone) {
-                            tasks.get(taskIndex).markAsDone();
-                        } else {
-                            tasks.get(taskIndex).markAsNotDone();
-                        }
-                        storage.save(tasks.getTasks());
-                        if (markDone) {
-                            System.out.println(" Nice! I've marked this task as done:");
-                        } else {
-                            System.out.println(" OK, I've marked this task as not done yet:");
-                        }
-                        System.out.println("   " + tasks.get(taskIndex));
-                    }
-                } catch (NumberFormatException exception) {
-                    throw new MaryException("'" + numberText
-                            + "' is not a valid task number; use a positive whole number.");
-                }
                 } else {
                     throw new MaryException("I don't recognize that command; use todo, deadline, event, on, list, mark, unmark, or bye.");
                 }
