@@ -56,28 +56,6 @@ public class MARY {
                 }
                 } else if (command.startsWith("on")) {
                     showTasksOnDate(command, tasks);
-                } else if (command.startsWith("delete") ) {
-                    String numberText = command.startsWith("delete ")
-                            ? command.substring(7).trim() : "";
-                    if (numberText.isEmpty()) {
-                        throw new MaryException("use 'delete N', where N is a task number.");
-                    }
-                    try {
-                        int taskNumber = Integer.parseInt(numberText);
-                        int taskIndex = taskNumber - 1;
-                        if (taskIndex < 0 || taskIndex >= tasks.size()) {
-                            throw new MaryException("task " + taskNumber
-                                    + " does not exist; use 'list' to see valid task numbers.");
-                        }
-                        Task removedTask = tasks.remove(taskIndex);
-                        storage.save(tasks.getTasks());
-                        System.out.println(" Noted. I've removed this task:");
-                        System.out.println("   " + removedTask);
-                        System.out.println(" Now you have " + tasks.size() + " tasks in the list.");
-                    } catch (NumberFormatException exception) {
-                        throw new MaryException("'" + numberText
-                                + "' is not a valid task number; use a positive whole number.");
-                    }
             } else if (command.startsWith("mark") || command.startsWith("unmark")) {
                 boolean markDone = command.startsWith("mark ");
                 int prefixLength = markDone ? 5 : 7;

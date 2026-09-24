@@ -6,6 +6,7 @@ public class Parser {
     public static Command parse(String command) {
         if (command.equals("bye")) return new ExitCommand();
         if (command.equals("list")) return new ListCommand();
+        if (command.startsWith("delete")) return new DeleteCommand(command);
         if (command.startsWith("todo") || command.startsWith("deadline") || command.startsWith("event")) {
             return new AddCommand(command);
         }
