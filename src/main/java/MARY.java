@@ -8,12 +8,17 @@ import java.nio.file.Path;
 import java.util.List;
 
 public class MARY {
-    private static final Path SAVE_FILE = Path.of("mary-data.txt");
-
     public static void main(String[] args) {
         Ui ui = new Ui();
-        ArrayList<Task> tasks = new ArrayList<>();
-        String loadError = loadTasks(tasks);
+        Storage storage = new Storage("mary-data.txt");
+        TaskList tasks;
+        String loadError = null;
+        try {
+            tasks = new TaskList(storage.load());
+        } catch (MaryException exception) {
+            tasks = new TaskList();
+            loadError = "the saved task data is corrupted: " + exception.getMessage();
+        }
         ui.showLine();
         if (loadError != null) {
             ui.showLoadingError(loadError);
@@ -59,7 +64,7 @@ public class MARY {
                                     + " does not exist; use 'list' to see valid task numbers.");
                         }
                         Task removedTask = tasks.remove(taskIndex);
-                        saveTasks(tasks);
+                        storage.save(tasks.getTasks());
                         System.out.println(" Noted. I've removed this task:");
                         System.out.println("   " + removedTask);
                         System.out.println(" Now you have " + tasks.size() + " tasks in the list.");
@@ -89,7 +94,7 @@ public class MARY {
                         } else {
                             tasks.get(taskIndex).markAsNotDone();
                         }
-                        saveTasks(tasks);
+                        storage.save(tasks.getTasks());
                         if (markDone) {
                             System.out.println(" Nice! I've marked this task as done:");
                         } else {
@@ -105,7 +110,7 @@ public class MARY {
                         || command.startsWith("event")) {
                     Task newTask = createTask(command);
                     tasks.add(newTask);
-                    saveTasks(tasks);
+                    storage.save(tasks.getTasks());
                     System.out.println(" Got it. I've added this task:");
                     System.out.println("   " + newTask);
                     System.out.println(" Now you have " + tasks.size() + " tasks in the list.");
@@ -173,77 +178,8 @@ public class MARY {
         throw new MaryException("use 'todo description' to add a task without a date.");
     }
 
-    /** Loads saved tasks from the current folder, if the save file exists. */
-    private static String loadTasks(ArrayList<Task> tasks) {
-        if (!Files.exists(SAVE_FILE)) {
-            return null;
-        }
-        try {
-            List<String> records = Files.readAllLines(SAVE_FILE);
-            for (int i = 0; i < records.size(); i++) {
-                String record = records.get(i);
-                if (!record.isBlank()) {
-                    tasks.add(parseRecord(record, i + 1));
-                }
-            }
-            return null;
-        } catch (IOException exception) {
-            return "could not read " + SAVE_FILE + ": " + exception.getMessage();
-        } catch (MaryException exception) {
-            tasks.clear();
-            return "the saved task data is corrupted: " + exception.getMessage();
-        }
-    }
-
-    /** Saves all tasks to a relative file in the current folder. */
-    private static void saveTasks(ArrayList<Task> tasks) throws MaryException {
-        try {
-            ArrayList<String> records = new ArrayList<>();
-            for (Task task : tasks) {
-                records.add(task.toStorageRecord());
-            }
-            Files.write(SAVE_FILE, records);
-        } catch (IOException exception) {
-            throw new MaryException("could not save tasks to " + SAVE_FILE + ".");
-        }
-    }
-
-    /** Converts one saved record into the appropriate task subtype. */
-    private static Task parseRecord(String record, int lineNumber) throws MaryException {
-        String[] fields = record.split(" \\| ", -1);
-        if (fields.length < 3 || (fields[0].equals("D") && fields.length != 4)
-                || (fields[0].equals("E") && fields.length != 5)
-                || (!fields[0].equals("T") && !fields[0].equals("D") && !fields[0].equals("E"))) {
-            throw new MaryException("invalid record on line " + lineNumber + ".");
-        }
-        if (!fields[1].equals("0") && !fields[1].equals("1")) {
-            throw new MaryException("invalid completion status on line " + lineNumber + ".");
-        }
-        if (fields[2].isBlank()) {
-            throw new MaryException("empty task description on line " + lineNumber + ".");
-        }
-        Task task;
-        if (fields[0].equals("T")) {
-            task = new Todo(fields[2]);
-        } else if (fields[0].equals("D")) {
-            try {
-                task = new Deadline(fields[2], LocalDateTime.parse(fields[3]));
-            } catch (DateTimeParseException exception) {
-                throw new MaryException("invalid deadline date/time on line " + lineNumber + ".");
-            }
-        } else {
-            try {
-                task = new Event(fields[2], LocalDateTime.parse(fields[3]), LocalDateTime.parse(fields[4]));
-            } catch (DateTimeParseException exception) {
-                throw new MaryException("invalid event date/time on line " + lineNumber + ".");
-            }
-        }
-        task.setDone(fields[1].equals("1"));
-        return task;
-    }
-
     /** Displays deadlines and events that occur on the requested date. */
-    private static void showTasksOnDate(String command, ArrayList<Task> tasks) throws MaryException {
+    private static void showTasksOnDate(String command, TaskList tasks) throws MaryException {
         if (!command.startsWith("on ") || command.substring(3).trim().isEmpty()) {
             throw new MaryException("use 'on d/M/yyyy', for example 'on 2/12/2019'.");
         }
@@ -254,7 +190,7 @@ public class MARY {
             throw new MaryException("use date format d/M/yyyy, for example 2/12/2019.");
         }
         boolean found = false;
-        for (Task task : tasks) {
+        for (Task task : tasks.getTasks()) {
             boolean occurs = task instanceof Deadline && ((Deadline) task).getBy().toLocalDate().equals(date)
                     || task instanceof Event && (!((Event) task).getFrom().toLocalDate().isAfter(date)
                     && !((Event) task).getTo().toLocalDate().isBefore(date));
