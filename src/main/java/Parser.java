@@ -2,6 +2,12 @@ import java.time.format.DateTimeParseException;
 
 /** Interprets task-creation commands and validates their arguments. */
 public class Parser {
+    /** Creates a command object for the exit command, if applicable. */
+    public static Command parse(String command) {
+        if (command.equals("bye")) return new ExitCommand();
+        return null;
+    }
+
     /** Converts a todo, deadline, or event command into a task. */
     public static Task parseTask(String command) throws MaryException {
         if (command.startsWith("todo ")) {

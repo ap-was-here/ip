@@ -29,8 +29,9 @@ public class MARY {
         while ((command = ui.readCommand()) != null) {
 
             ui.showLine();
-            if (command.equals("bye")) {
-                ui.showGoodbye();
+            Command parsedCommand = Parser.parse(command);
+            if (parsedCommand != null && parsedCommand.isExit()) {
+                parsedCommand.execute(tasks, ui, storage);
                 break;
             }
 
