@@ -5,6 +5,7 @@ public class Parser {
     /** Creates a command object for the exit command, if applicable. */
     public static Command parse(String command) {
         if (command.equals("bye")) return new ExitCommand();
+        if (command.equals("list")) return new ListCommand();
         return null;
     }
 

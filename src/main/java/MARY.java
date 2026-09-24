@@ -34,6 +34,11 @@ public class MARY {
                 parsedCommand.execute(tasks, ui, storage);
                 break;
             }
+            if (parsedCommand != null) {
+                parsedCommand.execute(tasks, ui, storage);
+                ui.showLine();
+                continue;
+            }
 
             try {
                 if (command.isBlank()) {
