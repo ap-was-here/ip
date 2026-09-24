@@ -108,7 +108,7 @@ public class MARY {
                 }
                 } else if (command.startsWith("todo") || command.startsWith("deadline")
                         || command.startsWith("event")) {
-                    Task newTask = createTask(command);
+                    Task newTask = Parser.parseTask(command);
                     tasks.add(newTask);
                     storage.save(tasks.getTasks());
                     System.out.println(" Got it. I've added this task:");

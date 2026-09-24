@@ -1,0 +1,47 @@
+import java.time.format.DateTimeParseException;
+
+/** Interprets task-creation commands and validates their arguments. */
+public class Parser {
+    /** Converts a todo, deadline, or event command into a task. */
+    public static Task parseTask(String command) throws MaryException {
+        if (command.startsWith("todo ")) {
+            String description = command.substring(5).trim();
+            if (description.isEmpty()) throw new MaryException("please add a task description after 'todo'.");
+            return new Todo(description);
+        }
+        if (command.startsWith("deadline ")) {
+            String content = command.substring(9).trim();
+            int marker = content.indexOf(" /by ");
+            if (marker < 0 || content.substring(0, marker).trim().isEmpty()
+                    || content.substring(marker + 5).trim().isEmpty()) {
+                throw new MaryException("use 'deadline description /by date or time'.");
+            }
+            try {
+                return new Deadline(content.substring(0, marker).trim(),
+                        Task.parseDateTime(content.substring(marker + 5).trim()));
+            } catch (DateTimeParseException exception) {
+                throw new MaryException("use date/time format d/M/yyyy HHmm, for example 2/12/2019 1800.");
+            }
+        }
+        if (command.startsWith("event ")) {
+            String content = command.substring(6).trim();
+            int fromMarker = content.indexOf(" /from ");
+            int toMarker = content.indexOf(" /to ");
+            if (fromMarker < 0 || toMarker <= fromMarker) {
+                throw new MaryException("use 'event description /from start /to end'.");
+            }
+            String description = content.substring(0, fromMarker).trim();
+            String from = content.substring(fromMarker + 7, toMarker).trim();
+            String to = content.substring(toMarker + 5).trim();
+            if (description.isEmpty() || from.isEmpty() || to.isEmpty()) {
+                throw new MaryException("event description, start time, and end time cannot be empty.");
+            }
+            try {
+                return new Event(description, Task.parseDateTime(from), Task.parseDateTime(to));
+            } catch (DateTimeParseException exception) {
+                throw new MaryException("use event date/time format d/M/yyyy HHmm for both /from and /to.");
+            }
+        }
+        throw new MaryException("use 'todo description' to add a task without a date.");
+    }
+}
