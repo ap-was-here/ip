@@ -1,3 +1,5 @@
+package mary.task;
+
 import java.time.LocalDateTime;
 
 /** Represents a task with a start time and an end time. */

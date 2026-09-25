@@ -1,3 +1,5 @@
+package mary.exception;
+
 /** Categorizes input errors that MARY can report. */
 public enum ErrorType {
     EMPTY_DESCRIPTION,

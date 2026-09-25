@@ -1,3 +1,11 @@
+package mary.command;
+
+import mary.exception.MaryException;
+import mary.storage.Storage;
+import mary.task.Task;
+import mary.task.TaskList;
+import mary.ui.Ui;
+
 /** Marks a task done or not done. */
 public class MarkCommand extends Command {
     private final String fullCommand;

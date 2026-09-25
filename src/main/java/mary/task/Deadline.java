@@ -1,3 +1,5 @@
+package mary.task;
+
 import java.time.LocalDateTime;
 
 /** Represents a task that must be completed by a specified time. */

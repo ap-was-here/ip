@@ -1,3 +1,12 @@
+package mary.command;
+
+import mary.exception.MaryException;
+import mary.parser.Parser;
+import mary.storage.Storage;
+import mary.task.Task;
+import mary.task.TaskList;
+import mary.ui.Ui;
+
 /** Adds a todo, deadline, or event task. */
 public class AddCommand extends Command {
     private final String fullCommand;

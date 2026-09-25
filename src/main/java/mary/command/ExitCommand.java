@@ -1,3 +1,9 @@
+package mary.command;
+
+import mary.storage.Storage;
+import mary.task.TaskList;
+import mary.ui.Ui;
+
 /** Command that ends the chatbot session. */
 public class ExitCommand extends Command {
     @Override

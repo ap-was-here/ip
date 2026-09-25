@@ -1,3 +1,5 @@
+package mary.command;
+
 /** Lists the commands understood by MARY. */
 public enum CommandType {
     TODO,

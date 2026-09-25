@@ -1,3 +1,5 @@
+package mary.ui;
+
 import java.util.Scanner;
 
 /** Handles MARY's interaction with the user. */

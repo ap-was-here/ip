@@ -1,3 +1,5 @@
+package mary.task;
+
 /** Represents a task without a date or time. */
 public class Todo extends Task {
     /** Creates an unfinished todo task. */

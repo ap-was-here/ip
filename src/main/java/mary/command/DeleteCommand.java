@@ -1,3 +1,11 @@
+package mary.command;
+
+import mary.exception.MaryException;
+import mary.storage.Storage;
+import mary.task.Task;
+import mary.task.TaskList;
+import mary.ui.Ui;
+
 /** Removes a task by its one-based list number. */
 public class DeleteCommand extends Command {
     private final String fullCommand;

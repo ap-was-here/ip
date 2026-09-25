@@ -1,5 +1,583 @@
 # UI Test Plan
 
+## Current package-migration regression suite
+
+This suite invokes `mary.MARY` with Java 25 and compares complete stdout exactly
+(normalizing CRLF/LF only). Expected output is defined below before testing.
+The historical cases farther down are retained as history: some predate typed
+dates, command extraction, and the current farewell and are not current oracles.
+
+Each case starts in a new isolated working directory with no save file, unless
+`seed` specifies its contents. Sessions within a case share that directory to
+test persistence. The repository's real `mary-data.txt` must never be used or
+modified by these tests. Compile to a separate output directory with `javac -d`;
+do not overwrite or remove the existing tracked `.class` files.
+
+For this structural refactor, also compile a snapshot of the original sources
+and compare its stdout and saved data with the packaged version using identical
+fixtures. Stop immediately if either an exact expectation or comparison fails.
+
+The executable specification below records each case's aim, input commands, and
+expected output. `welcome` is the exact startup output (including the existing
+two initial dividers). For a `startupError`, insert ` Error: MESSAGE` and one
+divider after the first startup divider. Each step prints one divider, its
+`output` lines, and one divider. Input is supplied through stdin and is not
+included in stdout. Every line, including the last, ends with a newline.
+An empty `steps` array means EOF immediately after startup.
+
+`saved` is the exact expected final data file content, or null if no file should
+exist. Case P1 covers adding all task types, marking/unmarking, deletion, date
+search and persistence; P2 covers invalid inputs; P3 covers corrupted data;
+P4 covers missing data and EOF. These cover the behaviours described by the
+older cases without relying on obsolete date strings such as "Sunday".
+
+<!-- package-suite -->
+```json
+{
+  "separator": "____________________________________________________________",
+  "welcome": [
+    "____________________________________________________________",
+    "____________________________________________________________",
+    "███╗   ███╗ █████╗ ██████╗ ██╗   ██╗",
+    "████╗ ████║██╔══██╗██╔══██╗╚██╗ ██╔╝",
+    "██╔████╔██║███████║██████╔╝ ╚████╔╝",
+    "██║╚██╔╝██║██╔══██║██╔══██╗  ╚██╔╝",
+    "██║ ╚═╝ ██║██║  ██║██║  ██║   ██║",
+    "╚═╝     ╚═╝╚═╝  ╚═╝╚═╝  ╚═╝   ╚═╝",
+    "Hi! I'm MARY.",
+    "What have you got for me today?",
+    "____________________________________________________________"
+  ],
+  "cases": [
+    {
+      "id": "P1",
+      "aim": "Exercise all packaged command types and task subtypes, list renumbering, date filtering, and save/reload across two processes.",
+      "sessions": [
+        {
+          "steps": [
+            {
+              "input": "list",
+              "output": [
+                " MARY has no saved tasks yet."
+              ]
+            },
+            {
+              "input": "todo read book",
+              "output": [
+                " Got it. I've added this task:",
+                "   [T][ ] read book",
+                " Now you have 1 tasks in the list."
+              ]
+            },
+            {
+              "input": "deadline return book /by 2/12/2019 1800",
+              "output": [
+                " Got it. I've added this task:",
+                "   [D][ ] return book (by: 2 Dec 2019 18:00)",
+                " Now you have 2 tasks in the list."
+              ]
+            },
+            {
+              "input": "event project meeting /from 2/12/2019 1400 /to 4/12/2019 1600",
+              "output": [
+                " Got it. I've added this task:",
+                "   [E][ ] project meeting (from: 2 Dec 2019 14:00 to: 4 Dec 2019 16:00)",
+                " Now you have 3 tasks in the list."
+              ]
+            },
+            {
+              "input": "list",
+              "output": [
+                " Here are the tasks in your list:",
+                " 1.[T][ ] read book",
+                " 2.[D][ ] return book (by: 2 Dec 2019 18:00)",
+                " 3.[E][ ] project meeting (from: 2 Dec 2019 14:00 to: 4 Dec 2019 16:00)"
+              ]
+            },
+            {
+              "input": "mark 2",
+              "output": [
+                " Nice! I've marked this task as done:",
+                "   [D][X] return book (by: 2 Dec 2019 18:00)"
+              ]
+            },
+            {
+              "input": "unmark 2",
+              "output": [
+                " OK, I've marked this task as not done yet:",
+                "   [D][ ] return book (by: 2 Dec 2019 18:00)"
+              ]
+            },
+            {
+              "input": "mark 1",
+              "output": [
+                " Nice! I've marked this task as done:",
+                "   [T][X] read book"
+              ]
+            },
+            {
+              "input": "delete 2",
+              "output": [
+                " Noted. I've removed this task:",
+                "   [D][ ] return book (by: 2 Dec 2019 18:00)",
+                " Now you have 2 tasks in the list."
+              ]
+            },
+            {
+              "input": "list",
+              "output": [
+                " Here are the tasks in your list:",
+                " 1.[T][X] read book",
+                " 2.[E][ ] project meeting (from: 2 Dec 2019 14:00 to: 4 Dec 2019 16:00)"
+              ]
+            },
+            {
+              "input": "on 3/12/2019",
+              "output": [
+                " Tasks occurring on 2019-12-03:",
+                " [E][ ] project meeting (from: 2 Dec 2019 14:00 to: 4 Dec 2019 16:00)"
+              ]
+            },
+            {
+              "input": "on 1/12/2019",
+              "output": [
+                " No deadlines or events occur on 2019-12-01."
+              ]
+            },
+            {
+              "input": "bye",
+              "output": [
+                "See you later. Complete your tasks on time!"
+              ]
+            }
+          ]
+        },
+        {
+          "steps": [
+            {
+              "input": "list",
+              "output": [
+                " Here are the tasks in your list:",
+                " 1.[T][X] read book",
+                " 2.[E][ ] project meeting (from: 2 Dec 2019 14:00 to: 4 Dec 2019 16:00)"
+              ]
+            },
+            {
+              "input": "on 3/12/2019",
+              "output": [
+                " Tasks occurring on 2019-12-03:",
+                " [E][ ] project meeting (from: 2 Dec 2019 14:00 to: 4 Dec 2019 16:00)"
+              ]
+            },
+            {
+              "input": "bye",
+              "output": [
+                "See you later. Complete your tasks on time!"
+              ]
+            }
+          ]
+        }
+      ],
+      "saved": "T | 1 | read book\nE | 0 | project meeting | 2019-12-02T14:00 | 2019-12-04T16:00\n"
+    },
+    {
+      "id": "P2",
+      "aim": "Verify exceptions and invalid command/date messages still cross package boundaries, with no saved data created.",
+      "sessions": [
+        {
+          "steps": [
+            {
+              "input": "",
+              "output": [
+                " Error: please enter a command or task."
+              ]
+            },
+            {
+              "input": "blah",
+              "output": [
+                " Error: I don't recognize that command; use todo, deadline, event, on, list, mark, unmark, delete, or bye."
+              ]
+            },
+            {
+              "input": "todo",
+              "output": [
+                " Error: use 'todo description' to add a task without a date."
+              ]
+            },
+            {
+              "input": "deadline homework",
+              "output": [
+                " Error: use 'deadline description /by date or time'."
+              ]
+            },
+            {
+              "input": "event meeting /from 2pm",
+              "output": [
+                " Error: use 'event description /from start /to end'."
+              ]
+            },
+            {
+              "input": "mark abc",
+              "output": [
+                " Error: 'abc' is not a valid task number; use a positive whole number."
+              ]
+            },
+            {
+              "input": "delete 0",
+              "output": [
+                " Error: task 0 does not exist; use 'list' to see valid task numbers."
+              ]
+            },
+            {
+              "input": "deadline return book /by tomorrow",
+              "output": [
+                " Error: use date/time format d/M/yyyy HHmm, for example 2/12/2019 1800."
+              ]
+            },
+            {
+              "input": "event meeting /from 2/12/2019 /to 2/12/2019 1600",
+              "output": [
+                " Error: use event date/time format d/M/yyyy HHmm for both /from and /to."
+              ]
+            },
+            {
+              "input": "on tomorrow",
+              "output": [
+                " Error: use date format d/M/yyyy, for example 2/12/2019."
+              ]
+            },
+            {
+              "input": "list",
+              "output": [
+                " MARY has no saved tasks yet."
+              ]
+            },
+            {
+              "input": "bye",
+              "output": [
+                "See you later. Complete your tasks on time!"
+              ]
+            }
+          ]
+        }
+      ],
+      "saved": null
+    },
+    {
+      "id": "P3",
+      "aim": "Load a malformed record in an isolated data file; report the loading error and continue accepting commands without changing that file.",
+      "seed": "not a valid task record\n",
+      "sessions": [
+        {
+          "startupError": "the saved task data is corrupted: invalid record on line 1.",
+          "steps": [
+            {
+              "input": "list",
+              "output": [
+                " MARY has no saved tasks yet."
+              ]
+            },
+            {
+              "input": "bye",
+              "output": [
+                "See you later. Complete your tasks on time!"
+              ]
+            }
+          ]
+        }
+      ],
+      "saved": "not a valid task record\n"
+    },
+    {
+      "id": "P4",
+      "aim": "Verify the packaged entry point handles end-of-input and a missing data file.",
+      "sessions": [
+        {
+          "steps": []
+        }
+      ],
+      "saved": null
+    }
+  ]
+}
+```
+<!-- /package-suite -->
+
+## Package-migration test session
+
+<!-- package-session -->
+Date: 2026-09-25. Runtime/compiler: Temurin Java 25.0.4.1.
+
+Result: **PASS** — P1–P4 (five packaged sessions, plus five matching baseline
+sessions). All 22 sources compiled into a clean output folder. The complete
+stdout, zero exit codes, empty stderr, and final saved-file contents matched the
+predeclared expectations and the original default-package implementation.
+Only line endings were normalized; spaces and the Unicode banner were preserved.
+
+Each case used an isolated working directory. The project save file was not
+used. Below are the actual inputs and complete captured outputs; input is shown
+separately because redirected stdin is not echoed by the application.
+
+### P1, session 1: PASS
+
+Console input:
+
+```text
+list
+todo read book
+deadline return book /by 2/12/2019 1800
+event project meeting /from 2/12/2019 1400 /to 4/12/2019 1600
+list
+mark 2
+unmark 2
+mark 1
+delete 2
+list
+on 3/12/2019
+on 1/12/2019
+bye
+```
+
+Console output (stderr empty; exit code 0):
+
+```text
+____________________________________________________________
+____________________________________________________________
+███╗   ███╗ █████╗ ██████╗ ██╗   ██╗
+████╗ ████║██╔══██╗██╔══██╗╚██╗ ██╔╝
+██╔████╔██║███████║██████╔╝ ╚████╔╝
+██║╚██╔╝██║██╔══██║██╔══██╗  ╚██╔╝
+██║ ╚═╝ ██║██║  ██║██║  ██║   ██║
+╚═╝     ╚═╝╚═╝  ╚═╝╚═╝  ╚═╝   ╚═╝
+Hi! I'm MARY.
+What have you got for me today?
+____________________________________________________________
+____________________________________________________________
+ MARY has no saved tasks yet.
+____________________________________________________________
+____________________________________________________________
+ Got it. I've added this task:
+   [T][ ] read book
+ Now you have 1 tasks in the list.
+____________________________________________________________
+____________________________________________________________
+ Got it. I've added this task:
+   [D][ ] return book (by: 2 Dec 2019 18:00)
+ Now you have 2 tasks in the list.
+____________________________________________________________
+____________________________________________________________
+ Got it. I've added this task:
+   [E][ ] project meeting (from: 2 Dec 2019 14:00 to: 4 Dec 2019 16:00)
+ Now you have 3 tasks in the list.
+____________________________________________________________
+____________________________________________________________
+ Here are the tasks in your list:
+ 1.[T][ ] read book
+ 2.[D][ ] return book (by: 2 Dec 2019 18:00)
+ 3.[E][ ] project meeting (from: 2 Dec 2019 14:00 to: 4 Dec 2019 16:00)
+____________________________________________________________
+____________________________________________________________
+ Nice! I've marked this task as done:
+   [D][X] return book (by: 2 Dec 2019 18:00)
+____________________________________________________________
+____________________________________________________________
+ OK, I've marked this task as not done yet:
+   [D][ ] return book (by: 2 Dec 2019 18:00)
+____________________________________________________________
+____________________________________________________________
+ Nice! I've marked this task as done:
+   [T][X] read book
+____________________________________________________________
+____________________________________________________________
+ Noted. I've removed this task:
+   [D][ ] return book (by: 2 Dec 2019 18:00)
+ Now you have 2 tasks in the list.
+____________________________________________________________
+____________________________________________________________
+ Here are the tasks in your list:
+ 1.[T][X] read book
+ 2.[E][ ] project meeting (from: 2 Dec 2019 14:00 to: 4 Dec 2019 16:00)
+____________________________________________________________
+____________________________________________________________
+ Tasks occurring on 2019-12-03:
+ [E][ ] project meeting (from: 2 Dec 2019 14:00 to: 4 Dec 2019 16:00)
+____________________________________________________________
+____________________________________________________________
+ No deadlines or events occur on 2019-12-01.
+____________________________________________________________
+____________________________________________________________
+See you later. Complete your tasks on time!
+____________________________________________________________
+```
+
+### P1, session 2: PASS
+
+Console input:
+
+```text
+list
+on 3/12/2019
+bye
+```
+
+Console output (stderr empty; exit code 0):
+
+```text
+____________________________________________________________
+____________________________________________________________
+███╗   ███╗ █████╗ ██████╗ ██╗   ██╗
+████╗ ████║██╔══██╗██╔══██╗╚██╗ ██╔╝
+██╔████╔██║███████║██████╔╝ ╚████╔╝
+██║╚██╔╝██║██╔══██║██╔══██╗  ╚██╔╝
+██║ ╚═╝ ██║██║  ██║██║  ██║   ██║
+╚═╝     ╚═╝╚═╝  ╚═╝╚═╝  ╚═╝   ╚═╝
+Hi! I'm MARY.
+What have you got for me today?
+____________________________________________________________
+____________________________________________________________
+ Here are the tasks in your list:
+ 1.[T][X] read book
+ 2.[E][ ] project meeting (from: 2 Dec 2019 14:00 to: 4 Dec 2019 16:00)
+____________________________________________________________
+____________________________________________________________
+ Tasks occurring on 2019-12-03:
+ [E][ ] project meeting (from: 2 Dec 2019 14:00 to: 4 Dec 2019 16:00)
+____________________________________________________________
+____________________________________________________________
+See you later. Complete your tasks on time!
+____________________________________________________________
+```
+
+### P2, session 1: PASS
+
+Console input:
+
+```text
+
+blah
+todo
+deadline homework
+event meeting /from 2pm
+mark abc
+delete 0
+deadline return book /by tomorrow
+event meeting /from 2/12/2019 /to 2/12/2019 1600
+on tomorrow
+list
+bye
+```
+
+Console output (stderr empty; exit code 0):
+
+```text
+____________________________________________________________
+____________________________________________________________
+███╗   ███╗ █████╗ ██████╗ ██╗   ██╗
+████╗ ████║██╔══██╗██╔══██╗╚██╗ ██╔╝
+██╔████╔██║███████║██████╔╝ ╚████╔╝
+██║╚██╔╝██║██╔══██║██╔══██╗  ╚██╔╝
+██║ ╚═╝ ██║██║  ██║██║  ██║   ██║
+╚═╝     ╚═╝╚═╝  ╚═╝╚═╝  ╚═╝   ╚═╝
+Hi! I'm MARY.
+What have you got for me today?
+____________________________________________________________
+____________________________________________________________
+ Error: please enter a command or task.
+____________________________________________________________
+____________________________________________________________
+ Error: I don't recognize that command; use todo, deadline, event, on, list, mark, unmark, delete, or bye.
+____________________________________________________________
+____________________________________________________________
+ Error: use 'todo description' to add a task without a date.
+____________________________________________________________
+____________________________________________________________
+ Error: use 'deadline description /by date or time'.
+____________________________________________________________
+____________________________________________________________
+ Error: use 'event description /from start /to end'.
+____________________________________________________________
+____________________________________________________________
+ Error: 'abc' is not a valid task number; use a positive whole number.
+____________________________________________________________
+____________________________________________________________
+ Error: task 0 does not exist; use 'list' to see valid task numbers.
+____________________________________________________________
+____________________________________________________________
+ Error: use date/time format d/M/yyyy HHmm, for example 2/12/2019 1800.
+____________________________________________________________
+____________________________________________________________
+ Error: use event date/time format d/M/yyyy HHmm for both /from and /to.
+____________________________________________________________
+____________________________________________________________
+ Error: use date format d/M/yyyy, for example 2/12/2019.
+____________________________________________________________
+____________________________________________________________
+ MARY has no saved tasks yet.
+____________________________________________________________
+____________________________________________________________
+See you later. Complete your tasks on time!
+____________________________________________________________
+```
+
+### P3, session 1: PASS
+
+Console input:
+
+```text
+list
+bye
+```
+
+Console output (stderr empty; exit code 0):
+
+```text
+____________________________________________________________
+ Error: the saved task data is corrupted: invalid record on line 1.
+____________________________________________________________
+____________________________________________________________
+███╗   ███╗ █████╗ ██████╗ ██╗   ██╗
+████╗ ████║██╔══██╗██╔══██╗╚██╗ ██╔╝
+██╔████╔██║███████║██████╔╝ ╚████╔╝
+██║╚██╔╝██║██╔══██║██╔══██╗  ╚██╔╝
+██║ ╚═╝ ██║██║  ██║██║  ██║   ██║
+╚═╝     ╚═╝╚═╝  ╚═╝╚═╝  ╚═╝   ╚═╝
+Hi! I'm MARY.
+What have you got for me today?
+____________________________________________________________
+____________________________________________________________
+ MARY has no saved tasks yet.
+____________________________________________________________
+____________________________________________________________
+See you later. Complete your tasks on time!
+____________________________________________________________
+```
+
+### P4, session 1: PASS
+
+Console input (immediate EOF):
+
+```text
+```
+
+Console output (stderr empty; exit code 0):
+
+```text
+____________________________________________________________
+____________________________________________________________
+███╗   ███╗ █████╗ ██████╗ ██╗   ██╗
+████╗ ████║██╔══██╗██╔══██╗╚██╗ ██╔╝
+██╔████╔██║███████║██████╔╝ ╚████╔╝
+██║╚██╔╝██║██╔══██║██╔══██╗  ╚██╔╝
+██║ ╚═╝ ██║██║  ██║██║  ██║   ██║
+╚═╝     ╚═╝╚═╝  ╚═╝╚═╝  ╚═╝   ╚═╝
+Hi! I'm MARY.
+What have you got for me today?
+____________________________________________________________
+```
+<!-- /package-session -->
+
+## Historical test plans and records (superseded)
+
 This file contains command-line UI test cases for MARY. Each test starts a fresh program process, so task data is kept only for the duration of that test. The full startup banner is included in the captured session records.
 
 ## Test case 1: Add tasks and list them

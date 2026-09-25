@@ -1,12 +1,19 @@
-import java.util.ArrayList;
-import java.io.IOException;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeParseException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.util.List;
+package mary;
 
+import java.time.format.DateTimeParseException;
+
+import mary.command.Command;
+import mary.exception.MaryException;
+import mary.parser.Parser;
+import mary.storage.Storage;
+import mary.task.Deadline;
+import mary.task.Event;
+import mary.task.Task;
+import mary.task.TaskList;
+import mary.task.Todo;
+import mary.ui.Ui;
+
+/** Starts MARY and coordinates its console command loop. */
 public class MARY {
     public static void main(String[] args) {
         Ui ui = new Ui();

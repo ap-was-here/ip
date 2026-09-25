@@ -1,3 +1,9 @@
+package mary.command;
+
+import mary.storage.Storage;
+import mary.task.TaskList;
+import mary.ui.Ui;
+
 /** Reports an input that does not match a supported command. */
 public class UnknownCommand extends Command {
     private final String input;
