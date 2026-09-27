@@ -25,6 +25,10 @@ dependencies {
 test {
     useJUnitPlatform()
 
+    // Keep month names deterministic in date-display assertions on all machines.
+    systemProperty 'user.language', 'en'
+    systemProperty 'user.country', 'US'
+
     testLogging {
         events 'passed', 'skipped', 'failed'
 

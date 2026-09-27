@@ -1,5 +1,654 @@
 # UI Test Plan
 
+## Bug-fix UI regression run (2026-09-27)
+
+Run R1–R2 and P1–P4 from the shared JSON specification against the newly built
+`mary.jar`, with Java 25. R1 adds exact expectations for missing mark/unmark
+arguments and impossible dates; R2 adds a malformed todo record with an extra
+field. Use isolated directories. Compare exact output and saved data, stopping
+at the first mismatch. Do not compare these corrected cases to the old buggy
+baseline program. All prior console records below are historical.
+
+<!-- bugfix-ui-session -->
+Result: **PASS** — six cases (R1, R2, P1–P4), seven JAR sessions, Java 25.0.4.1.
+Exact stdout, empty stderr, zero exit codes and saved-file contents all matched
+the specification. Gradle `test shadowJar` succeeded and all 52 JUnit tests passed.
+The tests used temporary data directories; the project save file was not used.
+
+Complete console records follow, with redirected stdin shown separately.
+
+### Bug-fix UI R1, session 1: PASS
+
+Input (JSON strings preserve the trailing spaces in two commands):
+
+```json
+[
+  "todo read",
+  "mark",
+  "unmark",
+  "mark ",
+  "unmark ",
+  "on 29/2/2023",
+  "deadline invalid /by 31/4/2024 1800",
+  "event invalid /from 29/2/2023 1400 /to 1/3/2023 1600",
+  "list",
+  "bye"
+]
+```
+
+Output:
+
+```text
+____________________________________________________________
+____________________________________________________________
+███╗   ███╗ █████╗ ██████╗ ██╗   ██╗
+████╗ ████║██╔══██╗██╔══██╗╚██╗ ██╔╝
+██╔████╔██║███████║██████╔╝ ╚████╔╝
+██║╚██╔╝██║██╔══██║██╔══██╗  ╚██╔╝
+██║ ╚═╝ ██║██║  ██║██║  ██║   ██║
+╚═╝     ╚═╝╚═╝  ╚═╝╚═╝  ╚═╝   ╚═╝
+Hi! I'm MARY.
+What have you got for me today?
+____________________________________________________________
+____________________________________________________________
+ Got it. I've added this task:
+   [T][ ] read
+ Now you have 1 tasks in the list.
+____________________________________________________________
+____________________________________________________________
+ Error: use 'mark N' or 'unmark N', where N is a task number.
+____________________________________________________________
+____________________________________________________________
+ Error: use 'mark N' or 'unmark N', where N is a task number.
+____________________________________________________________
+____________________________________________________________
+ Error: use 'mark N' or 'unmark N', where N is a task number.
+____________________________________________________________
+____________________________________________________________
+ Error: use 'mark N' or 'unmark N', where N is a task number.
+____________________________________________________________
+____________________________________________________________
+ Error: use date format d/M/yyyy, for example 2/12/2019.
+____________________________________________________________
+____________________________________________________________
+ Error: use date/time format d/M/yyyy HHmm, for example 2/12/2019 1800.
+____________________________________________________________
+____________________________________________________________
+ Error: use event date/time format d/M/yyyy HHmm for both /from and /to.
+____________________________________________________________
+____________________________________________________________
+ Here are the tasks in your list:
+ 1.[T][ ] read
+____________________________________________________________
+____________________________________________________________
+See you later. Complete your tasks on time!
+____________________________________________________________
+```
+
+### Bug-fix UI R2, session 1: PASS
+
+Input:
+
+```text
+list
+bye
+```
+
+Output:
+
+```text
+____________________________________________________________
+ Error: the saved task data is corrupted: invalid record on line 1.
+____________________________________________________________
+____________________________________________________________
+███╗   ███╗ █████╗ ██████╗ ██╗   ██╗
+████╗ ████║██╔══██╗██╔══██╗╚██╗ ██╔╝
+██╔████╔██║███████║██████╔╝ ╚████╔╝
+██║╚██╔╝██║██╔══██║██╔══██╗  ╚██╔╝
+██║ ╚═╝ ██║██║  ██║██║  ██║   ██║
+╚═╝     ╚═╝╚═╝  ╚═╝╚═╝  ╚═╝   ╚═╝
+Hi! I'm MARY.
+What have you got for me today?
+____________________________________________________________
+____________________________________________________________
+ MARY has no saved tasks yet.
+____________________________________________________________
+____________________________________________________________
+See you later. Complete your tasks on time!
+____________________________________________________________
+```
+
+### Bug-fix UI P1, session 1: PASS
+
+Input:
+
+```text
+list
+todo read book
+deadline return book /by 2/12/2019 1800
+event project meeting /from 2/12/2019 1400 /to 4/12/2019 1600
+list
+mark 2
+unmark 2
+mark 1
+delete 2
+list
+on 3/12/2019
+on 1/12/2019
+bye
+```
+
+Output:
+
+```text
+____________________________________________________________
+____________________________________________________________
+███╗   ███╗ █████╗ ██████╗ ██╗   ██╗
+████╗ ████║██╔══██╗██╔══██╗╚██╗ ██╔╝
+██╔████╔██║███████║██████╔╝ ╚████╔╝
+██║╚██╔╝██║██╔══██║██╔══██╗  ╚██╔╝
+██║ ╚═╝ ██║██║  ██║██║  ██║   ██║
+╚═╝     ╚═╝╚═╝  ╚═╝╚═╝  ╚═╝   ╚═╝
+Hi! I'm MARY.
+What have you got for me today?
+____________________________________________________________
+____________________________________________________________
+ MARY has no saved tasks yet.
+____________________________________________________________
+____________________________________________________________
+ Got it. I've added this task:
+   [T][ ] read book
+ Now you have 1 tasks in the list.
+____________________________________________________________
+____________________________________________________________
+ Got it. I've added this task:
+   [D][ ] return book (by: 2 Dec 2019 18:00)
+ Now you have 2 tasks in the list.
+____________________________________________________________
+____________________________________________________________
+ Got it. I've added this task:
+   [E][ ] project meeting (from: 2 Dec 2019 14:00 to: 4 Dec 2019 16:00)
+ Now you have 3 tasks in the list.
+____________________________________________________________
+____________________________________________________________
+ Here are the tasks in your list:
+ 1.[T][ ] read book
+ 2.[D][ ] return book (by: 2 Dec 2019 18:00)
+ 3.[E][ ] project meeting (from: 2 Dec 2019 14:00 to: 4 Dec 2019 16:00)
+____________________________________________________________
+____________________________________________________________
+ Nice! I've marked this task as done:
+   [D][X] return book (by: 2 Dec 2019 18:00)
+____________________________________________________________
+____________________________________________________________
+ OK, I've marked this task as not done yet:
+   [D][ ] return book (by: 2 Dec 2019 18:00)
+____________________________________________________________
+____________________________________________________________
+ Nice! I've marked this task as done:
+   [T][X] read book
+____________________________________________________________
+____________________________________________________________
+ Noted. I've removed this task:
+   [D][ ] return book (by: 2 Dec 2019 18:00)
+ Now you have 2 tasks in the list.
+____________________________________________________________
+____________________________________________________________
+ Here are the tasks in your list:
+ 1.[T][X] read book
+ 2.[E][ ] project meeting (from: 2 Dec 2019 14:00 to: 4 Dec 2019 16:00)
+____________________________________________________________
+____________________________________________________________
+ Tasks occurring on 2019-12-03:
+ [E][ ] project meeting (from: 2 Dec 2019 14:00 to: 4 Dec 2019 16:00)
+____________________________________________________________
+____________________________________________________________
+ No deadlines or events occur on 2019-12-01.
+____________________________________________________________
+____________________________________________________________
+See you later. Complete your tasks on time!
+____________________________________________________________
+```
+
+### Bug-fix UI P1, session 2: PASS
+
+Input:
+
+```text
+list
+on 3/12/2019
+bye
+```
+
+Output:
+
+```text
+____________________________________________________________
+____________________________________________________________
+███╗   ███╗ █████╗ ██████╗ ██╗   ██╗
+████╗ ████║██╔══██╗██╔══██╗╚██╗ ██╔╝
+██╔████╔██║███████║██████╔╝ ╚████╔╝
+██║╚██╔╝██║██╔══██║██╔══██╗  ╚██╔╝
+██║ ╚═╝ ██║██║  ██║██║  ██║   ██║
+╚═╝     ╚═╝╚═╝  ╚═╝╚═╝  ╚═╝   ╚═╝
+Hi! I'm MARY.
+What have you got for me today?
+____________________________________________________________
+____________________________________________________________
+ Here are the tasks in your list:
+ 1.[T][X] read book
+ 2.[E][ ] project meeting (from: 2 Dec 2019 14:00 to: 4 Dec 2019 16:00)
+____________________________________________________________
+____________________________________________________________
+ Tasks occurring on 2019-12-03:
+ [E][ ] project meeting (from: 2 Dec 2019 14:00 to: 4 Dec 2019 16:00)
+____________________________________________________________
+____________________________________________________________
+See you later. Complete your tasks on time!
+____________________________________________________________
+```
+
+### Bug-fix UI P2, session 1: PASS
+
+Input:
+
+```text
+
+blah
+todo
+deadline homework
+event meeting /from 2pm
+mark abc
+delete 0
+deadline return book /by tomorrow
+event meeting /from 2/12/2019 /to 2/12/2019 1600
+on tomorrow
+list
+bye
+```
+
+Output:
+
+```text
+____________________________________________________________
+____________________________________________________________
+███╗   ███╗ █████╗ ██████╗ ██╗   ██╗
+████╗ ████║██╔══██╗██╔══██╗╚██╗ ██╔╝
+██╔████╔██║███████║██████╔╝ ╚████╔╝
+██║╚██╔╝██║██╔══██║██╔══██╗  ╚██╔╝
+██║ ╚═╝ ██║██║  ██║██║  ██║   ██║
+╚═╝     ╚═╝╚═╝  ╚═╝╚═╝  ╚═╝   ╚═╝
+Hi! I'm MARY.
+What have you got for me today?
+____________________________________________________________
+____________________________________________________________
+ Error: please enter a command or task.
+____________________________________________________________
+____________________________________________________________
+ Error: I don't recognize that command; use todo, deadline, event, on, list, mark, unmark, delete, or bye.
+____________________________________________________________
+____________________________________________________________
+ Error: use 'todo description' to add a task without a date.
+____________________________________________________________
+____________________________________________________________
+ Error: use 'deadline description /by date or time'.
+____________________________________________________________
+____________________________________________________________
+ Error: use 'event description /from start /to end'.
+____________________________________________________________
+____________________________________________________________
+ Error: 'abc' is not a valid task number; use a positive whole number.
+____________________________________________________________
+____________________________________________________________
+ Error: task 0 does not exist; use 'list' to see valid task numbers.
+____________________________________________________________
+____________________________________________________________
+ Error: use date/time format d/M/yyyy HHmm, for example 2/12/2019 1800.
+____________________________________________________________
+____________________________________________________________
+ Error: use event date/time format d/M/yyyy HHmm for both /from and /to.
+____________________________________________________________
+____________________________________________________________
+ Error: use date format d/M/yyyy, for example 2/12/2019.
+____________________________________________________________
+____________________________________________________________
+ MARY has no saved tasks yet.
+____________________________________________________________
+____________________________________________________________
+See you later. Complete your tasks on time!
+____________________________________________________________
+```
+
+### Bug-fix UI P3, session 1: PASS
+
+Input:
+
+```text
+list
+bye
+```
+
+Output:
+
+```text
+____________________________________________________________
+ Error: the saved task data is corrupted: invalid record on line 1.
+____________________________________________________________
+____________________________________________________________
+███╗   ███╗ █████╗ ██████╗ ██╗   ██╗
+████╗ ████║██╔══██╗██╔══██╗╚██╗ ██╔╝
+██╔████╔██║███████║██████╔╝ ╚████╔╝
+██║╚██╔╝██║██╔══██║██╔══██╗  ╚██╔╝
+██║ ╚═╝ ██║██║  ██║██║  ██║   ██║
+╚═╝     ╚═╝╚═╝  ╚═╝╚═╝  ╚═╝   ╚═╝
+Hi! I'm MARY.
+What have you got for me today?
+____________________________________________________________
+____________________________________________________________
+ MARY has no saved tasks yet.
+____________________________________________________________
+____________________________________________________________
+See you later. Complete your tasks on time!
+____________________________________________________________
+```
+
+### Bug-fix UI P4, session 1: PASS
+
+Input (EOF):
+
+```text
+```
+
+Output:
+
+```text
+____________________________________________________________
+____________________________________________________________
+███╗   ███╗ █████╗ ██████╗ ██╗   ██╗
+████╗ ████║██╔══██╗██╔══██╗╚██╗ ██╔╝
+██╔████╔██║███████║██████╔╝ ╚████╔╝
+██║╚██╔╝██║██╔══██║██╔══██╗  ╚██╔╝
+██║ ╚═╝ ██║██║  ██║██║  ██║   ██║
+╚═╝     ╚═╝╚═╝  ╚═╝╚═╝  ╚═╝   ╚═╝
+Hi! I'm MARY.
+What have you got for me today?
+____________________________________________________________
+```
+<!-- /bugfix-ui-session -->
+
+## JUnit-addition UI regression run (2026-09-27)
+
+The JUnit addition does not change production behavior. Run the existing P1–P4
+suite and exact expectations below against `mary.jar` with Java 25. This UI run
+is separate from the new boundary-focused JUnit tests, whose defects are recorded
+in `junit-test-plan.md`. Stop this UI run at its first mismatch.
+
+<!-- junit-ui-session -->
+Result: **PASS** — P1–P4, five JAR sessions using Java 25. Every stdout
+comparison and saved-file check matched the recorded expectations. Each process
+exited with 0 and empty stderr. These results do not supersede the four failing
+JUnit boundary tests described in `junit-test-plan.md`.
+
+Complete console records follow (stdin is shown separately from stdout).
+
+### JUnit-addition UI P1, session 1: PASS
+
+Input:
+
+```text
+list
+todo read book
+deadline return book /by 2/12/2019 1800
+event project meeting /from 2/12/2019 1400 /to 4/12/2019 1600
+list
+mark 2
+unmark 2
+mark 1
+delete 2
+list
+on 3/12/2019
+on 1/12/2019
+bye
+```
+
+Output:
+
+```text
+____________________________________________________________
+____________________________________________________________
+███╗   ███╗ █████╗ ██████╗ ██╗   ██╗
+████╗ ████║██╔══██╗██╔══██╗╚██╗ ██╔╝
+██╔████╔██║███████║██████╔╝ ╚████╔╝
+██║╚██╔╝██║██╔══██║██╔══██╗  ╚██╔╝
+██║ ╚═╝ ██║██║  ██║██║  ██║   ██║
+╚═╝     ╚═╝╚═╝  ╚═╝╚═╝  ╚═╝   ╚═╝
+Hi! I'm MARY.
+What have you got for me today?
+____________________________________________________________
+____________________________________________________________
+ MARY has no saved tasks yet.
+____________________________________________________________
+____________________________________________________________
+ Got it. I've added this task:
+   [T][ ] read book
+ Now you have 1 tasks in the list.
+____________________________________________________________
+____________________________________________________________
+ Got it. I've added this task:
+   [D][ ] return book (by: 2 Dec 2019 18:00)
+ Now you have 2 tasks in the list.
+____________________________________________________________
+____________________________________________________________
+ Got it. I've added this task:
+   [E][ ] project meeting (from: 2 Dec 2019 14:00 to: 4 Dec 2019 16:00)
+ Now you have 3 tasks in the list.
+____________________________________________________________
+____________________________________________________________
+ Here are the tasks in your list:
+ 1.[T][ ] read book
+ 2.[D][ ] return book (by: 2 Dec 2019 18:00)
+ 3.[E][ ] project meeting (from: 2 Dec 2019 14:00 to: 4 Dec 2019 16:00)
+____________________________________________________________
+____________________________________________________________
+ Nice! I've marked this task as done:
+   [D][X] return book (by: 2 Dec 2019 18:00)
+____________________________________________________________
+____________________________________________________________
+ OK, I've marked this task as not done yet:
+   [D][ ] return book (by: 2 Dec 2019 18:00)
+____________________________________________________________
+____________________________________________________________
+ Nice! I've marked this task as done:
+   [T][X] read book
+____________________________________________________________
+____________________________________________________________
+ Noted. I've removed this task:
+   [D][ ] return book (by: 2 Dec 2019 18:00)
+ Now you have 2 tasks in the list.
+____________________________________________________________
+____________________________________________________________
+ Here are the tasks in your list:
+ 1.[T][X] read book
+ 2.[E][ ] project meeting (from: 2 Dec 2019 14:00 to: 4 Dec 2019 16:00)
+____________________________________________________________
+____________________________________________________________
+ Tasks occurring on 2019-12-03:
+ [E][ ] project meeting (from: 2 Dec 2019 14:00 to: 4 Dec 2019 16:00)
+____________________________________________________________
+____________________________________________________________
+ No deadlines or events occur on 2019-12-01.
+____________________________________________________________
+____________________________________________________________
+See you later. Complete your tasks on time!
+____________________________________________________________
+```
+
+### JUnit-addition UI P1, session 2: PASS
+
+Input:
+
+```text
+list
+on 3/12/2019
+bye
+```
+
+Output:
+
+```text
+____________________________________________________________
+____________________________________________________________
+███╗   ███╗ █████╗ ██████╗ ██╗   ██╗
+████╗ ████║██╔══██╗██╔══██╗╚██╗ ██╔╝
+██╔████╔██║███████║██████╔╝ ╚████╔╝
+██║╚██╔╝██║██╔══██║██╔══██╗  ╚██╔╝
+██║ ╚═╝ ██║██║  ██║██║  ██║   ██║
+╚═╝     ╚═╝╚═╝  ╚═╝╚═╝  ╚═╝   ╚═╝
+Hi! I'm MARY.
+What have you got for me today?
+____________________________________________________________
+____________________________________________________________
+ Here are the tasks in your list:
+ 1.[T][X] read book
+ 2.[E][ ] project meeting (from: 2 Dec 2019 14:00 to: 4 Dec 2019 16:00)
+____________________________________________________________
+____________________________________________________________
+ Tasks occurring on 2019-12-03:
+ [E][ ] project meeting (from: 2 Dec 2019 14:00 to: 4 Dec 2019 16:00)
+____________________________________________________________
+____________________________________________________________
+See you later. Complete your tasks on time!
+____________________________________________________________
+```
+
+### JUnit-addition UI P2, session 1: PASS
+
+Input:
+
+```text
+
+blah
+todo
+deadline homework
+event meeting /from 2pm
+mark abc
+delete 0
+deadline return book /by tomorrow
+event meeting /from 2/12/2019 /to 2/12/2019 1600
+on tomorrow
+list
+bye
+```
+
+Output:
+
+```text
+____________________________________________________________
+____________________________________________________________
+███╗   ███╗ █████╗ ██████╗ ██╗   ██╗
+████╗ ████║██╔══██╗██╔══██╗╚██╗ ██╔╝
+██╔████╔██║███████║██████╔╝ ╚████╔╝
+██║╚██╔╝██║██╔══██║██╔══██╗  ╚██╔╝
+██║ ╚═╝ ██║██║  ██║██║  ██║   ██║
+╚═╝     ╚═╝╚═╝  ╚═╝╚═╝  ╚═╝   ╚═╝
+Hi! I'm MARY.
+What have you got for me today?
+____________________________________________________________
+____________________________________________________________
+ Error: please enter a command or task.
+____________________________________________________________
+____________________________________________________________
+ Error: I don't recognize that command; use todo, deadline, event, on, list, mark, unmark, delete, or bye.
+____________________________________________________________
+____________________________________________________________
+ Error: use 'todo description' to add a task without a date.
+____________________________________________________________
+____________________________________________________________
+ Error: use 'deadline description /by date or time'.
+____________________________________________________________
+____________________________________________________________
+ Error: use 'event description /from start /to end'.
+____________________________________________________________
+____________________________________________________________
+ Error: 'abc' is not a valid task number; use a positive whole number.
+____________________________________________________________
+____________________________________________________________
+ Error: task 0 does not exist; use 'list' to see valid task numbers.
+____________________________________________________________
+____________________________________________________________
+ Error: use date/time format d/M/yyyy HHmm, for example 2/12/2019 1800.
+____________________________________________________________
+____________________________________________________________
+ Error: use event date/time format d/M/yyyy HHmm for both /from and /to.
+____________________________________________________________
+____________________________________________________________
+ Error: use date format d/M/yyyy, for example 2/12/2019.
+____________________________________________________________
+____________________________________________________________
+ MARY has no saved tasks yet.
+____________________________________________________________
+____________________________________________________________
+See you later. Complete your tasks on time!
+____________________________________________________________
+```
+
+### JUnit-addition UI P3, session 1: PASS
+
+Input:
+
+```text
+list
+bye
+```
+
+Output:
+
+```text
+____________________________________________________________
+ Error: the saved task data is corrupted: invalid record on line 1.
+____________________________________________________________
+____________________________________________________________
+███╗   ███╗ █████╗ ██████╗ ██╗   ██╗
+████╗ ████║██╔══██╗██╔══██╗╚██╗ ██╔╝
+██╔████╔██║███████║██████╔╝ ╚████╔╝
+██║╚██╔╝██║██╔══██║██╔══██╗  ╚██╔╝
+██║ ╚═╝ ██║██║  ██║██║  ██║   ██║
+╚═╝     ╚═╝╚═╝  ╚═╝╚═╝  ╚═╝   ╚═╝
+Hi! I'm MARY.
+What have you got for me today?
+____________________________________________________________
+____________________________________________________________
+ MARY has no saved tasks yet.
+____________________________________________________________
+____________________________________________________________
+See you later. Complete your tasks on time!
+____________________________________________________________
+```
+
+### JUnit-addition UI P4, session 1: PASS
+
+Input (EOF):
+
+```text
+```
+
+Output:
+
+```text
+____________________________________________________________
+____________________________________________________________
+███╗   ███╗ █████╗ ██████╗ ██╗   ██╗
+████╗ ████║██╔══██╗██╔══██╗╚██╗ ██╔╝
+██╔████╔██║███████║██████╔╝ ╚████╔╝
+██║╚██╔╝██║██╔══██║██╔══██╗  ╚██╔╝
+██║ ╚═╝ ██║██║  ██║██║  ██║   ██║
+╚═╝     ╚═╝╚═╝  ╚═╝╚═╝  ╚═╝   ╚═╝
+Hi! I'm MARY.
+What have you got for me today?
+____________________________________________________________
+```
+<!-- /junit-ui-session -->
+
 ## Gradle JAR verification (2026-09-27)
 
 Run the P1–P4 suite below against the Gradle-built `build/libs/mary.jar` using
@@ -323,6 +972,105 @@ older cases without relying on obsolete date strings such as "Sunday".
     "____________________________________________________________"
   ],
   "cases": [
+    {
+      "id": "R1",
+      "aim": "Verify missing mark/unmark arguments and impossible dates give errors without crashing or adding invalid tasks.",
+      "sessions": [
+        {
+          "steps": [
+            {
+              "input": "todo read",
+              "output": [
+                " Got it. I've added this task:",
+                "   [T][ ] read",
+                " Now you have 1 tasks in the list."
+              ]
+            },
+            {
+              "input": "mark",
+              "output": [
+                " Error: use 'mark N' or 'unmark N', where N is a task number."
+              ]
+            },
+            {
+              "input": "unmark",
+              "output": [
+                " Error: use 'mark N' or 'unmark N', where N is a task number."
+              ]
+            },
+            {
+              "input": "mark ",
+              "output": [
+                " Error: use 'mark N' or 'unmark N', where N is a task number."
+              ]
+            },
+            {
+              "input": "unmark ",
+              "output": [
+                " Error: use 'mark N' or 'unmark N', where N is a task number."
+              ]
+            },
+            {
+              "input": "on 29/2/2023",
+              "output": [
+                " Error: use date format d/M/yyyy, for example 2/12/2019."
+              ]
+            },
+            {
+              "input": "deadline invalid /by 31/4/2024 1800",
+              "output": [
+                " Error: use date/time format d/M/yyyy HHmm, for example 2/12/2019 1800."
+              ]
+            },
+            {
+              "input": "event invalid /from 29/2/2023 1400 /to 1/3/2023 1600",
+              "output": [
+                " Error: use event date/time format d/M/yyyy HHmm for both /from and /to."
+              ]
+            },
+            {
+              "input": "list",
+              "output": [
+                " Here are the tasks in your list:",
+                " 1.[T][ ] read"
+              ]
+            },
+            {
+              "input": "bye",
+              "output": [
+                "See you later. Complete your tasks on time!"
+              ]
+            }
+          ]
+        }
+      ],
+      "saved": "T | 0 | read\n"
+    },
+    {
+      "id": "R2",
+      "aim": "Reject a saved todo containing an extra field, report its line, and preserve the corrupted file.",
+      "seed": "T | 0 | read | unexpected\n",
+      "sessions": [
+        {
+          "startupError": "the saved task data is corrupted: invalid record on line 1.",
+          "steps": [
+            {
+              "input": "list",
+              "output": [
+                " MARY has no saved tasks yet."
+              ]
+            },
+            {
+              "input": "bye",
+              "output": [
+                "See you later. Complete your tasks on time!"
+              ]
+            }
+          ]
+        }
+      ],
+      "saved": "T | 0 | read | unexpected\n"
+    },
     {
       "id": "P1",
       "aim": "Exercise all packaged command types and task subtypes, list renumbering, date filtering, and save/reload across two processes.",

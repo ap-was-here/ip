@@ -34,7 +34,26 @@ Use lightweight tags unless the user requests an annotated tag.
 When proposing or creating a commit message, include enough detail to explain the rationale for the change.
 Do not commit or push unless explicitly asked.
 
-## UI testing after code changes
+## JUnit testing target
+
+Focus JUnit tests on approximately the highest-value 50% of implemented methods,
+prioritizing complex parsing, persistence, core task operations, and critical
+command behavior. This is a method-selection target, not a requirement to attain
+exactly 50% line coverage or to test trivial getters and enum constants.
+
+After every code change, review and update the JUnit tests as needed to maintain
+this target. Cover normal inputs, boundaries, invalid inputs, and relevant failure
+paths for the selected methods. Never weaken assertions to conceal a defect.
+Record any pre-existing defects exposed by tests separately from regressions.
+
+Follow Gradle/JUnit Jupiter conventions: mirror production packages under
+`src/test/java`, name test classes `ClassNameTest`, and use descriptive method
+names such as `feature_scenario_expectedBehavior`. Use temporary directories for
+file tests and restore any replaced console streams. Run `gradlew.bat test` with
+Java 25 and inspect the report before claiming tests pass. See
+`test/junit-test-plan.md` for the current prioritized method selection.
+
+## UI regression testing
 
 After every code update:
 

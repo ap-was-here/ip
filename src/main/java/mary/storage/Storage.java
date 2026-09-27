@@ -48,7 +48,8 @@ public class Storage {
 
     private Task parseRecord(String record, int lineNumber) throws MaryException {
         String[] fields = record.split(" \\| ", -1);
-        if (fields.length < 3 || (fields[0].equals("D") && fields.length != 4)
+        if (fields.length < 3 || (fields[0].equals("T") && fields.length != 3)
+                || (fields[0].equals("D") && fields.length != 4)
                 || (fields[0].equals("E") && fields.length != 5)
                 || (!fields[0].equals("T") && !fields[0].equals("D") && !fields[0].equals("E"))) {
             throw new MaryException("invalid record on line " + lineNumber + ".");

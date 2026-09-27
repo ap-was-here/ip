@@ -3,10 +3,15 @@ package mary.task;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.time.format.ResolverStyle;
 
 /** Base class for all tasks. */
 public class Task {
-    protected static final DateTimeFormatter INPUT_DATE_TIME = DateTimeFormatter.ofPattern("d/M/uuuu HHmm");
+    // Strict resolution rejects impossible dates instead of adjusting their day.
+    protected static final DateTimeFormatter INPUT_DATE_TIME = DateTimeFormatter.ofPattern("d/M/uuuu HHmm")
+            .withResolverStyle(ResolverStyle.STRICT);
+    private static final DateTimeFormatter INPUT_DATE = DateTimeFormatter.ofPattern("d/M/uuuu")
+            .withResolverStyle(ResolverStyle.STRICT);
     protected static final DateTimeFormatter DISPLAY_DATE_TIME = DateTimeFormatter.ofPattern("d MMM uuuu HH:mm");
     protected String description;
     protected boolean isDone;
@@ -44,7 +49,7 @@ public class Task {
 
     /** Parses a date used by the date search command. */
     public static LocalDate parseDate(String value) {
-        return LocalDate.parse(value, DateTimeFormatter.ofPattern("d/M/uuuu"));
+        return LocalDate.parse(value, INPUT_DATE);
     }
 
     /** Formats a date/time for display. */

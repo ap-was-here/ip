@@ -15,8 +15,14 @@ public class MarkCommand extends Command {
     @Override
     public void execute(TaskList tasks, Ui ui, Storage storage) {
         boolean done = fullCommand.startsWith("mark ");
-        String numberText = fullCommand.substring(done ? 5 : 7).trim();
+        String numberText = "";
         try {
+            // Validate the prefix before slicing: bare mark/unmark have no argument.
+            String prefix = done ? "mark " : "unmark ";
+            if (!fullCommand.startsWith(prefix)) {
+                throw new MaryException("use 'mark N' or 'unmark N', where N is a task number.");
+            }
+            numberText = fullCommand.substring(prefix.length()).trim();
             if (numberText.isEmpty()) throw new MaryException("use 'mark N' or 'unmark N', where N is a task number.");
             int index = Integer.parseInt(numberText) - 1;
             if (index < 0 || index >= tasks.size()) {
