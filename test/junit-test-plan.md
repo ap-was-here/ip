@@ -2,8 +2,8 @@
 
 Target: focus on approximately the highest-value 50% of implemented methods,
 not an exact line-coverage percentage. There are about 45 non-constructor
-implemented methods in the current application. The following 23 methods are
-the primary targets (roughly 51%); collaborators and accessors may also be
+implemented methods before search support, plus three search methods. The following
+26 methods are the primary targets (roughly 54% of 48); collaborators and accessors may also be
 exercised indirectly. No coverage percentage is inferred from test counts.
 
 | Area | Primary methods | Why |
@@ -14,6 +14,7 @@ exercised indirectly. No coverage percentage is inferred from test counts.
 | TaskList (3) | `add`, `remove`, `getTasks` | Ordering, index boundaries, ownership of the collection |
 | Task subtypes (5) | `Todo.toString`, `Deadline.toString`, `Deadline.toStorageRecord`, `Event.toString`, `Event.toStorageRecord` | Polymorphic display and persistence contracts |
 | Commands (4) | `AddCommand.execute`, `DeleteCommand.execute`, `MarkCommand.execute`, `OnCommand.execute` | State changes, persistence, errors, inclusive date filtering |
+| Search (3) | `Task.matchesDescription`, `TaskList.find`, `FindCommand.execute` | Literal matching, locale independence, stable results, input validation, no writes |
 
 Test files mirror source packages under `src/test/java/mary`, with names such
 as `ParserTest.java` and `StorageTest.java`. Test names use
@@ -35,6 +36,15 @@ An existing defect should be reported with its failing regression test rather
 than changing an assertion to bless incorrect behavior.
 
 ## Latest execution
+
+2026-09-27, keyword search: Java 25 Gradle `test shadowJar --rerun-tasks`
+passed all 62 tests. Search tests cover parser boundaries, blank keywords,
+case-insensitive literal matching, phrases, punctuation, non-ASCII descriptions,
+locale independence, metadata exclusion, duplicate matches, result ownership,
+numbering, completion state, and unchanged saved data. UI cases R1, R2, P1–P4,
+F1 and F2 also passed (nine sessions); see `ui-test-plan.md` for full records.
+
+### Earlier ASCII banner execution
 
 2026-09-27, ASCII cat banner: Java 25 Gradle `test shadowJar --rerun-tasks`
 passed all 53 tests. Added `UiTest.showWelcome_catBanner_printsExactAsciiGreeting`

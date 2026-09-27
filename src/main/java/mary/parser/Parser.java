@@ -6,6 +6,7 @@ import mary.command.AddCommand;
 import mary.command.Command;
 import mary.command.DeleteCommand;
 import mary.command.ExitCommand;
+import mary.command.FindCommand;
 import mary.command.ListCommand;
 import mary.command.MarkCommand;
 import mary.command.OnCommand;
@@ -16,51 +17,31 @@ import mary.task.Event;
 import mary.task.Task;
 import mary.task.Todo;
 
-/**
- * Dispatches user input to commands and parses task descriptions and dates.
- */
+/** Interprets task-creation commands and validates their arguments. */
 public class Parser {
-    /**
-     * Dispatches input to a command; argument validation occurs during execution.
-     *
-     * @param command non-null, untrimmed user input.
-     * @return the matching command, or an UnknownCommand for blank or unknown input.
-     */
+    /** Creates a command object for the exit command, if applicable. */
     public static Command parse(String command) {
-        if (command.equals("bye")) {
-            return new ExitCommand();
+        if (command.equals("find")
+                || (command.startsWith("find") && command.length() > 4
+                && Character.isWhitespace(command.charAt(4)))) {
+            return new FindCommand(command.substring(4));
         }
-        if (command.equals("list")) {
-            return new ListCommand();
-        }
-        if (command.startsWith("delete")) {
-            return new DeleteCommand(command);
-        }
-        if (command.startsWith("mark") || command.startsWith("unmark")) {
-            return new MarkCommand(command);
-        }
-        if (command.startsWith("on")) {
-            return new OnCommand(command);
-        }
+        if (command.equals("bye")) return new ExitCommand();
+        if (command.equals("list")) return new ListCommand();
+        if (command.startsWith("delete")) return new DeleteCommand(command);
+        if (command.startsWith("mark") || command.startsWith("unmark")) return new MarkCommand(command);
+        if (command.startsWith("on")) return new OnCommand(command);
         if (command.startsWith("todo") || command.startsWith("deadline") || command.startsWith("event")) {
             return new AddCommand(command);
         }
         return new UnknownCommand(command);
     }
 
-    /**
-     * Converts a todo, deadline, or event command into an unfinished task.
-     *
-     * @param command non-null task-creation command with its arguments.
-     * @return a task with parsed dates where applicable.
-     * @throws MaryException if the command, description, markers, or dates are invalid.
-     */
+    /** Converts a todo, deadline, or event command into a task. */
     public static Task parseTask(String command) throws MaryException {
         if (command.startsWith("todo ")) {
             String description = command.substring(5).trim();
-            if (description.isEmpty()) {
-                throw new MaryException("please add a task description after 'todo'.");
-            }
+            if (description.isEmpty()) throw new MaryException("please add a task description after 'todo'.");
             return new Todo(description);
         }
         if (command.startsWith("deadline ")) {

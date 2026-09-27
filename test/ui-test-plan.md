@@ -925,7 +925,7 @@ ____________________________________________________________
 
 ## Current package-migration regression suite
 
-This suite invokes `mary.Mary` with Java 25 and compares complete stdout exactly
+This suite invokes `mary.MARY` with Java 25 and compares complete stdout exactly
 (normalizing CRLF/LF only). Expected output is defined below before testing.
 The historical cases farther down are retained as history: some predate typed
 dates, command extraction, and the current farewell and are not current oracles.
@@ -961,14 +961,11 @@ older cases without relying on obsolete date strings such as "Sunday".
   "welcome": [
     "____________________________________________________________",
     "____________________________________________________________",
-    "███╗   ███╗ █████╗ ██████╗ ██╗   ██╗",
-    "████╗ ████║██╔══██╗██╔══██╗╚██╗ ██╔╝",
-    "██╔████╔██║███████║██████╔╝ ╚████╔╝",
-    "██║╚██╔╝██║██╔══██║██╔══██╗  ╚██╔╝",
-    "██║ ╚═╝ ██║██║  ██║██║  ██║   ██║",
-    "╚═╝     ╚═╝╚═╝  ╚═╝╚═╝  ╚═╝   ╚═╝",
-    "Hi! I'm MARY.",
-    "What have you got for me today?",
+    " /\\_/\\",
+    "( o.o )   M A R Y",
+    " > ^ <    Your purr-sonal task assistant.",
+    "",
+    "What's on your list today?",
     "____________________________________________________________"
   ],
   "cases": [
@@ -1217,7 +1214,7 @@ older cases without relying on obsolete date strings such as "Sunday".
             {
               "input": "blah",
               "output": [
-                " Error: I don't recognize that command; use todo, deadline, event, on, list, mark, unmark, delete, or bye."
+                " Error: I don't recognize that command; use todo, deadline, event, on, list, find, mark, unmark, delete, or bye."
               ]
             },
             {
@@ -1316,6 +1313,127 @@ older cases without relying on obsolete date strings such as "Sunday".
       "sessions": [
         {
           "steps": []
+        }
+      ],
+      "saved": null
+    },
+    {
+      "id": "F1",
+      "aim": "Search persisted task descriptions across all types and states; verify case folding, substrings, phrases, description-only matching, invalid syntax, and unchanged storage/list order.",
+      "seed": "T | 0 | buy bread\nT | 1 | read book\nD | 1 | return Book | 2019-12-02T18:00\nE | 0 | BOOK club | 2019-12-02T14:00 | 2019-12-02T16:00\n",
+      "sessions": [
+        {
+          "steps": [
+            {
+              "input": "find book",
+              "output": [
+                " Here are the matching tasks in your list:",
+                " 1.[T][X] read book",
+                " 2.[D][X] return Book (by: 2 Dec 2019 18:00)",
+                " 3.[E][ ] BOOK club (from: 2 Dec 2019 14:00 to: 2 Dec 2019 16:00)"
+              ]
+            },
+            {
+              "input": "find   BOOK  ",
+              "output": [
+                " Here are the matching tasks in your list:",
+                " 1.[T][X] read book",
+                " 2.[D][X] return Book (by: 2 Dec 2019 18:00)",
+                " 3.[E][ ] BOOK club (from: 2 Dec 2019 14:00 to: 2 Dec 2019 16:00)"
+              ]
+            },
+            {
+              "input": "find ook",
+              "output": [
+                " Here are the matching tasks in your list:",
+                " 1.[T][X] read book",
+                " 2.[D][X] return Book (by: 2 Dec 2019 18:00)",
+                " 3.[E][ ] BOOK club (from: 2 Dec 2019 14:00 to: 2 Dec 2019 16:00)"
+              ]
+            },
+            {
+              "input": "find read book",
+              "output": [
+                " Here are the matching tasks in your list:",
+                " 1.[T][X] read book"
+              ]
+            },
+            {
+              "input": "find Dec",
+              "output": [
+                " No matching tasks found."
+              ]
+            },
+            {
+              "input": "find [X]",
+              "output": [
+                " No matching tasks found."
+              ]
+            },
+            {
+              "input": "find missing",
+              "output": [
+                " No matching tasks found."
+              ]
+            },
+            {
+              "input": "find",
+              "output": [
+                " Error: use 'find keyword', for example 'find book'."
+              ]
+            },
+            {
+              "input": "find   ",
+              "output": [
+                " Error: use 'find keyword', for example 'find book'."
+              ]
+            },
+            {
+              "input": "finder book",
+              "output": [
+                " Error: I don't recognize that command; use todo, deadline, event, on, list, find, mark, unmark, delete, or bye."
+              ]
+            },
+            {
+              "input": "list",
+              "output": [
+                " Here are the tasks in your list:",
+                " 1.[T][ ] buy bread",
+                " 2.[T][X] read book",
+                " 3.[D][X] return Book (by: 2 Dec 2019 18:00)",
+                " 4.[E][ ] BOOK club (from: 2 Dec 2019 14:00 to: 2 Dec 2019 16:00)"
+              ]
+            },
+            {
+              "input": "bye",
+              "output": [
+                "See you later. Complete your tasks on time!"
+              ]
+            }
+          ]
+        }
+      ],
+      "saved": "T | 0 | buy bread\nT | 1 | read book\nD | 1 | return Book | 2019-12-02T18:00\nE | 0 | BOOK club | 2019-12-02T14:00 | 2019-12-02T16:00\n"
+    },
+    {
+      "id": "F2",
+      "aim": "Search an empty list without creating a data file.",
+      "sessions": [
+        {
+          "steps": [
+            {
+              "input": "find book",
+              "output": [
+                " No matching tasks found."
+              ]
+            },
+            {
+              "input": "bye",
+              "output": [
+                "See you later. Complete your tasks on time!"
+              ]
+            }
+          ]
         }
       ],
       "saved": null
@@ -2380,17 +2498,17 @@ Hi! I'm MARY.
 What have you got for me today?
 ____________________________________________________________
 ```
-## Javadoc-only verification — 2026-09-27
 
-Reviewed the existing UI cases and JUnit selection: no expected behavior or assertions
-needed changing. Java sources differ only in comments. Java 25 Gradle
-`test javadoc shadowJar --rerun-tasks` succeeded; all 52 JUnit tests passed.
-Javadoc generation reported 32 warnings for undocumented fields, enum constants,
-and implicit constructors, not the explicitly declared methods covered by this update.
-The test-ui skill ran R1, R2, P1–P4 using the rebuilt JAR in isolated directories.
-All six cases/seven sessions passed exact output, exit-status, and saved-data checks.
-Inputs are JSON arrays (one element per input line; an empty array means EOF).
-All actual output below matched the existing expected output, ignoring line endings only.
+## ASCII cat banner verification — 2026-09-27
+
+Aim: display the selected ASCII cat artwork and greeting without Unicode block
+characters, preserving all task-command and persistence behavior. The current
+suite's shared welcome expectation was updated before testing; historical logs
+are unchanged. Added UiTest for exact welcome output and ASCII-only characters.
+Java 25 Gradle `test shadowJar --rerun-tasks` passed all 53 JUnit tests.
+The test-ui skill ran the rebuilt JAR in isolated working directories.
+R1, R2, P1–P4 passed: six cases/seven sessions, including exact stdout,
+exit status, and saved data. Inputs below use JSON strings to preserve spaces.
 
 ### R1, session 1: PASS
 
@@ -2411,19 +2529,16 @@ Console input:
 ]
 ```
 
-Complete console output:
+Actual console output:
 
 ```text
 ____________________________________________________________
 ____________________________________________________________
-███╗   ███╗ █████╗ ██████╗ ██╗   ██╗
-████╗ ████║██╔══██╗██╔══██╗╚██╗ ██╔╝
-██╔████╔██║███████║██████╔╝ ╚████╔╝
-██║╚██╔╝██║██╔══██║██╔══██╗  ╚██╔╝
-██║ ╚═╝ ██║██║  ██║██║  ██║   ██║
-╚═╝     ╚═╝╚═╝  ╚═╝╚═╝  ╚═╝   ╚═╝
-Hi! I'm MARY.
-What have you got for me today?
+ /\_/\
+( o.o )   M A R Y
+ > ^ <    Your purr-sonal task assistant.
+
+What's on your list today?
 ____________________________________________________________
 ____________________________________________________________
  Got it. I've added this task:
@@ -2471,21 +2586,18 @@ Console input:
 ]
 ```
 
-Complete console output:
+Actual console output:
 
 ```text
 ____________________________________________________________
  Error: the saved task data is corrupted: invalid record on line 1.
 ____________________________________________________________
 ____________________________________________________________
-███╗   ███╗ █████╗ ██████╗ ██╗   ██╗
-████╗ ████║██╔══██╗██╔══██╗╚██╗ ██╔╝
-██╔████╔██║███████║██████╔╝ ╚████╔╝
-██║╚██╔╝██║██╔══██║██╔══██╗  ╚██╔╝
-██║ ╚═╝ ██║██║  ██║██║  ██║   ██║
-╚═╝     ╚═╝╚═╝  ╚═╝╚═╝  ╚═╝   ╚═╝
-Hi! I'm MARY.
-What have you got for me today?
+ /\_/\
+( o.o )   M A R Y
+ > ^ <    Your purr-sonal task assistant.
+
+What's on your list today?
 ____________________________________________________________
 ____________________________________________________________
  MARY has no saved tasks yet.
@@ -2517,19 +2629,16 @@ Console input:
 ]
 ```
 
-Complete console output:
+Actual console output:
 
 ```text
 ____________________________________________________________
 ____________________________________________________________
-███╗   ███╗ █████╗ ██████╗ ██╗   ██╗
-████╗ ████║██╔══██╗██╔══██╗╚██╗ ██╔╝
-██╔████╔██║███████║██████╔╝ ╚████╔╝
-██║╚██╔╝██║██╔══██║██╔══██╗  ╚██╔╝
-██║ ╚═╝ ██║██║  ██║██║  ██║   ██║
-╚═╝     ╚═╝╚═╝  ╚═╝╚═╝  ╚═╝   ╚═╝
-Hi! I'm MARY.
-What have you got for me today?
+ /\_/\
+( o.o )   M A R Y
+ > ^ <    Your purr-sonal task assistant.
+
+What's on your list today?
 ____________________________________________________________
 ____________________________________________________________
  MARY has no saved tasks yet.
@@ -2601,19 +2710,16 @@ Console input:
 ]
 ```
 
-Complete console output:
+Actual console output:
 
 ```text
 ____________________________________________________________
 ____________________________________________________________
-███╗   ███╗ █████╗ ██████╗ ██╗   ██╗
-████╗ ████║██╔══██╗██╔══██╗╚██╗ ██╔╝
-██╔████╔██║███████║██████╔╝ ╚████╔╝
-██║╚██╔╝██║██╔══██║██╔══██╗  ╚██╔╝
-██║ ╚═╝ ██║██║  ██║██║  ██║   ██║
-╚═╝     ╚═╝╚═╝  ╚═╝╚═╝  ╚═╝   ╚═╝
-Hi! I'm MARY.
-What have you got for me today?
+ /\_/\
+( o.o )   M A R Y
+ > ^ <    Your purr-sonal task assistant.
+
+What's on your list today?
 ____________________________________________________________
 ____________________________________________________________
  Here are the tasks in your list:
@@ -2650,19 +2756,16 @@ Console input:
 ]
 ```
 
-Complete console output:
+Actual console output:
 
 ```text
 ____________________________________________________________
 ____________________________________________________________
-███╗   ███╗ █████╗ ██████╗ ██╗   ██╗
-████╗ ████║██╔══██╗██╔══██╗╚██╗ ██╔╝
-██╔████╔██║███████║██████╔╝ ╚████╔╝
-██║╚██╔╝██║██╔══██║██╔══██╗  ╚██╔╝
-██║ ╚═╝ ██║██║  ██║██║  ██║   ██║
-╚═╝     ╚═╝╚═╝  ╚═╝╚═╝  ╚═╝   ╚═╝
-Hi! I'm MARY.
-What have you got for me today?
+ /\_/\
+( o.o )   M A R Y
+ > ^ <    Your purr-sonal task assistant.
+
+What's on your list today?
 ____________________________________________________________
 ____________________________________________________________
  Error: please enter a command or task.
@@ -2713,21 +2816,18 @@ Console input:
 ]
 ```
 
-Complete console output:
+Actual console output:
 
 ```text
 ____________________________________________________________
  Error: the saved task data is corrupted: invalid record on line 1.
 ____________________________________________________________
 ____________________________________________________________
-███╗   ███╗ █████╗ ██████╗ ██╗   ██╗
-████╗ ████║██╔══██╗██╔══██╗╚██╗ ██╔╝
-██╔████╔██║███████║██████╔╝ ╚████╔╝
-██║╚██╔╝██║██╔══██║██╔══██╗  ╚██╔╝
-██║ ╚═╝ ██║██║  ██║██║  ██║   ██║
-╚═╝     ╚═╝╚═╝  ╚═╝╚═╝  ╚═╝   ╚═╝
-Hi! I'm MARY.
-What have you got for me today?
+ /\_/\
+( o.o )   M A R Y
+ > ^ <    Your purr-sonal task assistant.
+
+What's on your list today?
 ____________________________________________________________
 ____________________________________________________________
  MARY has no saved tasks yet.
@@ -2745,35 +2845,488 @@ Console input:
 []
 ```
 
-Complete console output:
+Actual console output:
 
 ```text
 ____________________________________________________________
 ____________________________________________________________
-███╗   ███╗ █████╗ ██████╗ ██╗   ██╗
-████╗ ████║██╔══██╗██╔══██╗╚██╗ ██╔╝
-██╔████╔██║███████║██████╔╝ ╚████╔╝
-██║╚██╔╝██║██╔══██║██╔══██╗  ╚██╔╝
-██║ ╚═╝ ██║██║  ██║██║  ██║   ██║
-╚═╝     ╚═╝╚═╝  ╚═╝╚═╝  ╚═╝   ╚═╝
-Hi! I'm MARY.
-What have you got for me today?
+ /\_/\
+( o.o )   M A R Y
+ > ^ <    Your purr-sonal task assistant.
+
+What's on your list today?
 ____________________________________________________________
 ```
-## SE-EDU style verification — 2026-09-27 (pending)
 
-Invoked the test-ui workflow and reviewed R1, R2, P1–P4. Their aims, command inputs,
-expected console output, and saved data remain unchanged. The entry point is now
-`mary.Mary`; the chatbot still displays MARY. Current run instructions and Gradle
-configuration use the new Java name; historical transcripts retain their original names.
+## Keyword search verification — 2026-09-27
 
-Compilation and rebuilding the UI-test JAR were not run: permission for the Java 25
-Gradle `test javadoc shadowJar --rerun-tasks` command was declined. Consequently,
-no UI processes were started and there is no new console session to record.
-Earlier PASS records below do not verify this change. Rebuild the JAR before
-running these six cases/seven sessions; do not test a stale artifact.
+The test-ui skill ran the recorded R1, R2, P1–P4, F1 and F2 cases against the
+rebuilt JAR using Java 25. All eight cases/nine sessions passed exact stdout,
+exit status, and saved-data checks. F1 verifies case-insensitive substring and
+phrase searches, matching all task types/statuses, excluding metadata, invalid
+input, and unchanged list order/storage. F2 verifies empty-list searching without
+creating a data file. Expected results were recorded before running the suite.
+All 62 JUnit tests passed with Gradle `test shadowJar --rerun-tasks`.
+Inputs below use JSON strings so empty input and trailing spaces remain visible.
 
-Static review covered 34 Java files: no wildcard imports, over-120-column lines,
-tabs, trailing whitespace, detected unbraced bodies, import-order mismatches, or
-missing declared-method Javadoc headers were found. These checks do not replace
-compilation, JUnit, or the exact-output UI comparisons.
+### R1, session 1: PASS
+
+Console input:
+
+```json
+[
+  "todo read",
+  "mark",
+  "unmark",
+  "mark ",
+  "unmark ",
+  "on 29/2/2023",
+  "deadline invalid /by 31/4/2024 1800",
+  "event invalid /from 29/2/2023 1400 /to 1/3/2023 1600",
+  "list",
+  "bye"
+]
+```
+
+Complete console output (matches expected):
+
+```text
+____________________________________________________________
+____________________________________________________________
+ /\_/\
+( o.o )   M A R Y
+ > ^ <    Your purr-sonal task assistant.
+
+What's on your list today?
+____________________________________________________________
+____________________________________________________________
+ Got it. I've added this task:
+   [T][ ] read
+ Now you have 1 tasks in the list.
+____________________________________________________________
+____________________________________________________________
+ Error: use 'mark N' or 'unmark N', where N is a task number.
+____________________________________________________________
+____________________________________________________________
+ Error: use 'mark N' or 'unmark N', where N is a task number.
+____________________________________________________________
+____________________________________________________________
+ Error: use 'mark N' or 'unmark N', where N is a task number.
+____________________________________________________________
+____________________________________________________________
+ Error: use 'mark N' or 'unmark N', where N is a task number.
+____________________________________________________________
+____________________________________________________________
+ Error: use date format d/M/yyyy, for example 2/12/2019.
+____________________________________________________________
+____________________________________________________________
+ Error: use date/time format d/M/yyyy HHmm, for example 2/12/2019 1800.
+____________________________________________________________
+____________________________________________________________
+ Error: use event date/time format d/M/yyyy HHmm for both /from and /to.
+____________________________________________________________
+____________________________________________________________
+ Here are the tasks in your list:
+ 1.[T][ ] read
+____________________________________________________________
+____________________________________________________________
+See you later. Complete your tasks on time!
+____________________________________________________________
+```
+
+### R2, session 1: PASS
+
+Console input:
+
+```json
+[
+  "list",
+  "bye"
+]
+```
+
+Complete console output (matches expected):
+
+```text
+____________________________________________________________
+ Error: the saved task data is corrupted: invalid record on line 1.
+____________________________________________________________
+____________________________________________________________
+ /\_/\
+( o.o )   M A R Y
+ > ^ <    Your purr-sonal task assistant.
+
+What's on your list today?
+____________________________________________________________
+____________________________________________________________
+ MARY has no saved tasks yet.
+____________________________________________________________
+____________________________________________________________
+See you later. Complete your tasks on time!
+____________________________________________________________
+```
+
+### P1, session 1: PASS
+
+Console input:
+
+```json
+[
+  "list",
+  "todo read book",
+  "deadline return book /by 2/12/2019 1800",
+  "event project meeting /from 2/12/2019 1400 /to 4/12/2019 1600",
+  "list",
+  "mark 2",
+  "unmark 2",
+  "mark 1",
+  "delete 2",
+  "list",
+  "on 3/12/2019",
+  "on 1/12/2019",
+  "bye"
+]
+```
+
+Complete console output (matches expected):
+
+```text
+____________________________________________________________
+____________________________________________________________
+ /\_/\
+( o.o )   M A R Y
+ > ^ <    Your purr-sonal task assistant.
+
+What's on your list today?
+____________________________________________________________
+____________________________________________________________
+ MARY has no saved tasks yet.
+____________________________________________________________
+____________________________________________________________
+ Got it. I've added this task:
+   [T][ ] read book
+ Now you have 1 tasks in the list.
+____________________________________________________________
+____________________________________________________________
+ Got it. I've added this task:
+   [D][ ] return book (by: 2 Dec 2019 18:00)
+ Now you have 2 tasks in the list.
+____________________________________________________________
+____________________________________________________________
+ Got it. I've added this task:
+   [E][ ] project meeting (from: 2 Dec 2019 14:00 to: 4 Dec 2019 16:00)
+ Now you have 3 tasks in the list.
+____________________________________________________________
+____________________________________________________________
+ Here are the tasks in your list:
+ 1.[T][ ] read book
+ 2.[D][ ] return book (by: 2 Dec 2019 18:00)
+ 3.[E][ ] project meeting (from: 2 Dec 2019 14:00 to: 4 Dec 2019 16:00)
+____________________________________________________________
+____________________________________________________________
+ Nice! I've marked this task as done:
+   [D][X] return book (by: 2 Dec 2019 18:00)
+____________________________________________________________
+____________________________________________________________
+ OK, I've marked this task as not done yet:
+   [D][ ] return book (by: 2 Dec 2019 18:00)
+____________________________________________________________
+____________________________________________________________
+ Nice! I've marked this task as done:
+   [T][X] read book
+____________________________________________________________
+____________________________________________________________
+ Noted. I've removed this task:
+   [D][ ] return book (by: 2 Dec 2019 18:00)
+ Now you have 2 tasks in the list.
+____________________________________________________________
+____________________________________________________________
+ Here are the tasks in your list:
+ 1.[T][X] read book
+ 2.[E][ ] project meeting (from: 2 Dec 2019 14:00 to: 4 Dec 2019 16:00)
+____________________________________________________________
+____________________________________________________________
+ Tasks occurring on 2019-12-03:
+ [E][ ] project meeting (from: 2 Dec 2019 14:00 to: 4 Dec 2019 16:00)
+____________________________________________________________
+____________________________________________________________
+ No deadlines or events occur on 2019-12-01.
+____________________________________________________________
+____________________________________________________________
+See you later. Complete your tasks on time!
+____________________________________________________________
+```
+
+### P1, session 2: PASS
+
+Console input:
+
+```json
+[
+  "list",
+  "on 3/12/2019",
+  "bye"
+]
+```
+
+Complete console output (matches expected):
+
+```text
+____________________________________________________________
+____________________________________________________________
+ /\_/\
+( o.o )   M A R Y
+ > ^ <    Your purr-sonal task assistant.
+
+What's on your list today?
+____________________________________________________________
+____________________________________________________________
+ Here are the tasks in your list:
+ 1.[T][X] read book
+ 2.[E][ ] project meeting (from: 2 Dec 2019 14:00 to: 4 Dec 2019 16:00)
+____________________________________________________________
+____________________________________________________________
+ Tasks occurring on 2019-12-03:
+ [E][ ] project meeting (from: 2 Dec 2019 14:00 to: 4 Dec 2019 16:00)
+____________________________________________________________
+____________________________________________________________
+See you later. Complete your tasks on time!
+____________________________________________________________
+```
+
+### P2, session 1: PASS
+
+Console input:
+
+```json
+[
+  "",
+  "blah",
+  "todo",
+  "deadline homework",
+  "event meeting /from 2pm",
+  "mark abc",
+  "delete 0",
+  "deadline return book /by tomorrow",
+  "event meeting /from 2/12/2019 /to 2/12/2019 1600",
+  "on tomorrow",
+  "list",
+  "bye"
+]
+```
+
+Complete console output (matches expected):
+
+```text
+____________________________________________________________
+____________________________________________________________
+ /\_/\
+( o.o )   M A R Y
+ > ^ <    Your purr-sonal task assistant.
+
+What's on your list today?
+____________________________________________________________
+____________________________________________________________
+ Error: please enter a command or task.
+____________________________________________________________
+____________________________________________________________
+ Error: I don't recognize that command; use todo, deadline, event, on, list, find, mark, unmark, delete, or bye.
+____________________________________________________________
+____________________________________________________________
+ Error: use 'todo description' to add a task without a date.
+____________________________________________________________
+____________________________________________________________
+ Error: use 'deadline description /by date or time'.
+____________________________________________________________
+____________________________________________________________
+ Error: use 'event description /from start /to end'.
+____________________________________________________________
+____________________________________________________________
+ Error: 'abc' is not a valid task number; use a positive whole number.
+____________________________________________________________
+____________________________________________________________
+ Error: task 0 does not exist; use 'list' to see valid task numbers.
+____________________________________________________________
+____________________________________________________________
+ Error: use date/time format d/M/yyyy HHmm, for example 2/12/2019 1800.
+____________________________________________________________
+____________________________________________________________
+ Error: use event date/time format d/M/yyyy HHmm for both /from and /to.
+____________________________________________________________
+____________________________________________________________
+ Error: use date format d/M/yyyy, for example 2/12/2019.
+____________________________________________________________
+____________________________________________________________
+ MARY has no saved tasks yet.
+____________________________________________________________
+____________________________________________________________
+See you later. Complete your tasks on time!
+____________________________________________________________
+```
+
+### P3, session 1: PASS
+
+Console input:
+
+```json
+[
+  "list",
+  "bye"
+]
+```
+
+Complete console output (matches expected):
+
+```text
+____________________________________________________________
+ Error: the saved task data is corrupted: invalid record on line 1.
+____________________________________________________________
+____________________________________________________________
+ /\_/\
+( o.o )   M A R Y
+ > ^ <    Your purr-sonal task assistant.
+
+What's on your list today?
+____________________________________________________________
+____________________________________________________________
+ MARY has no saved tasks yet.
+____________________________________________________________
+____________________________________________________________
+See you later. Complete your tasks on time!
+____________________________________________________________
+```
+
+### P4, session 1: PASS
+
+Console input:
+
+```json
+[]
+```
+
+Complete console output (matches expected):
+
+```text
+____________________________________________________________
+____________________________________________________________
+ /\_/\
+( o.o )   M A R Y
+ > ^ <    Your purr-sonal task assistant.
+
+What's on your list today?
+____________________________________________________________
+```
+
+### F1, session 1: PASS
+
+Console input:
+
+```json
+[
+  "find book",
+  "find   BOOK  ",
+  "find ook",
+  "find read book",
+  "find Dec",
+  "find [X]",
+  "find missing",
+  "find",
+  "find   ",
+  "finder book",
+  "list",
+  "bye"
+]
+```
+
+Complete console output (matches expected):
+
+```text
+____________________________________________________________
+____________________________________________________________
+ /\_/\
+( o.o )   M A R Y
+ > ^ <    Your purr-sonal task assistant.
+
+What's on your list today?
+____________________________________________________________
+____________________________________________________________
+ Here are the matching tasks in your list:
+ 1.[T][X] read book
+ 2.[D][X] return Book (by: 2 Dec 2019 18:00)
+ 3.[E][ ] BOOK club (from: 2 Dec 2019 14:00 to: 2 Dec 2019 16:00)
+____________________________________________________________
+____________________________________________________________
+ Here are the matching tasks in your list:
+ 1.[T][X] read book
+ 2.[D][X] return Book (by: 2 Dec 2019 18:00)
+ 3.[E][ ] BOOK club (from: 2 Dec 2019 14:00 to: 2 Dec 2019 16:00)
+____________________________________________________________
+____________________________________________________________
+ Here are the matching tasks in your list:
+ 1.[T][X] read book
+ 2.[D][X] return Book (by: 2 Dec 2019 18:00)
+ 3.[E][ ] BOOK club (from: 2 Dec 2019 14:00 to: 2 Dec 2019 16:00)
+____________________________________________________________
+____________________________________________________________
+ Here are the matching tasks in your list:
+ 1.[T][X] read book
+____________________________________________________________
+____________________________________________________________
+ No matching tasks found.
+____________________________________________________________
+____________________________________________________________
+ No matching tasks found.
+____________________________________________________________
+____________________________________________________________
+ No matching tasks found.
+____________________________________________________________
+____________________________________________________________
+ Error: use 'find keyword', for example 'find book'.
+____________________________________________________________
+____________________________________________________________
+ Error: use 'find keyword', for example 'find book'.
+____________________________________________________________
+____________________________________________________________
+ Error: I don't recognize that command; use todo, deadline, event, on, list, find, mark, unmark, delete, or bye.
+____________________________________________________________
+____________________________________________________________
+ Here are the tasks in your list:
+ 1.[T][ ] buy bread
+ 2.[T][X] read book
+ 3.[D][X] return Book (by: 2 Dec 2019 18:00)
+ 4.[E][ ] BOOK club (from: 2 Dec 2019 14:00 to: 2 Dec 2019 16:00)
+____________________________________________________________
+____________________________________________________________
+See you later. Complete your tasks on time!
+____________________________________________________________
+```
+
+### F2, session 1: PASS
+
+Console input:
+
+```json
+[
+  "find book",
+  "bye"
+]
+```
+
+Complete console output (matches expected):
+
+```text
+____________________________________________________________
+____________________________________________________________
+ /\_/\
+( o.o )   M A R Y
+ > ^ <    Your purr-sonal task assistant.
+
+What's on your list today?
+____________________________________________________________
+____________________________________________________________
+ No matching tasks found.
+____________________________________________________________
+____________________________________________________________
+See you later. Complete your tasks on time!
+____________________________________________________________
+```

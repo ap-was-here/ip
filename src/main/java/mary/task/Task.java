@@ -4,10 +4,9 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.ResolverStyle;
+import java.util.Locale;
 
-/**
- * Base class for all tasks.
- */
+/** Base class for all tasks. */
 public class Task {
     // Strict resolution rejects impossible dates instead of adjusting their day.
     protected static final DateTimeFormatter INPUT_DATE_TIME = DateTimeFormatter.ofPattern("d/M/uuuu HHmm")
@@ -18,77 +17,53 @@ public class Task {
     protected String description;
     protected boolean isDone;
 
-    /**
-     * Creates an unfinished task with the given description.
-     *
-     * @param description task text to retain.
-     */
+    /** Creates an unfinished task with the given description. */
     public Task(String description) {
         this.description = description;
         this.isDone = false;
     }
 
-    /**
-     * Marks this task as completed.
-     */
+    /** Marks this task as completed. */
     public void markAsDone() {
         isDone = true;
     }
 
     /**
-     * Marks this task as unfinished.
+     * Checks only the description for a case-insensitive literal substring.
+     *
+     * @param keyword non-null search text.
+     * @return whether the description contains the keyword, ignoring case.
      */
+    public boolean matchesDescription(String keyword) {
+        return description.toLowerCase(Locale.ROOT).contains(keyword.toLowerCase(Locale.ROOT));
+    }
+
+    /** Marks this task as unfinished. */
     public void markAsNotDone() {
         isDone = false;
     }
 
-    /**
-     * Sets the completion state when loading a saved task.
-     *
-     * @param isDone true for completed, false for unfinished.
-     */
-    public void setDone(boolean isDone) {
-        this.isDone = isDone;
+    /** Sets the completion state when loading a saved task. */
+    public void setDone(boolean done) {
+        isDone = done;
     }
 
-    /**
-     * Serializes this task as a todo record; dated subtypes override this format.
-     * Fields are separated by {@code  | }; descriptions are not escaped.
-     *
-     * @return type, completion flag (1 or 0), and description.
-     */
+    /** Returns the portable record used for saving this task. */
     public String toStorageRecord() {
         return "T | " + (isDone ? "1" : "0") + " | " + description;
     }
 
-    /**
-     * Parses a date/time strictly, rejecting impossible dates and times.
-     *
-     * @param value date/time in {@code d/M/uuuu HHmm} format using a 24-hour clock.
-     * @return the parsed local date/time, without a time zone.
-     * @throws java.time.format.DateTimeParseException if the format or value is invalid.
-     */
+    /** Parses the date/time format accepted by MARY commands. */
     public static LocalDateTime parseDateTime(String value) {
         return LocalDateTime.parse(value, INPUT_DATE_TIME);
     }
 
-    /**
-     * Parses a date strictly for date-based task searches.
-     *
-     * @param value date in {@code d/M/uuuu} format.
-     * @return the parsed local date.
-     * @throws java.time.format.DateTimeParseException if the format or date is invalid.
-     */
+    /** Parses a date used by the date search command. */
     public static LocalDate parseDate(String value) {
         return LocalDate.parse(value, INPUT_DATE);
     }
 
-    /**
-     * Formats a date/time with an abbreviated month name in the default format locale.
-     *
-     * @param value local date/time to display.
-     * @return text in {@code d MMM uuuu HH:mm} format.
-     */
+    /** Formats a date/time for display. */
     public static String formatDateTime(LocalDateTime value) {
         return value.format(DISPLAY_DATE_TIME);
     }
@@ -96,19 +71,17 @@ public class Task {
     /**
      * Returns the symbol used to display this task's status.
      *
-     * @return {@code X} for a completed task, otherwise a space.
+     * @return {@code X} for a completed task, otherwise a space
      */
     public String getStatusIcon() {
         return isDone ? "X" : " ";
     }
 
-    /**
-     * Returns the task with its completion status.
-     *
-     * @return bracketed status followed by the description.
-     */
+    /** Returns the task with its completion status. */
     @Override
     public String toString() {
         return "[" + getStatusIcon() + "] " + description;
     }
 }
+
+//to rectify branching error
