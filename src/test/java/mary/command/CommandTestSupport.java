@@ -1,18 +1,21 @@
 package mary.command;
 
-import mary.storage.Storage;
-import mary.task.TaskList;
-import mary.ui.Ui;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.io.TempDir;
-
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 
-/** Captures command output and isolates persistence for each test. */
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.io.TempDir;
+
+import mary.storage.Storage;
+import mary.task.TaskList;
+import mary.ui.Ui;
+
+/**
+ * Captures command output and isolates persistence for each test.
+ */
 abstract class CommandTestSupport {
     @TempDir
     Path directory;
@@ -23,6 +26,9 @@ abstract class CommandTestSupport {
     private PrintStream capturedOutput;
     private ByteArrayOutputStream output;
 
+    /**
+     * Creates a fresh task list, isolated storage, and UTF-8 console capture for each test.
+     */
     @BeforeEach
     void prepareCommandEnvironment() {
         tasks = new TaskList();
@@ -34,13 +40,21 @@ abstract class CommandTestSupport {
         System.setOut(capturedOutput);
     }
 
+    /**
+     * Restores standard output before closing the test-only capture stream.
+     */
     @AfterEach
     void restoreConsole() {
         System.setOut(originalOutput);
         capturedOutput.close();
     }
 
-    /** Runs one command and returns only its output, normalizing line endings. */
+    /**
+     * Clears previous output and executes a command against the test fixtures.
+     *
+     * @param command command to execute.
+     * @return captured output with CRLF normalized to LF.
+     */
     String execute(Command command) {
         output.reset();
         command.execute(tasks, ui, storage);

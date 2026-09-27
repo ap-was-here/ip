@@ -13,8 +13,16 @@ import mary.task.TaskList;
 import mary.task.Todo;
 import mary.ui.Ui;
 
-/** Starts MARY and coordinates its console command loop. */
-public class MARY {
+/**
+ * Starts MARY and coordinates its console command loop.
+ */
+public class Mary {
+    /**
+     * Loads saved tasks and accepts commands until exit or end-of-input.
+     * A loading error is displayed before continuing with an empty task list.
+     *
+     * @param args command-line arguments (unused).
+     */
     public static void main(String[] args) {
         Ui ui = new Ui();
         Storage storage = new Storage("mary-data.txt");
@@ -34,7 +42,6 @@ public class MARY {
 
         String command;
         while ((command = ui.readCommand()) != null) {
-
             ui.showLine();
             Command parsedCommand = Parser.parse(command);
             if (parsedCommand != null && parsedCommand.isExit()) {
@@ -53,16 +60,17 @@ public class MARY {
                 }
 
                 if (command.equals("list")) {
-                if (tasks.isEmpty()) {
-                    System.out.println(" MARY has no saved tasks yet.");
-                } else {
-                    System.out.println(" Here are the tasks in your list:");
-                    for (int i = 0; i < tasks.size(); i++) {
-                        System.out.println(" " + (i + 1) + "." + tasks.get(i));
+                    if (tasks.isEmpty()) {
+                        System.out.println(" MARY has no saved tasks yet.");
+                    } else {
+                        System.out.println(" Here are the tasks in your list:");
+                        for (int i = 0; i < tasks.size(); i++) {
+                            System.out.println(" " + (i + 1) + "." + tasks.get(i));
+                        }
                     }
-                }
                 } else {
-                    throw new MaryException("I don't recognize that command; use todo, deadline, event, on, list, mark, unmark, or bye.");
+                    throw new MaryException("I don't recognize that command; use todo, deadline, event, on,"
+                            + " list, mark, unmark, or bye.");
                 }
             } catch (MaryException exception) {
                 ui.showError(exception.getMessage());
@@ -73,10 +81,12 @@ public class MARY {
     }
 
     /**
-     * Converts a user's task command into a Task object without using inheritance.
+     * Converts a task command into its concrete task subtype.
+     * This legacy helper is retained; active commands use {@link Parser#parseTask(String)}.
      *
-     * @param command the complete command entered by the user
-     * @return the task represented by the command
+     * @param command the complete command entered by the user.
+     * @return the task represented by the command.
+     * @throws MaryException if the description, command syntax, or date/time is invalid.
      */
     private static Task createTask(String command) throws MaryException {
         if (command.startsWith("todo ")) {
@@ -124,8 +134,4 @@ public class MARY {
 
         throw new MaryException("use 'todo description' to add a task without a date.");
     }
-
 }
-
-
-//to rectify branching error

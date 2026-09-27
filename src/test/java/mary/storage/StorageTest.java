@@ -1,22 +1,35 @@
 package mary.storage;
 
-import mary.exception.MaryException;
-import mary.task.*;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.io.TempDir;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertInstanceOf;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.LocalDateTime;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.*;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
 
-/** Tests persistence using isolated files, never the user's saved tasks. */
+import mary.exception.MaryException;
+import mary.task.Deadline;
+import mary.task.Event;
+import mary.task.Task;
+import mary.task.Todo;
+
+/**
+ * Tests persistence using isolated files, never the user's saved tasks.
+ */
 class StorageTest {
     @TempDir
     Path directory;
 
+    /**
+     * Tests load: missing file; returns empty without creating file.
+     */
     @Test
     void load_missingFile_returnsEmptyWithoutCreatingFile() throws Exception {
         Path file = directory.resolve("missing.txt");
@@ -24,6 +37,9 @@ class StorageTest {
         assertFalse(Files.exists(file));
     }
 
+    /**
+     * Tests load: empty and blank lines; returns empty list.
+     */
     @Test
     void load_emptyAndBlankLines_returnsEmptyList() throws Exception {
         Path file = directory.resolve("tasks.txt");
@@ -31,6 +47,9 @@ class StorageTest {
         assertTrue(new Storage(file.toString()).load().isEmpty());
     }
 
+    /**
+     * Tests save and load: all subtypes and states; preserves order and values.
+     */
     @Test
     void saveAndLoad_allSubtypesAndStates_preservesOrderAndValues() throws Exception {
         Path file = directory.resolve("tasks.txt");
@@ -40,16 +59,19 @@ class StorageTest {
         Event event = new Event("camp", LocalDateTime.of(2019, 12, 2, 14, 0),
                 LocalDateTime.of(2019, 12, 4, 16, 0));
         event.markAsDone();
-        List<Task> expected = List.of(todo, deadline, event);
-        new Storage(file.toString()).save(expected);
-        List<Task> loaded = new Storage(file.toString()).load();
-        assertEquals(expected.stream().map(Task::toStorageRecord).toList(),
-                loaded.stream().map(Task::toStorageRecord).toList());
-        assertInstanceOf(Todo.class, loaded.get(0));
-        assertEquals(deadline.getBy(), assertInstanceOf(Deadline.class, loaded.get(1)).getBy());
-        assertEquals(event.getTo(), assertInstanceOf(Event.class, loaded.get(2)).getTo());
+        List<Task> expectedTasks = List.of(todo, deadline, event);
+        new Storage(file.toString()).save(expectedTasks);
+        List<Task> loadedTasks = new Storage(file.toString()).load();
+        assertEquals(expectedTasks.stream().map(Task::toStorageRecord).toList(),
+                loadedTasks.stream().map(Task::toStorageRecord).toList());
+        assertInstanceOf(Todo.class, loadedTasks.get(0));
+        assertEquals(deadline.getBy(), assertInstanceOf(Deadline.class, loadedTasks.get(1)).getBy());
+        assertEquals(event.getTo(), assertInstanceOf(Event.class, loadedTasks.get(2)).getTo());
     }
 
+    /**
+     * Tests save: replacement and empty list; removes old records.
+     */
     @Test
     void save_replacementAndEmptyList_removesOldRecords() throws Exception {
         Path file = directory.resolve("tasks.txt");
@@ -62,6 +84,9 @@ class StorageTest {
         assertTrue(storage.load().isEmpty());
     }
 
+    /**
+     * Tests load: bad types and field counts; reports record line.
+     */
     @Test
     void load_badTypesAndFieldCounts_reportsRecordLine() throws Exception {
         for (String record : List.of("nonsense", "Q | 0 | read", "T | 0",
@@ -75,6 +100,9 @@ class StorageTest {
         }
     }
 
+    /**
+     * Tests load: extra todo fields; rejects corrupt record.
+     */
     @Test
     void load_extraTodoFields_rejectsCorruptRecord() throws Exception {
         Path file = directory.resolve("tasks.txt");
@@ -85,6 +113,9 @@ class StorageTest {
         }
     }
 
+    /**
+     * Tests load: bad status and empty description; reports specific error.
+     */
     @Test
     void load_badStatusAndEmptyDescription_reportsSpecificError() throws Exception {
         Path file = directory.resolve("tasks.txt");
@@ -97,6 +128,9 @@ class StorageTest {
                 assertThrows(MaryException.class, storage::load).getMessage());
     }
 
+    /**
+     * Tests load: bad dates; reports date error.
+     */
     @Test
     void load_badDates_reportsDateError() throws Exception {
         Path file = directory.resolve("tasks.txt");
@@ -109,12 +143,18 @@ class StorageTest {
         }
     }
 
+    /**
+     * Tests load: directory instead of file; wraps io failure.
+     */
     @Test
     void load_directoryInsteadOfFile_wrapsIoFailure() {
         assertEquals("could not read " + directory + ".", assertThrows(MaryException.class,
                 () -> new Storage(directory.toString()).load()).getMessage());
     }
 
+    /**
+     * Tests save: directory instead of file; wraps io failure.
+     */
     @Test
     void save_directoryInsteadOfFile_wrapsIoFailure() {
         assertEquals("could not save tasks to " + directory + ".", assertThrows(MaryException.class,

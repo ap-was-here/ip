@@ -7,14 +7,29 @@ import mary.task.Task;
 import mary.task.TaskList;
 import mary.ui.Ui;
 
-/** Adds a todo, deadline, or event task. */
+/**
+ * Adds a todo, deadline, or event task.
+ */
 public class AddCommand extends Command {
     private final String fullCommand;
 
+    /**
+     * Creates a command retaining the supplied input for execution-time validation.
+     *
+     * @param fullCommand complete, non-null user input.
+     */
     public AddCommand(String fullCommand) {
         this.fullCommand = fullCommand;
     }
 
+    /**
+     * Parses and adds a task, then saves the list and displays confirmation.
+     * Validation and storage errors are displayed through the UI; a save failure does not undo the addition.
+     *
+     * @param tasks current in-memory task list.
+     * @param ui user-facing message handler.
+     * @param storage persistence service (unused by read-only commands).
+     */
     @Override
     public void execute(TaskList tasks, Ui ui, Storage storage) {
         try {

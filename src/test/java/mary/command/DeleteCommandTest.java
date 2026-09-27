@@ -1,11 +1,19 @@
 package mary.command;
 
-import mary.task.Todo;
-import org.junit.jupiter.api.Test;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
-/** Tests one-based deletion, renumbering, persistence, and invalid input. */
+import org.junit.jupiter.api.Test;
+
+import mary.task.Todo;
+
+/**
+ * Tests one-based deletion, renumbering, persistence, and invalid input.
+ */
 class DeleteCommandTest extends CommandTestSupport {
+    /**
+     * Tests execute: middle task; removes only selected task and saves.
+     */
     @Test
     void execute_middleTask_removesOnlySelectedTaskAndSaves() throws Exception {
         tasks.add(new Todo("a"));
@@ -18,6 +26,9 @@ class DeleteCommandTest extends CommandTestSupport {
         assertEquals(2, storage.load().size());
     }
 
+    /**
+     * Tests execute: last remaining task; saves empty list.
+     */
     @Test
     void execute_lastRemainingTask_savesEmptyList() throws Exception {
         tasks.add(new Todo("a"));
@@ -26,16 +37,22 @@ class DeleteCommandTest extends CommandTestSupport {
         assertTrue(storage.load().isEmpty());
     }
 
+    /**
+     * Tests execute: missing or invalid number; does not remove task.
+     */
     @Test
     void execute_missingOrInvalidNumber_doesNotRemoveTask() {
         tasks.add(new Todo("keep"));
-        for (String input : new String[]{"delete", "delete ", "delete abc", "delete 1.5",
+        for (String input : new String[] {"delete", "delete ", "delete abc", "delete 1.5",
                 "delete 0", "delete -1", "delete 2", "delete 2147483648"}) {
             assertTrue(execute(new DeleteCommand(input)).startsWith(" Error:"), input);
             assertEquals(1, tasks.size(), input);
         }
     }
 
+    /**
+     * Tests execute: empty list; explains valid number lookup.
+     */
     @Test
     void execute_emptyList_explainsValidNumberLookup() {
         assertEquals(" Error: task 1 does not exist; use 'list' to see valid task numbers.\n",

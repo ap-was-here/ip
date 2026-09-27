@@ -1,11 +1,18 @@
 package mary.task;
 
-import org.junit.jupiter.api.Test;
-import java.time.LocalDateTime;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
-/** Verifies typed deadline formatting and ISO persistence. */
+import java.time.LocalDateTime;
+
+import org.junit.jupiter.api.Test;
+
+/**
+ * Verifies typed deadline formatting and ISO persistence.
+ */
 class DeadlineTest {
+    /**
+     * Tests to string: and storage record; formats date without losing status.
+     */
     @Test
     void toString_andStorageRecord_formatsDateWithoutLosingStatus() {
         Deadline task = new Deadline("return book", LocalDateTime.of(2019, 12, 2, 18, 0));

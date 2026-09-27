@@ -1,11 +1,22 @@
 package mary.command;
 
-import org.junit.jupiter.api.Test;
-import java.nio.file.Files;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
-/** Tests additions, persistence, validation, and storage failure feedback. */
+import java.nio.file.Files;
+
+import org.junit.jupiter.api.Test;
+
+import mary.storage.Storage;
+
+/**
+ * Tests additions, persistence, validation, and storage failure feedback.
+ */
 class AddCommandTest extends CommandTestSupport {
+    /**
+     * Tests execute: valid todo; adds and saves task.
+     */
     @Test
     void execute_validTodo_addsAndSavesTask() throws Exception {
         assertEquals(" Got it. I've added this task:\n   [T][ ] read book\n Now you have 1 tasks in the list.\n",
@@ -14,6 +25,9 @@ class AddCommandTest extends CommandTestSupport {
         assertEquals("[T][ ] read book", storage.load().get(0).toString());
     }
 
+    /**
+     * Tests execute: deadline and event; persists both subtypes.
+     */
     @Test
     void execute_deadlineAndEvent_persistsBothSubtypes() throws Exception {
         execute(new AddCommand("deadline read /by 2/12/2019 1800"));
@@ -23,6 +37,9 @@ class AddCommandTest extends CommandTestSupport {
         assertEquals(2, tasks.size());
     }
 
+    /**
+     * Tests execute: invalid description; reports error without adding or saving.
+     */
     @Test
     void execute_invalidDescription_reportsErrorWithoutAddingOrSaving() {
         assertTrue(execute(new AddCommand("todo ")).startsWith(" Error:"));
@@ -30,9 +47,12 @@ class AddCommandTest extends CommandTestSupport {
         assertFalse(Files.exists(directory.resolve("tasks.txt")));
     }
 
+    /**
+     * Tests execute: save failure; reports error without success message.
+     */
     @Test
     void execute_saveFailure_reportsErrorWithoutSuccessMessage() {
-        storage = new mary.storage.Storage(directory.toString());
+        storage = new Storage(directory.toString());
         String output = execute(new AddCommand("todo read"));
         assertTrue(output.contains("Error: could not save tasks"));
         assertFalse(output.contains("Got it."));

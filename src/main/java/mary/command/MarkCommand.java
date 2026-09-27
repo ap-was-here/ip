@@ -6,34 +6,57 @@ import mary.task.Task;
 import mary.task.TaskList;
 import mary.ui.Ui;
 
-/** Marks a task done or not done. */
+/**
+ * Marks a task done or not done.
+ */
 public class MarkCommand extends Command {
     private final String fullCommand;
 
-    public MarkCommand(String fullCommand) { this.fullCommand = fullCommand; }
+    /**
+     * Creates a command retaining the supplied input for execution-time validation.
+     *
+     * @param fullCommand complete, non-null user input.
+     */
+    public MarkCommand(String fullCommand) {
+        this.fullCommand = fullCommand;
+    }
 
+    /**
+     * Updates completion using a one-based task number and saves the list.
+     * Invalid input and storage errors are displayed; a save failure does not undo the status change.
+     *
+     * @param tasks current in-memory task list.
+     * @param ui user-facing message handler.
+     * @param storage persistence service (unused by read-only commands).
+     */
     @Override
     public void execute(TaskList tasks, Ui ui, Storage storage) {
-        boolean done = fullCommand.startsWith("mark ");
+        boolean isDone = fullCommand.startsWith("mark ");
         String numberText = "";
         try {
             // Validate the prefix before slicing: bare mark/unmark have no argument.
-            String prefix = done ? "mark " : "unmark ";
+            String prefix = isDone ? "mark " : "unmark ";
             if (!fullCommand.startsWith(prefix)) {
                 throw new MaryException("use 'mark N' or 'unmark N', where N is a task number.");
             }
             numberText = fullCommand.substring(prefix.length()).trim();
-            if (numberText.isEmpty()) throw new MaryException("use 'mark N' or 'unmark N', where N is a task number.");
+            if (numberText.isEmpty()) {
+                throw new MaryException("use 'mark N' or 'unmark N', where N is a task number.");
+            }
             int index = Integer.parseInt(numberText) - 1;
             if (index < 0 || index >= tasks.size()) {
                 throw new MaryException("task " + numberText
                         + " does not exist; use 'list' to see valid task numbers.");
             }
             Task task = tasks.get(index);
-            if (done) task.markAsDone(); else task.markAsNotDone();
+            if (isDone) {
+                task.markAsDone();
+            } else {
+                task.markAsNotDone();
+            }
             storage.save(tasks.getTasks());
-            System.out.println(done ? " Nice! I've marked this task as done:" :
-                    " OK, I've marked this task as not done yet:");
+            System.out.println(isDone ? " Nice! I've marked this task as done:"
+                    : " OK, I've marked this task as not done yet:");
             System.out.println("   " + task);
         } catch (NumberFormatException exception) {
             ui.showError("'" + numberText + "' is not a valid task number; use a positive whole number.");

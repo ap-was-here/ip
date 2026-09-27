@@ -24,11 +24,30 @@ Unless the user says otherwise, assume that you are assisting a student working 
 
 # Project-specific requirements
 
+## Mandatory Java coding standard
+
+All Java code in this project, including tests and newly generated code, must
+follow the SE-EDU basic and intermediate Java coding standard. Before writing,
+modifying, or reviewing Java code, read and apply the project-specific skill
+`seedu-java-coding-standard` at `.codex/skills/seedu-java-coding-standard/SKILL.md`.
+Use it during the final review as well; a formatter alone does not establish compliance.
+Keep header Javadoc for all non-private classes and declared methods, including
+constructors, tests and accessors, and for non-trivial private methods. This local
+requirement is stricter than the upstream documentation exceptions.
+Apply conventions without changing behavior unless the task explicitly calls for it.
+
 ## Java version:
 
 Ensure that Java 25 is used when running the application or build tasks. On macOS, use `sdk use java 25.0.3.fx-zulu` to switch to Java 25 if needed.
 
 ## Git
+
+All future commits must follow the SE-EDU Git conventions. Before preparing,
+reviewing, or creating a commit, read and apply the project-specific skill
+`seedu-git-standard` at `.codex/skills/seedu-git-standard/SKILL.md`.
+Check both the staged change boundaries and the commit message against the skill.
+Keep standalone changes in separate commits when requested, and report test
+limitations accurately. This requirement does not authorize commits or pushes.
 
 Use lightweight tags unless the user requests an annotated tag.
 When proposing or creating a commit message, include enough detail to explain the rationale for the change.

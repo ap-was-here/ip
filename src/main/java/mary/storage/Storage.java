@@ -14,20 +14,38 @@ import mary.task.Event;
 import mary.task.Task;
 import mary.task.Todo;
 
-/** Loads and saves tasks using a relative path. */
+/**
+ * Loads and saves UTF-8 task records at a configured path.
+ */
 public class Storage {
     private final Path file;
 
-    public Storage(String filePath) { file = Path.of(filePath); }
+    /**
+     * Selects the data file without creating it or its parent directories.
+     *
+     * @param filePath file path; relative paths resolve from the working directory.
+     */
+    public Storage(String filePath) {
+        file = Path.of(filePath);
+    }
 
-    /** Loads all tasks, rejecting malformed saved records. */
+    /**
+     * Loads records in file order, skipping blank lines.
+     *
+     * @return loaded tasks, or an empty list if the file does not exist.
+     * @throws MaryException if the file cannot be read or any record is malformed.
+     */
     public List<Task> load() throws MaryException {
         ArrayList<Task> tasks = new ArrayList<>();
-        if (!Files.exists(file)) return tasks;
+        if (!Files.exists(file)) {
+            return tasks;
+        }
         try {
             List<String> records = Files.readAllLines(file);
             for (int i = 0; i < records.size(); i++) {
-                if (!records.get(i).isBlank()) tasks.add(parseRecord(records.get(i), i + 1));
+                if (!records.get(i).isBlank()) {
+                    tasks.add(parseRecord(records.get(i), i + 1));
+                }
             }
             return tasks;
         } catch (IOException exception) {
@@ -35,17 +53,33 @@ public class Storage {
         }
     }
 
-    /** Saves all tasks to disk. */
+    /**
+     * Creates or overwrites the data file with the supplied tasks in list order.
+     * Parent directories must already exist; an empty list clears the file.
+     *
+     * @param tasks tasks to serialize.
+     * @throws MaryException if writing the file fails.
+     */
     public void save(List<Task> tasks) throws MaryException {
         try {
             ArrayList<String> records = new ArrayList<>();
-            for (Task task : tasks) records.add(task.toStorageRecord());
+            for (Task task : tasks) {
+                records.add(task.toStorageRecord());
+            }
             Files.write(file, records);
         } catch (IOException exception) {
             throw new MaryException("could not save tasks to " + file + ".");
         }
     }
 
+    /**
+     * Validates a pipe-delimited record and restores its subtype and completion state.
+     *
+     * @param record saved record containing ISO date/times for dated tasks.
+     * @param lineNumber one-based file line number for error messages.
+     * @return the restored task.
+     * @throws MaryException if the type, field count, status, description, or dates are invalid.
+     */
     private Task parseRecord(String record, int lineNumber) throws MaryException {
         String[] fields = record.split(" \\| ", -1);
         if (fields.length < 3 || (fields[0].equals("T") && fields.length != 3)
@@ -57,12 +91,18 @@ public class Storage {
         if (!fields[1].equals("0") && !fields[1].equals("1")) {
             throw new MaryException("invalid completion status on line " + lineNumber + ".");
         }
-        if (fields[2].isBlank()) throw new MaryException("empty task description on line " + lineNumber + ".");
+        if (fields[2].isBlank()) {
+            throw new MaryException("empty task description on line " + lineNumber + ".");
+        }
         try {
             Task task;
-            if (fields[0].equals("T")) task = new Todo(fields[2]);
-            else if (fields[0].equals("D")) task = new Deadline(fields[2], LocalDateTime.parse(fields[3]));
-            else task = new Event(fields[2], LocalDateTime.parse(fields[3]), LocalDateTime.parse(fields[4]));
+            if (fields[0].equals("T")) {
+                task = new Todo(fields[2]);
+            } else if (fields[0].equals("D")) {
+                task = new Deadline(fields[2], LocalDateTime.parse(fields[3]));
+            } else {
+                task = new Event(fields[2], LocalDateTime.parse(fields[3]), LocalDateTime.parse(fields[4]));
+            }
             task.setDone(fields[1].equals("1"));
             return task;
         } catch (DateTimeParseException exception) {

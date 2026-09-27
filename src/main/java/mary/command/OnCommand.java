@@ -11,12 +11,29 @@ import mary.task.Task;
 import mary.task.TaskList;
 import mary.ui.Ui;
 
-/** Displays deadlines and events occurring on a date. */
+/**
+ * Displays deadlines and events occurring on a date.
+ */
 public class OnCommand extends Command {
     private final String fullCommand;
 
-    public OnCommand(String fullCommand) { this.fullCommand = fullCommand; }
+    /**
+     * Creates a command retaining the supplied input for execution-time validation.
+     *
+     * @param fullCommand complete, non-null user input.
+     */
+    public OnCommand(String fullCommand) {
+        this.fullCommand = fullCommand;
+    }
 
+    /**
+     * Displays matching deadlines and events for the requested date, including both event boundary dates.
+     * Todos are excluded and the list is not modified; invalid dates are reported through the UI.
+     *
+     * @param tasks current in-memory task list.
+     * @param ui user-facing message handler.
+     * @param storage persistence service (unused by read-only commands).
+     */
     @Override
     public void execute(TaskList tasks, Ui ui, Storage storage) {
         try {
@@ -29,18 +46,22 @@ public class OnCommand extends Command {
             } catch (DateTimeParseException exception) {
                 throw new MaryException("use date format d/M/yyyy, for example 2/12/2019.");
             }
-            boolean found = false;
+            boolean isFound = false;
             for (Task task : tasks.getTasks()) {
-                boolean occurs = task instanceof Deadline && ((Deadline) task).getBy().toLocalDate().equals(date)
+                boolean doesOccur = task instanceof Deadline && ((Deadline) task).getBy().toLocalDate().equals(date)
                         || task instanceof Event && !((Event) task).getFrom().toLocalDate().isAfter(date)
                         && !((Event) task).getTo().toLocalDate().isBefore(date);
-                if (occurs) {
-                    if (!found) System.out.println(" Tasks occurring on " + date + ":");
-                    found = true;
+                if (doesOccur) {
+                    if (!isFound) {
+                        System.out.println(" Tasks occurring on " + date + ":");
+                    }
+                    isFound = true;
                     System.out.println(" " + task);
                 }
             }
-            if (!found) System.out.println(" No deadlines or events occur on " + date + ".");
+            if (!isFound) {
+                System.out.println(" No deadlines or events occur on " + date + ".");
+            }
         } catch (MaryException exception) {
             ui.showError(exception.getMessage());
         }

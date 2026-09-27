@@ -925,7 +925,7 @@ ____________________________________________________________
 
 ## Current package-migration regression suite
 
-This suite invokes `mary.MARY` with Java 25 and compares complete stdout exactly
+This suite invokes `mary.Mary` with Java 25 and compares complete stdout exactly
 (normalizing CRLF/LF only). Expected output is defined below before testing.
 The historical cases farther down are retained as history: some predate typed
 dates, command extraction, and the current farewell and are not current oracles.
@@ -961,11 +961,14 @@ older cases without relying on obsolete date strings such as "Sunday".
   "welcome": [
     "____________________________________________________________",
     "____________________________________________________________",
-    " /\\_/\\",
-    "( o.o )   M A R Y",
-    " > ^ <    Your purr-sonal task assistant.",
-    "",
-    "What's on your list today?",
+    "███╗   ███╗ █████╗ ██████╗ ██╗   ██╗",
+    "████╗ ████║██╔══██╗██╔══██╗╚██╗ ██╔╝",
+    "██╔████╔██║███████║██████╔╝ ╚████╔╝",
+    "██║╚██╔╝██║██╔══██║██╔══██╗  ╚██╔╝",
+    "██║ ╚═╝ ██║██║  ██║██║  ██║   ██║",
+    "╚═╝     ╚═╝╚═╝  ╚═╝╚═╝  ╚═╝   ╚═╝",
+    "Hi! I'm MARY.",
+    "What have you got for me today?",
     "____________________________________________________________"
   ],
   "cases": [
@@ -2377,17 +2380,17 @@ Hi! I'm MARY.
 What have you got for me today?
 ____________________________________________________________
 ```
+## Javadoc-only verification — 2026-09-27
 
-## ASCII cat banner verification — 2026-09-27
-
-Aim: display the selected ASCII cat artwork and greeting without Unicode block
-characters, preserving all task-command and persistence behavior. The current
-suite's shared welcome expectation was updated before testing; historical logs
-are unchanged. Added UiTest for exact welcome output and ASCII-only characters.
-Java 25 Gradle `test shadowJar --rerun-tasks` passed all 53 JUnit tests.
-The test-ui skill ran the rebuilt JAR in isolated working directories.
-R1, R2, P1–P4 passed: six cases/seven sessions, including exact stdout,
-exit status, and saved data. Inputs below use JSON strings to preserve spaces.
+Reviewed the existing UI cases and JUnit selection: no expected behavior or assertions
+needed changing. Java sources differ only in comments. Java 25 Gradle
+`test javadoc shadowJar --rerun-tasks` succeeded; all 52 JUnit tests passed.
+Javadoc generation reported 32 warnings for undocumented fields, enum constants,
+and implicit constructors, not the explicitly declared methods covered by this update.
+The test-ui skill ran R1, R2, P1–P4 using the rebuilt JAR in isolated directories.
+All six cases/seven sessions passed exact output, exit-status, and saved-data checks.
+Inputs are JSON arrays (one element per input line; an empty array means EOF).
+All actual output below matched the existing expected output, ignoring line endings only.
 
 ### R1, session 1: PASS
 
@@ -2408,16 +2411,19 @@ Console input:
 ]
 ```
 
-Actual console output:
+Complete console output:
 
 ```text
 ____________________________________________________________
 ____________________________________________________________
- /\_/\
-( o.o )   M A R Y
- > ^ <    Your purr-sonal task assistant.
-
-What's on your list today?
+███╗   ███╗ █████╗ ██████╗ ██╗   ██╗
+████╗ ████║██╔══██╗██╔══██╗╚██╗ ██╔╝
+██╔████╔██║███████║██████╔╝ ╚████╔╝
+██║╚██╔╝██║██╔══██║██╔══██╗  ╚██╔╝
+██║ ╚═╝ ██║██║  ██║██║  ██║   ██║
+╚═╝     ╚═╝╚═╝  ╚═╝╚═╝  ╚═╝   ╚═╝
+Hi! I'm MARY.
+What have you got for me today?
 ____________________________________________________________
 ____________________________________________________________
  Got it. I've added this task:
@@ -2465,18 +2471,21 @@ Console input:
 ]
 ```
 
-Actual console output:
+Complete console output:
 
 ```text
 ____________________________________________________________
  Error: the saved task data is corrupted: invalid record on line 1.
 ____________________________________________________________
 ____________________________________________________________
- /\_/\
-( o.o )   M A R Y
- > ^ <    Your purr-sonal task assistant.
-
-What's on your list today?
+███╗   ███╗ █████╗ ██████╗ ██╗   ██╗
+████╗ ████║██╔══██╗██╔══██╗╚██╗ ██╔╝
+██╔████╔██║███████║██████╔╝ ╚████╔╝
+██║╚██╔╝██║██╔══██║██╔══██╗  ╚██╔╝
+██║ ╚═╝ ██║██║  ██║██║  ██║   ██║
+╚═╝     ╚═╝╚═╝  ╚═╝╚═╝  ╚═╝   ╚═╝
+Hi! I'm MARY.
+What have you got for me today?
 ____________________________________________________________
 ____________________________________________________________
  MARY has no saved tasks yet.
@@ -2508,16 +2517,19 @@ Console input:
 ]
 ```
 
-Actual console output:
+Complete console output:
 
 ```text
 ____________________________________________________________
 ____________________________________________________________
- /\_/\
-( o.o )   M A R Y
- > ^ <    Your purr-sonal task assistant.
-
-What's on your list today?
+███╗   ███╗ █████╗ ██████╗ ██╗   ██╗
+████╗ ████║██╔══██╗██╔══██╗╚██╗ ██╔╝
+██╔████╔██║███████║██████╔╝ ╚████╔╝
+██║╚██╔╝██║██╔══██║██╔══██╗  ╚██╔╝
+██║ ╚═╝ ██║██║  ██║██║  ██║   ██║
+╚═╝     ╚═╝╚═╝  ╚═╝╚═╝  ╚═╝   ╚═╝
+Hi! I'm MARY.
+What have you got for me today?
 ____________________________________________________________
 ____________________________________________________________
  MARY has no saved tasks yet.
@@ -2589,16 +2601,19 @@ Console input:
 ]
 ```
 
-Actual console output:
+Complete console output:
 
 ```text
 ____________________________________________________________
 ____________________________________________________________
- /\_/\
-( o.o )   M A R Y
- > ^ <    Your purr-sonal task assistant.
-
-What's on your list today?
+███╗   ███╗ █████╗ ██████╗ ██╗   ██╗
+████╗ ████║██╔══██╗██╔══██╗╚██╗ ██╔╝
+██╔████╔██║███████║██████╔╝ ╚████╔╝
+██║╚██╔╝██║██╔══██║██╔══██╗  ╚██╔╝
+██║ ╚═╝ ██║██║  ██║██║  ██║   ██║
+╚═╝     ╚═╝╚═╝  ╚═╝╚═╝  ╚═╝   ╚═╝
+Hi! I'm MARY.
+What have you got for me today?
 ____________________________________________________________
 ____________________________________________________________
  Here are the tasks in your list:
@@ -2635,16 +2650,19 @@ Console input:
 ]
 ```
 
-Actual console output:
+Complete console output:
 
 ```text
 ____________________________________________________________
 ____________________________________________________________
- /\_/\
-( o.o )   M A R Y
- > ^ <    Your purr-sonal task assistant.
-
-What's on your list today?
+███╗   ███╗ █████╗ ██████╗ ██╗   ██╗
+████╗ ████║██╔══██╗██╔══██╗╚██╗ ██╔╝
+██╔████╔██║███████║██████╔╝ ╚████╔╝
+██║╚██╔╝██║██╔══██║██╔══██╗  ╚██╔╝
+██║ ╚═╝ ██║██║  ██║██║  ██║   ██║
+╚═╝     ╚═╝╚═╝  ╚═╝╚═╝  ╚═╝   ╚═╝
+Hi! I'm MARY.
+What have you got for me today?
 ____________________________________________________________
 ____________________________________________________________
  Error: please enter a command or task.
@@ -2695,18 +2713,21 @@ Console input:
 ]
 ```
 
-Actual console output:
+Complete console output:
 
 ```text
 ____________________________________________________________
  Error: the saved task data is corrupted: invalid record on line 1.
 ____________________________________________________________
 ____________________________________________________________
- /\_/\
-( o.o )   M A R Y
- > ^ <    Your purr-sonal task assistant.
-
-What's on your list today?
+███╗   ███╗ █████╗ ██████╗ ██╗   ██╗
+████╗ ████║██╔══██╗██╔══██╗╚██╗ ██╔╝
+██╔████╔██║███████║██████╔╝ ╚████╔╝
+██║╚██╔╝██║██╔══██║██╔══██╗  ╚██╔╝
+██║ ╚═╝ ██║██║  ██║██║  ██║   ██║
+╚═╝     ╚═╝╚═╝  ╚═╝╚═╝  ╚═╝   ╚═╝
+Hi! I'm MARY.
+What have you got for me today?
 ____________________________________________________________
 ____________________________________________________________
  MARY has no saved tasks yet.
@@ -2724,15 +2745,35 @@ Console input:
 []
 ```
 
-Actual console output:
+Complete console output:
 
 ```text
 ____________________________________________________________
 ____________________________________________________________
- /\_/\
-( o.o )   M A R Y
- > ^ <    Your purr-sonal task assistant.
-
-What's on your list today?
+███╗   ███╗ █████╗ ██████╗ ██╗   ██╗
+████╗ ████║██╔══██╗██╔══██╗╚██╗ ██╔╝
+██╔████╔██║███████║██████╔╝ ╚████╔╝
+██║╚██╔╝██║██╔══██║██╔══██╗  ╚██╔╝
+██║ ╚═╝ ██║██║  ██║██║  ██║   ██║
+╚═╝     ╚═╝╚═╝  ╚═╝╚═╝  ╚═╝   ╚═╝
+Hi! I'm MARY.
+What have you got for me today?
 ____________________________________________________________
 ```
+## SE-EDU style verification — 2026-09-27 (pending)
+
+Invoked the test-ui workflow and reviewed R1, R2, P1–P4. Their aims, command inputs,
+expected console output, and saved data remain unchanged. The entry point is now
+`mary.Mary`; the chatbot still displays MARY. Current run instructions and Gradle
+configuration use the new Java name; historical transcripts retain their original names.
+
+Compilation and rebuilding the UI-test JAR were not run: permission for the Java 25
+Gradle `test javadoc shadowJar --rerun-tasks` command was declined. Consequently,
+no UI processes were started and there is no new console session to record.
+Earlier PASS records below do not verify this change. Rebuild the JAR before
+running these six cases/seven sessions; do not test a stale artifact.
+
+Static review covered 34 Java files: no wildcard imports, over-120-column lines,
+tabs, trailing whitespace, detected unbraced bodies, import-order mismatches, or
+missing declared-method Javadoc headers were found. These checks do not replace
+compilation, JUnit, or the exact-output UI comparisons.

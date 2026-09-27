@@ -1,6 +1,8 @@
 package mary.exception;
 
-/** Categorizes input errors that MARY can report. */
+/**
+ * Categorizes input errors that MARY can report.
+ */
 public enum ErrorType {
     EMPTY_DESCRIPTION,
     INVALID_COMMAND,
