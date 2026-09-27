@@ -1,14 +1,21 @@
 package mary.command;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
+import java.nio.file.Files;
+import java.time.LocalDateTime;
+
+import org.junit.jupiter.api.Test;
+
 import mary.task.Deadline;
 import mary.task.Event;
 import mary.task.Todo;
-import org.junit.jupiter.api.Test;
-import java.nio.file.Files;
-import java.time.LocalDateTime;
-import static org.junit.jupiter.api.Assertions.*;
 
-/** Tests inclusive event boundaries and date filtering without persistence writes. */
+/**
+ * Tests inclusive event boundaries and date filtering without persistence writes.
+ */
 class OnCommandTest extends CommandTestSupport {
     /**
      * Tests execute: matching date; includes deadline and event but not todo.
@@ -33,10 +40,10 @@ class OnCommandTest extends CommandTestSupport {
     void execute_multiDayEvent_includesStartInteriorAndEndDates() {
         tasks.add(new Event("camp", LocalDateTime.of(2019, 12, 2, 14, 0),
                 LocalDateTime.of(2019, 12, 4, 16, 0)));
-        for (int day : new int[]{2, 3, 4}) {
+        for (int day : new int[] {2, 3, 4}) {
             assertTrue(execute(new OnCommand("on " + day + "/12/2019")).contains("[E][ ] camp"));
         }
-        for (int day : new int[]{1, 5}) {
+        for (int day : new int[] {1, 5}) {
             assertTrue(execute(new OnCommand("on " + day + "/12/2019")).contains("No deadlines or events"));
         }
     }
@@ -55,7 +62,7 @@ class OnCommandTest extends CommandTestSupport {
      */
     @Test
     void execute_missingAndMalformedDate_reportsUsage() {
-        for (String input : new String[]{"on", "on ", "on tomorrow", "on 1/13/2019"}) {
+        for (String input : new String[] {"on", "on ", "on tomorrow", "on 1/13/2019"}) {
             assertTrue(execute(new OnCommand(input)).startsWith(" Error:"), input);
         }
     }

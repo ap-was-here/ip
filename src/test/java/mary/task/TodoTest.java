@@ -1,9 +1,12 @@
 package mary.task;
 
-import org.junit.jupiter.api.Test;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
-/** Verifies todo display and persisted completion markers. */
+import org.junit.jupiter.api.Test;
+
+/**
+ * Verifies todo display and persisted completion markers.
+ */
 class TodoTest {
     /**
      * Tests to string: and storage record; completion changes preserve description.

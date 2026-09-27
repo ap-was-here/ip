@@ -13,7 +13,7 @@ Prerequisites: JDK 25, update Intellij to the most recent version.
    1. If there are any further prompts, accept the defaults.
 1. Configure the project to use **JDK 25** (not other versions) as explained in [here](https://www.jetbrains.com/help/idea/sdk.html#set-up-jdk).<br>
    In the same dialog, set the **Project language level** field to the `SDK default` option.
-1. After that, locate the `src/main/java/mary/MARY.java` file, right-click it, and choose `Run MARY.main()` (if the code editor is showing compile errors, try restarting the IDE). If you have an existing run configuration, change its main class to `mary.MARY`. If the setup is correct, you should see something like the below as the output:
+1. After that, locate the `src/main/java/mary/Mary.java` file, right-click it, and choose `Run Mary.main()` (if the code editor is showing compile errors, try restarting the IDE). If you have an existing run configuration, change its main class to `mary.Mary`. If the setup is correct, you should see something like the below as the output:
    ```
    ███╗   ███╗ █████╗ ██████╗ ██╗   ██╗
    ████╗ ████║██╔══██╗██╔══██╗╚██╗ ██╔╝
@@ -32,7 +32,7 @@ package directories sit underneath it.
 
 ```text
 src/main/java/mary/
-├── MARY.java
+├── Mary.java
 ├── task/       Task, Todo, Deadline, Event, TaskList, TaskType, TaskStatus
 ├── command/    Command, AddCommand, DeleteCommand, ExitCommand, ListCommand,
 │               MarkCommand, OnCommand, UnknownCommand, CommandType
@@ -50,7 +50,7 @@ classes they describe.
 
 The executable fat JAR is **`build/libs/mary.jar`**. Shadow is configured in
 `build.gradle` using `com.gradleup.shadow`, and the application entry point is
-`mary.MARY`. It packages the application and its runtime dependencies together.
+`mary.Mary`. It packages the application and its runtime dependencies together.
 There are currently no external runtime dependencies; JUnit is test-only and is
 not bundled. The ordinary, non-fat `jar` task is disabled to avoid confusion.
 
@@ -82,10 +82,10 @@ From the project root, with JDK 25 on `PATH`:
 ```powershell
 $sources = Get-ChildItem src/main/java -Recurse -Filter '*.java' | Select-Object -ExpandProperty FullName
 javac -encoding UTF-8 -d out $sources
-if ($LASTEXITCODE -eq 0) { java -cp out mary.MARY }
+if ($LASTEXITCODE -eq 0) { java -cp out mary.Mary }
 ```
 
 The recursive source search includes every package. `-d out` keeps compiled
-classes in the ignored output folder, and `mary.MARY` is the fully qualified
+classes in the ignored output folder, and `mary.Mary` is the fully qualified
 entry point. In IntelliJ, keep `src/main/java` marked as Sources Root and use
 the project root as the working directory so `mary-data.txt` stays in place.

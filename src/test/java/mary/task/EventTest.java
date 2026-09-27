@@ -1,10 +1,14 @@
 package mary.task;
 
-import org.junit.jupiter.api.Test;
-import java.time.LocalDateTime;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
-/** Verifies multi-day event display and both stored endpoints. */
+import java.time.LocalDateTime;
+
+import org.junit.jupiter.api.Test;
+
+/**
+ * Verifies multi-day event display and both stored endpoints.
+ */
 class EventTest {
     /**
      * Tests to string: and storage record; preserve both endpoints and status.

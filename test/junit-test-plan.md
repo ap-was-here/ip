@@ -30,11 +30,22 @@ not replace unit tests for boundaries and failure paths.
 
 Review and update JUnit tests after every code change to maintain the prioritized
 50% target. Leave trivial enums, basic getters, and console decoration to lower
-priority; avoid testing the unused duplicate task parser in `MARY` directly.
+priority; avoid testing the unused duplicate task parser in `Mary` directly.
 An existing defect should be reported with its failing regression test rather
 than changing an assertion to bless incorrect behavior.
 
 ## Latest execution
+
+### SE-EDU cleanup — pending verification (2026-09-27)
+
+Reviewed the existing highest-value 50% method selection. Style changes retain
+the same methods and assertions, with explicit imports and clearer local names;
+no additional behavior requires new cases. The entry point is now `mary.Mary`.
+Permission to run Java 25 Gradle `test javadoc shadowJar --rerun-tasks` was declined,
+so the 52 JUnit tests and UI sessions have not been rerun for this cleanup.
+Earlier passing results below apply to the earlier revisions only.
+
+### Earlier Javadoc-only execution
 
 2026-09-27 after Javadoc-only changes: reviewed the prioritized 50% method
 selection and existing assertions; no new behavior requires additional tests.

@@ -1,15 +1,31 @@
 package mary.parser;
 
-import mary.command.*;
-import mary.exception.MaryException;
-import mary.task.*;
-import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.assertAll;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertInstanceOf;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.time.LocalDateTime;
 
-import static org.junit.jupiter.api.Assertions.*;
+import org.junit.jupiter.api.Test;
 
-/** Verifies command dispatch and task syntax independently of console I/O. */
+import mary.command.AddCommand;
+import mary.command.DeleteCommand;
+import mary.command.ListCommand;
+import mary.command.MarkCommand;
+import mary.command.OnCommand;
+import mary.command.UnknownCommand;
+import mary.exception.MaryException;
+import mary.task.Deadline;
+import mary.task.Event;
+import mary.task.Task;
+import mary.task.Todo;
+
+/**
+ * Verifies command dispatch and task syntax independently of console I/O.
+ */
 class ParserTest {
     /**
      * Tests parse: supported commands; returns matching command.
@@ -34,7 +50,7 @@ class ParserTest {
      */
     @Test
     void parse_unknownOrBlank_returnsUnknownCommand() {
-        for (String input : new String[]{"", "   ", "blah", "LIST", "list extra"}) {
+        for (String input : new String[] {"", "   ", "blah", "LIST", "list extra"}) {
             assertInstanceOf(UnknownCommand.class, Parser.parse(input), input);
         }
     }
@@ -84,7 +100,7 @@ class ParserTest {
      */
     @Test
     void parseTask_malformedDeadline_rejectsMissingFields() {
-        for (String input : new String[]{"deadline read", "deadline /by 2/12/2019 1800",
+        for (String input : new String[] {"deadline read", "deadline /by 2/12/2019 1800",
                 "deadline read /by ", "deadline read /from 2/12/2019 1800"}) {
             MaryException error = assertThrows(MaryException.class, () -> Parser.parseTask(input), input);
             assertEquals("use 'deadline description /by date or time'.", error.getMessage());
@@ -96,7 +112,7 @@ class ParserTest {
      */
     @Test
     void parseTask_malformedEvent_rejectsMissingOrReversedMarkers() {
-        for (String input : new String[]{"event camp", "event camp /from 2/12/2019 1400",
+        for (String input : new String[] {"event camp", "event camp /from 2/12/2019 1400",
                 "event camp /to 2/12/2019 1600 /from 2/12/2019 1400",
                 "event /from 2/12/2019 1400 /to 2/12/2019 1600"}) {
             assertThrows(MaryException.class, () -> Parser.parseTask(input), input);

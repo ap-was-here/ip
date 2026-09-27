@@ -1,10 +1,15 @@
 package mary.command;
 
-import mary.task.Todo;
-import org.junit.jupiter.api.Test;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
-/** Tests one-based deletion, renumbering, persistence, and invalid input. */
+import org.junit.jupiter.api.Test;
+
+import mary.task.Todo;
+
+/**
+ * Tests one-based deletion, renumbering, persistence, and invalid input.
+ */
 class DeleteCommandTest extends CommandTestSupport {
     /**
      * Tests execute: middle task; removes only selected task and saves.
@@ -38,7 +43,7 @@ class DeleteCommandTest extends CommandTestSupport {
     @Test
     void execute_missingOrInvalidNumber_doesNotRemoveTask() {
         tasks.add(new Todo("keep"));
-        for (String input : new String[]{"delete", "delete ", "delete abc", "delete 1.5",
+        for (String input : new String[] {"delete", "delete ", "delete abc", "delete 1.5",
                 "delete 0", "delete -1", "delete 2", "delete 2147483648"}) {
             assertTrue(execute(new DeleteCommand(input)).startsWith(" Error:"), input);
             assertEquals(1, tasks.size(), input);

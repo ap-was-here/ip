@@ -46,7 +46,7 @@ test {
 }
 
 application {
-    mainClass = 'mary.MARY'
+    mainClass = 'mary.Mary'
 }
 
 jar {

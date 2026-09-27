@@ -1,10 +1,18 @@
 package mary.command;
 
-import org.junit.jupiter.api.Test;
-import java.nio.file.Files;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
-/** Tests additions, persistence, validation, and storage failure feedback. */
+import java.nio.file.Files;
+
+import org.junit.jupiter.api.Test;
+
+import mary.storage.Storage;
+
+/**
+ * Tests additions, persistence, validation, and storage failure feedback.
+ */
 class AddCommandTest extends CommandTestSupport {
     /**
      * Tests execute: valid todo; adds and saves task.
@@ -44,7 +52,7 @@ class AddCommandTest extends CommandTestSupport {
      */
     @Test
     void execute_saveFailure_reportsErrorWithoutSuccessMessage() {
-        storage = new mary.storage.Storage(directory.toString());
+        storage = new Storage(directory.toString());
         String output = execute(new AddCommand("todo read"));
         assertTrue(output.contains("Error: could not save tasks"));
         assertFalse(output.contains("Got it."));

@@ -1,11 +1,13 @@
 package mary.task;
 
-/** Represents a task without a date or time. */
+/**
+ * Represents a task without a date or time.
+ */
 public class Todo extends Task {
     /**
      * Creates an unfinished todo task.
      *
-     * @param description task text
+     * @param description task text.
      */
     public Todo(String description) {
         super(description);
@@ -14,7 +16,7 @@ public class Todo extends Task {
     /**
      * Formats the task for console display with its type and completion markers.
      *
-     * @return task description
+     * @return task description.
      */
     @Override
     public String toString() {

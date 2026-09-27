@@ -1,10 +1,16 @@
 package mary.command;
 
-import mary.task.Todo;
-import org.junit.jupiter.api.Test;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
-/** Tests completion changes, repetition, numbering errors, and persistence. */
+import org.junit.jupiter.api.Test;
+
+import mary.task.Todo;
+
+/**
+ * Tests completion changes, repetition, numbering errors, and persistence.
+ */
 class MarkCommandTest extends CommandTestSupport {
     /**
      * Tests execute: mark and unmark; updates only selected task and saves.
@@ -31,7 +37,7 @@ class MarkCommandTest extends CommandTestSupport {
     @Test
     void execute_invalidNumber_reportsErrorWithoutChangingStatus() {
         tasks.add(new Todo("keep"));
-        for (String input : new String[]{"mark abc", "mark 0", "mark -1", "mark 2",
+        for (String input : new String[] {"mark abc", "mark 0", "mark -1", "mark 2",
                 "unmark 0", "unmark 1.5", "mark 2147483648"}) {
             assertTrue(execute(new MarkCommand(input)).startsWith(" Error:"), input);
             assertEquals(" ", tasks.get(0).getStatusIcon());
@@ -43,7 +49,7 @@ class MarkCommandTest extends CommandTestSupport {
      */
     @Test
     void execute_missingNumber_reportsUsageInsteadOfCrashing() {
-        for (String input : new String[]{"mark", "unmark", "mark ", "unmark ",
+        for (String input : new String[] {"mark", "unmark", "mark ", "unmark ",
                 "markSomething", "unmarkSomething"}) {
             String output = assertDoesNotThrow(() -> execute(new MarkCommand(input)), input);
             assertEquals(" Error: use 'mark N' or 'unmark N', where N is a task number.\n", output);

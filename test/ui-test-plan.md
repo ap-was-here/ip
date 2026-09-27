@@ -925,7 +925,7 @@ ____________________________________________________________
 
 ## Current package-migration regression suite
 
-This suite invokes `mary.MARY` with Java 25 and compares complete stdout exactly
+This suite invokes `mary.Mary` with Java 25 and compares complete stdout exactly
 (normalizing CRLF/LF only). Expected output is defined below before testing.
 The historical cases farther down are retained as history: some predate typed
 dates, command extraction, and the current farewell and are not current oracles.
@@ -2760,3 +2760,20 @@ Hi! I'm MARY.
 What have you got for me today?
 ____________________________________________________________
 ```
+## SE-EDU style verification — 2026-09-27 (pending)
+
+Invoked the test-ui workflow and reviewed R1, R2, P1–P4. Their aims, command inputs,
+expected console output, and saved data remain unchanged. The entry point is now
+`mary.Mary`; the chatbot still displays MARY. Current run instructions and Gradle
+configuration use the new Java name; historical transcripts retain their original names.
+
+Compilation and rebuilding the UI-test JAR were not run: permission for the Java 25
+Gradle `test javadoc shadowJar --rerun-tasks` command was declined. Consequently,
+no UI processes were started and there is no new console session to record.
+Earlier PASS records below do not verify this change. Rebuild the JAR before
+running these six cases/seven sessions; do not test a stale artifact.
+
+Static review covered 34 Java files: no wildcard imports, over-120-column lines,
+tabs, trailing whitespace, detected unbraced bodies, import-order mismatches, or
+missing declared-method Javadoc headers were found. These checks do not replace
+compilation, JUnit, or the exact-output UI comparisons.

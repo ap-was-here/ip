@@ -1,14 +1,17 @@
 package mary.task;
 
-import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeParseException;
 
-import static org.junit.jupiter.api.Assertions.*;
+import org.junit.jupiter.api.Test;
 
-/** Tests completion transitions and the date parsing used throughout MARY. */
+/**
+ * Tests completion transitions and the date parsing used throughout MARY.
+ */
 class TaskTest {
     /**
      * Tests completion: repeated mark and unmark; is idempotent.
@@ -62,7 +65,7 @@ class TaskTest {
      */
     @Test
     void parseDate_malformedValues_throwsParseException() {
-        for (String input : new String[]{"", "tomorrow", "2019-12-02", "1/13/2019", "0/12/2019"}) {
+        for (String input : new String[] {"", "tomorrow", "2019-12-02", "1/13/2019", "0/12/2019"}) {
             assertThrows(DateTimeParseException.class, () -> Task.parseDate(input), input);
         }
     }
@@ -72,7 +75,7 @@ class TaskTest {
      */
     @Test
     void parseDateTime_malformedValues_throwsParseException() {
-        for (String input : new String[]{"", "2/12/2019", "2/12/2019 18:00",
+        for (String input : new String[] {"", "2/12/2019", "2/12/2019 18:00",
                 "2/12/2019 2500", "2/12/2019 1860", "2/13/2019 1800"}) {
             assertThrows(DateTimeParseException.class, () -> Task.parseDateTime(input), input);
         }
@@ -83,7 +86,7 @@ class TaskTest {
      */
     @Test
     void parseDate_impossibleCalendarDate_rejectsRatherThanChangingDate() {
-        for (String input : new String[]{"29/2/2023", "29/2/1900", "31/4/2024"}) {
+        for (String input : new String[] {"29/2/2023", "29/2/1900", "31/4/2024"}) {
             assertThrows(DateTimeParseException.class, () -> Task.parseDate(input), input);
         }
     }
@@ -93,7 +96,7 @@ class TaskTest {
      */
     @Test
     void parseDateTime_impossibleCalendarDate_rejectsRatherThanChangingDate() {
-        for (String input : new String[]{"31/4/2024 1800", "29/2/2023 1800"}) {
+        for (String input : new String[] {"31/4/2024 1800", "29/2/2023 1800"}) {
             assertThrows(DateTimeParseException.class, () -> Task.parseDateTime(input), input);
         }
     }

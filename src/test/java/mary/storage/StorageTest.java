@@ -1,18 +1,28 @@
 package mary.storage;
 
-import mary.exception.MaryException;
-import mary.task.*;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.io.TempDir;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertInstanceOf;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.LocalDateTime;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.*;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
 
-/** Tests persistence using isolated files, never the user's saved tasks. */
+import mary.exception.MaryException;
+import mary.task.Deadline;
+import mary.task.Event;
+import mary.task.Task;
+import mary.task.Todo;
+
+/**
+ * Tests persistence using isolated files, never the user's saved tasks.
+ */
 class StorageTest {
     @TempDir
     Path directory;
@@ -49,14 +59,14 @@ class StorageTest {
         Event event = new Event("camp", LocalDateTime.of(2019, 12, 2, 14, 0),
                 LocalDateTime.of(2019, 12, 4, 16, 0));
         event.markAsDone();
-        List<Task> expected = List.of(todo, deadline, event);
-        new Storage(file.toString()).save(expected);
-        List<Task> loaded = new Storage(file.toString()).load();
-        assertEquals(expected.stream().map(Task::toStorageRecord).toList(),
-                loaded.stream().map(Task::toStorageRecord).toList());
-        assertInstanceOf(Todo.class, loaded.get(0));
-        assertEquals(deadline.getBy(), assertInstanceOf(Deadline.class, loaded.get(1)).getBy());
-        assertEquals(event.getTo(), assertInstanceOf(Event.class, loaded.get(2)).getTo());
+        List<Task> expectedTasks = List.of(todo, deadline, event);
+        new Storage(file.toString()).save(expectedTasks);
+        List<Task> loadedTasks = new Storage(file.toString()).load();
+        assertEquals(expectedTasks.stream().map(Task::toStorageRecord).toList(),
+                loadedTasks.stream().map(Task::toStorageRecord).toList());
+        assertInstanceOf(Todo.class, loadedTasks.get(0));
+        assertEquals(deadline.getBy(), assertInstanceOf(Deadline.class, loadedTasks.get(1)).getBy());
+        assertEquals(event.getTo(), assertInstanceOf(Event.class, loadedTasks.get(2)).getTo());
     }
 
     /**

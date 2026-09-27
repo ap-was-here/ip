@@ -2,7 +2,9 @@ package mary.task;
 
 import java.time.LocalDateTime;
 
-/** Represents a task with a start time and an end time. */
+/**
+ * Represents a task with a start time and an end time.
+ */
 public class Event extends Task {
     protected LocalDateTime from;
     protected LocalDateTime to;
@@ -10,9 +12,9 @@ public class Event extends Task {
     /**
      * Creates an unfinished event task without validating endpoint order.
      *
-     * @param description task text
-     * @param from local start date/time
-     * @param to local end date/time
+     * @param description task text.
+     * @param from local start date/time.
+     * @param to local end date/time.
      */
     public Event(String description, LocalDateTime from, LocalDateTime to) {
         super(description);
@@ -23,7 +25,7 @@ public class Event extends Task {
     /**
      * Formats the task for console display with its type and completion markers.
      *
-     * @return task description and formatted date/time details
+     * @return task description and formatted date/time details.
      */
     @Override
     public String toString() {
@@ -34,7 +36,7 @@ public class Event extends Task {
     /**
      * Serializes the type, completion flag, description, and ISO date/time fields.
      *
-     * @return pipe-delimited record for storage; descriptions are not escaped
+     * @return pipe-delimited record for storage; descriptions are not escaped.
      */
     @Override
     public String toStorageRecord() {
@@ -44,14 +46,18 @@ public class Event extends Task {
     /**
      * Returns the event start date/time.
      *
-     * @return the local start date/time
+     * @return the local start date/time.
      */
-    public LocalDateTime getFrom() { return from; }
+    public LocalDateTime getFrom() {
+        return from;
+    }
 
     /**
      * Returns the event end date/time.
      *
-     * @return the local end date/time
+     * @return the local end date/time.
      */
-    public LocalDateTime getTo() { return to; }
+    public LocalDateTime getTo() {
+        return to;
+    }
 }
