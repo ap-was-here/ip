@@ -62,7 +62,8 @@ public class MARY {
                     }
                 }
                 } else {
-                    throw new MaryException("I don't recognize that command; use todo, deadline, event, on, list, mark, unmark, or bye.");
+                    throw new MaryException("I don't recognize that command; use todo, deadline, event, on,"
+                            + " list, find, mark, unmark, delete, or bye.");
                 }
             } catch (MaryException exception) {
                 ui.showError(exception.getMessage());

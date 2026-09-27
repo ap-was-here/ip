@@ -11,6 +11,19 @@ import static org.junit.jupiter.api.Assertions.*;
 
 /** Verifies command dispatch and task syntax independently of console I/O. */
 class ParserTest {
+    /**
+     * Checks command-word boundaries and supported whitespace around search text.
+     */
+    @Test
+    void parse_findCommands_dispatchesOnlyExactCommandWord() {
+        for (String input : new String[] {"find", "find ", "find book", "find\tbook"}) {
+            assertInstanceOf(FindCommand.class, Parser.parse(input), input);
+        }
+        for (String input : new String[] {"finder", "findbook", "FIND book"}) {
+            assertInstanceOf(UnknownCommand.class, Parser.parse(input), input);
+        }
+    }
+
     @Test
     void parse_supportedCommands_returnsMatchingCommand() {
         assertAll(

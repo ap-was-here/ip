@@ -4,6 +4,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.ResolverStyle;
+import java.util.Locale;
 
 /** Base class for all tasks. */
 public class Task {
@@ -25,6 +26,16 @@ public class Task {
     /** Marks this task as completed. */
     public void markAsDone() {
         isDone = true;
+    }
+
+    /**
+     * Checks only the description for a case-insensitive literal substring.
+     *
+     * @param keyword non-null search text.
+     * @return whether the description contains the keyword, ignoring case.
+     */
+    public boolean matchesDescription(String keyword) {
+        return description.toLowerCase(Locale.ROOT).contains(keyword.toLowerCase(Locale.ROOT));
     }
 
     /** Marks this task as unfinished. */

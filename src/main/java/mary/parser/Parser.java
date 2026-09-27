@@ -6,6 +6,7 @@ import mary.command.AddCommand;
 import mary.command.Command;
 import mary.command.DeleteCommand;
 import mary.command.ExitCommand;
+import mary.command.FindCommand;
 import mary.command.ListCommand;
 import mary.command.MarkCommand;
 import mary.command.OnCommand;
@@ -20,6 +21,11 @@ import mary.task.Todo;
 public class Parser {
     /** Creates a command object for the exit command, if applicable. */
     public static Command parse(String command) {
+        if (command.equals("find")
+                || (command.startsWith("find") && command.length() > 4
+                && Character.isWhitespace(command.charAt(4)))) {
+            return new FindCommand(command.substring(4));
+        }
         if (command.equals("bye")) return new ExitCommand();
         if (command.equals("list")) return new ListCommand();
         if (command.startsWith("delete")) return new DeleteCommand(command);

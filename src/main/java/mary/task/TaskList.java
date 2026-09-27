@@ -19,4 +19,20 @@ public class TaskList {
     public void add(Task task) { tasks.add(task); }
     public Task remove(int index) { return tasks.remove(index); }
     public List<Task> getTasks() { return new ArrayList<>(tasks); }
+
+    /**
+     * Finds tasks whose descriptions contain the keyword, ignoring case.
+     *
+     * @param keyword non-null search text.
+     * @return a new list of matching task objects in their original order.
+     */
+    public List<Task> find(String keyword) {
+        List<Task> matches = new ArrayList<>();
+        for (Task task : tasks) {
+            if (task.matchesDescription(keyword)) {
+                matches.add(task);
+            }
+        }
+        return matches;
+    }
 }

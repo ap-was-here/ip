@@ -24,6 +24,26 @@ Prerequisites: JDK 25, update Intellij to the most recent version.
 
 **Warning:** Keep the `src\main\java` folder as the root folder for Java files (i.e., don't rename those folders or move Java files to another folder outside of this folder path), as this is the default location some tools (e.g., Gradle) expect to find Java files.
 
+## Find tasks
+
+Enter `find book` to find descriptions containing `book`, ignoring letter case.
+Partial words match too (for example, `notebook`). Multiple words are treated as
+one phrase: `find read book`. Dates and completion/type markers are not searched.
+An empty keyword shows usage help, and a search with no matches says so.
+
+Results are numbered from 1 within the search results, as in the example below.
+Use `list` to see the full-list numbers needed by `mark`, `unmark`, or `delete`.
+Searching never changes tasks or saved data.
+
+```text
+find book
+____________________________________________________________
+ Here are the matching tasks in your list:
+ 1.[T][X] read book
+ 2.[D][ ] return book (by: 2 Dec 2019 18:00)
+____________________________________________________________
+```
+
 ## Package structure
 
 Packages group classes by responsibility. `src/main/java` remains the source root;

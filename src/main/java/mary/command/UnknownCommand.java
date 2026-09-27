@@ -13,6 +13,7 @@ public class UnknownCommand extends Command {
     @Override
     public void execute(TaskList tasks, Ui ui, Storage storage) {
         if (input.isBlank()) ui.showError("please enter a command or task.");
-        else ui.showError("I don't recognize that command; use todo, deadline, event, on, list, mark, unmark, delete, or bye.");
+        else ui.showError("I don't recognize that command; use todo, deadline, event, on, list, find,"
+                + " mark, unmark, delete, or bye.");
     }
 }
