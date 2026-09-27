@@ -36,6 +36,14 @@ than changing an assertion to bless incorrect behavior.
 
 ## Latest execution
 
+2026-09-27, ASCII cat banner: Java 25 Gradle `test shadowJar --rerun-tasks`
+passed all 53 tests. Added `UiTest.showWelcome_catBanner_printsExactAsciiGreeting`
+to verify exact artwork, greeting, separators, and ASCII-only output. The existing
+high-value method selection remains unchanged; this focused UI regression test
+supplements it. See `ui-test-plan.md` for the end-to-end console records.
+
+### Earlier production-fix execution
+
 2026-09-27 after the production fixes: Gradle `test shadowJar` with Java 25.0.4.1
 succeeded. **52 tests passed, 0 failed, 0 skipped** across 11 test classes.
 The four formerly failing regression tests remain enabled and now pass.

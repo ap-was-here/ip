@@ -5,20 +5,17 @@ import java.util.Scanner;
 /** Handles MARY's interaction with the user. */
 public class Ui {
     private static final String SEPARATOR = "____________________________________________________________";
-    private static final String BANNER = "███╗   ███╗ █████╗ ██████╗ ██╗   ██╗\n"
-            + "████╗ ████║██╔══██╗██╔══██╗╚██╗ ██╔╝\n"
-            + "██╔████╔██║███████║██████╔╝ ╚████╔╝\n"
-            + "██║╚██╔╝██║██╔══██║██╔══██╗  ╚██╔╝\n"
-            + "██║ ╚═╝ ██║██║  ██║██║  ██║   ██║\n"
-            + "╚═╝     ╚═╝╚═╝  ╚═╝╚═╝  ╚═╝   ╚═╝";
+    private static final String BANNER = " /\\_/\\\n"
+            + "( o.o )   M A R Y\n"
+            + " > ^ <    Your purr-sonal task assistant.";
     private final Scanner scanner = new Scanner(System.in);
 
     /** Displays the startup greeting. */
     public void showWelcome() {
         showLine();
         System.out.println(BANNER);
-        System.out.println("Hi! I'm MARY.");
-        System.out.println("What have you got for me today?");
+        System.out.println();
+        System.out.println("What's on your list today?");
         showLine();
     }
 

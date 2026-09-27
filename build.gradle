@@ -14,7 +14,7 @@ repositories {
 }
 
 tasks.withType(JavaCompile).configureEach {
-    // Preserve the Unicode banner regardless of the build machine's default encoding.
+    // Preserve source and test text regardless of the build machine's default encoding.
     options.encoding = 'UTF-8'
 }
 
