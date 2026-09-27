@@ -24,6 +24,18 @@ Unless the user says otherwise, assume that you are assisting a student working 
 
 # Project-specific requirements
 
+## Mandatory Java coding standard
+
+All Java code in this project, including tests and newly generated code, must
+follow the SE-EDU basic and intermediate Java coding standard. Before writing,
+modifying, or reviewing Java code, read and apply the project-specific skill
+`seedu-java-coding-standard` at `.codex/skills/seedu-java-coding-standard/SKILL.md`.
+Use it during the final review as well; a formatter alone does not establish compliance.
+Keep header Javadoc for all non-private classes and declared methods, including
+constructors, tests and accessors, and for non-trivial private methods. This local
+requirement is stricter than the upstream documentation exceptions.
+Apply conventions without changing behavior unless the task explicitly calls for it.
+
 ## Java version:
 
 Ensure that Java 25 is used when running the application or build tasks. On macOS, use `sdk use java 25.0.3.fx-zulu` to switch to Java 25 if needed.
