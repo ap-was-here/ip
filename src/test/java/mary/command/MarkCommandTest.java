@@ -6,6 +6,9 @@ import static org.junit.jupiter.api.Assertions.*;
 
 /** Tests completion changes, repetition, numbering errors, and persistence. */
 class MarkCommandTest extends CommandTestSupport {
+    /**
+     * Tests execute: mark and unmark; updates only selected task and saves.
+     */
     @Test
     void execute_markAndUnmark_updatesOnlySelectedTaskAndSaves() throws Exception {
         tasks.add(new Todo("first"));
@@ -22,6 +25,9 @@ class MarkCommandTest extends CommandTestSupport {
         assertEquals(" ", storage.load().get(1).getStatusIcon());
     }
 
+    /**
+     * Tests execute: invalid number; reports error without changing status.
+     */
     @Test
     void execute_invalidNumber_reportsErrorWithoutChangingStatus() {
         tasks.add(new Todo("keep"));
@@ -32,6 +38,9 @@ class MarkCommandTest extends CommandTestSupport {
         }
     }
 
+    /**
+     * Tests execute: missing number; reports usage instead of crashing.
+     */
     @Test
     void execute_missingNumber_reportsUsageInsteadOfCrashing() {
         for (String input : new String[]{"mark", "unmark", "mark ", "unmark ",

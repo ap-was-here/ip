@@ -15,8 +15,21 @@ import mary.ui.Ui;
 public class OnCommand extends Command {
     private final String fullCommand;
 
+    /**
+     * Creates a command retaining the supplied input for execution-time validation.
+     *
+     * @param fullCommand complete, non-null user input
+     */
     public OnCommand(String fullCommand) { this.fullCommand = fullCommand; }
 
+    /**
+     * Displays matching deadlines and events for the requested date, including both event boundary dates.
+     * Todos are excluded and the list is not modified; invalid dates are reported through the UI.
+     *
+     * @param tasks current in-memory task list
+     * @param ui user-facing message handler
+     * @param storage persistence service (unused by read-only commands)
+     */
     @Override
     public void execute(TaskList tasks, Ui ui, Storage storage) {
         try {

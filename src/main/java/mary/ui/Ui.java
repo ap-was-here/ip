@@ -22,7 +22,11 @@ public class Ui {
         showLine();
     }
 
-    /** Reads one command, or returns null when input ends. */
+    /**
+     * Reads a line without trimming whitespace.
+     *
+     * @return the input line, or null at end-of-input
+     */
     public String readCommand() {
         return scanner.hasNextLine() ? scanner.nextLine() : null;
     }
@@ -32,12 +36,20 @@ public class Ui {
         System.out.println(SEPARATOR);
     }
 
-    /** Displays an error message. */
+    /**
+     * Displays an error message with the standard error prefix.
+     *
+     * @param message explanation and any corrective guidance
+     */
     public void showError(String message) {
         System.out.println(" Error: " + message);
     }
 
-    /** Displays a startup/loading error. */
+    /**
+     * Displays a startup/loading error followed by a divider.
+     *
+     * @param message explanation of the loading problem
+     */
     public void showLoadingError(String message) {
         showError(message);
         showLine();

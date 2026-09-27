@@ -11,6 +11,9 @@ import static org.junit.jupiter.api.Assertions.*;
 
 /** Verifies command dispatch and task syntax independently of console I/O. */
 class ParserTest {
+    /**
+     * Tests parse: supported commands; returns matching command.
+     */
     @Test
     void parse_supportedCommands_returnsMatchingCommand() {
         assertAll(
@@ -26,6 +29,9 @@ class ParserTest {
                 () -> assertFalse(Parser.parse("list").isExit()));
     }
 
+    /**
+     * Tests parse: unknown or blank; returns unknown command.
+     */
     @Test
     void parse_unknownOrBlank_returnsUnknownCommand() {
         for (String input : new String[]{"", "   ", "blah", "LIST", "list extra"}) {
@@ -33,6 +39,9 @@ class ParserTest {
         }
     }
 
+    /**
+     * Tests parse task: todo; trims outer whitespace and preserves description.
+     */
     @Test
     void parseTask_todo_trimsOuterWhitespaceAndPreservesDescription() throws MaryException {
         Task task = Parser.parseTask("todo   read  café book   ");
@@ -40,6 +49,9 @@ class ParserTest {
         assertEquals("[T][ ] read  café book", task.toString());
     }
 
+    /**
+     * Tests parse task: deadline; parses day before month.
+     */
     @Test
     void parseTask_deadline_parsesDayBeforeMonth() throws MaryException {
         Deadline task = assertInstanceOf(Deadline.class,
@@ -47,6 +59,9 @@ class ParserTest {
         assertEquals(LocalDateTime.of(2019, 12, 2, 18, 0), task.getBy());
     }
 
+    /**
+     * Tests parse task: event; preserves both dates.
+     */
     @Test
     void parseTask_event_preservesBothDates() throws MaryException {
         Event task = assertInstanceOf(Event.class,
@@ -55,12 +70,18 @@ class ParserTest {
         assertEquals(LocalDateTime.of(2019, 12, 4, 16, 0), task.getTo());
     }
 
+    /**
+     * Tests parse task: missing todo description; explains correction.
+     */
     @Test
     void parseTask_missingTodoDescription_explainsCorrection() {
         MaryException error = assertThrows(MaryException.class, () -> Parser.parseTask("todo   "));
         assertEquals("please add a task description after 'todo'.", error.getMessage());
     }
 
+    /**
+     * Tests parse task: malformed deadline; rejects missing fields.
+     */
     @Test
     void parseTask_malformedDeadline_rejectsMissingFields() {
         for (String input : new String[]{"deadline read", "deadline /by 2/12/2019 1800",
@@ -70,6 +91,9 @@ class ParserTest {
         }
     }
 
+    /**
+     * Tests parse task: malformed event; rejects missing or reversed markers.
+     */
     @Test
     void parseTask_malformedEvent_rejectsMissingOrReversedMarkers() {
         for (String input : new String[]{"event camp", "event camp /from 2/12/2019 1400",
@@ -79,6 +103,9 @@ class ParserTest {
         }
     }
 
+    /**
+     * Tests parse task: invalid date time; reports accepted format.
+     */
     @Test
     void parseTask_invalidDateTime_reportsAcceptedFormat() {
         assertTrue(assertThrows(MaryException.class,
@@ -88,6 +115,9 @@ class ParserTest {
                 .getMessage().contains("d/M/yyyy HHmm"));
     }
 
+    /**
+     * Tests parse task: unknown task command; throws mary exception.
+     */
     @Test
     void parseTask_unknownTaskCommand_throwsMaryException() {
         assertThrows(MaryException.class, () -> Parser.parseTask("read book"));

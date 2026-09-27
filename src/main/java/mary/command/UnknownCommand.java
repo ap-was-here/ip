@@ -8,8 +8,20 @@ import mary.ui.Ui;
 public class UnknownCommand extends Command {
     private final String input;
 
+    /**
+     * Creates a command retaining the supplied input for execution-time validation.
+     *
+     * @param input complete, non-null user input
+     */
     public UnknownCommand(String input) { this.input = input; }
 
+    /**
+     * Displays a correction for blank or unsupported input without changing tasks.
+     *
+     * @param tasks current in-memory task list
+     * @param ui user-facing message handler
+     * @param storage persistence service (unused by read-only commands)
+     */
     @Override
     public void execute(TaskList tasks, Ui ui, Storage storage) {
         if (input.isBlank()) ui.showError("please enter a command or task.");

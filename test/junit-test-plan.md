@@ -36,6 +36,13 @@ than changing an assertion to bless incorrect behavior.
 
 ## Latest execution
 
+2026-09-27 after Javadoc-only changes: reviewed the prioritized 50% method
+selection and existing assertions; no new behavior requires additional tests.
+Gradle `test javadoc shadowJar --rerun-tasks` with Java 25 passed all 52 tests.
+All six UI cases/seven sessions also passed; complete records are in `ui-test-plan.md`.
+
+### Earlier production-fix execution
+
 2026-09-27 after the production fixes: Gradle `test shadowJar` with Java 25.0.4.1
 succeeded. **52 tests passed, 0 failed, 0 skipped** across 11 test classes.
 The four formerly failing regression tests remain enabled and now pass.

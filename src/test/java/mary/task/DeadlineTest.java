@@ -6,6 +6,9 @@ import static org.junit.jupiter.api.Assertions.*;
 
 /** Verifies typed deadline formatting and ISO persistence. */
 class DeadlineTest {
+    /**
+     * Tests to string: and storage record; formats date without losing status.
+     */
     @Test
     void toString_andStorageRecord_formatsDateWithoutLosingStatus() {
         Deadline task = new Deadline("return book", LocalDateTime.of(2019, 12, 2, 18, 0));

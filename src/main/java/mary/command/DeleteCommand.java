@@ -10,8 +10,21 @@ import mary.ui.Ui;
 public class DeleteCommand extends Command {
     private final String fullCommand;
 
+    /**
+     * Creates a command retaining the supplied input for execution-time validation.
+     *
+     * @param fullCommand complete, non-null user input
+     */
     public DeleteCommand(String fullCommand) { this.fullCommand = fullCommand; }
 
+    /**
+     * Removes the selected one-based task number, saves the list, and displays confirmation.
+     * Invalid numbers and storage errors are displayed; a save failure does not restore the removed task.
+     *
+     * @param tasks current in-memory task list
+     * @param ui user-facing message handler
+     * @param storage persistence service (unused by read-only commands)
+     */
     @Override
     public void execute(TaskList tasks, Ui ui, Storage storage) {
         String numberText = fullCommand.startsWith("delete ")

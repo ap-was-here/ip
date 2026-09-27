@@ -5,6 +5,9 @@ import static org.junit.jupiter.api.Assertions.*;
 
 /** Verifies todo display and persisted completion markers. */
 class TodoTest {
+    /**
+     * Tests to string: and storage record; completion changes preserve description.
+     */
     @Test
     void toString_andStorageRecord_completionChangesPreserveDescription() {
         Todo todo = new Todo("read book");

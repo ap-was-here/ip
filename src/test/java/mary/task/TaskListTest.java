@@ -9,6 +9,9 @@ import static org.junit.jupiter.api.Assertions.*;
 
 /** Verifies list ordering, deletion boundaries, and collection ownership. */
 class TaskListTest {
+    /**
+     * Tests add: empty list; preserves insertion order and object identity.
+     */
     @Test
     void add_emptyList_preservesInsertionOrderAndObjectIdentity() {
         TaskList list = new TaskList();
@@ -22,6 +25,9 @@ class TaskListTest {
         assertSame(second, list.get(1));
     }
 
+    /**
+     * Tests remove: middle first and last; updates order and size.
+     */
     @Test
     void remove_middleFirstAndLast_updatesOrderAndSize() {
         Task a = new Todo("a");
@@ -35,6 +41,9 @@ class TaskListTest {
         assertTrue(list.isEmpty());
     }
 
+    /**
+     * Tests remove: invalid indices; throws without changing list.
+     */
     @Test
     void remove_invalidIndices_throwsWithoutChangingList() {
         Task task = new Todo("keep");
@@ -45,6 +54,9 @@ class TaskListTest {
         assertThrows(IndexOutOfBoundsException.class, () -> new TaskList().remove(0));
     }
 
+    /**
+     * Tests constructor: source collection changes; do not change owned list.
+     */
     @Test
     void constructor_sourceCollectionChanges_doNotChangeOwnedList() {
         ArrayList<Task> source = new ArrayList<>(List.of(new Todo("keep")));
@@ -53,6 +65,9 @@ class TaskListTest {
         assertEquals(1, list.size());
     }
 
+    /**
+     * Tests get tasks: modifying snapshot; does not change owned list.
+     */
     @Test
     void getTasks_modifyingSnapshot_doesNotChangeOwnedList() {
         Task task = new Todo("keep");

@@ -16,9 +16,14 @@ import mary.task.Event;
 import mary.task.Task;
 import mary.task.Todo;
 
-/** Interprets task-creation commands and validates their arguments. */
+/** Dispatches user input to commands and parses task descriptions and dates. */
 public class Parser {
-    /** Creates a command object for the exit command, if applicable. */
+    /**
+     * Dispatches input to a command; argument validation occurs during execution.
+     *
+     * @param command non-null, untrimmed user input
+     * @return the matching command, or an UnknownCommand for blank or unknown input
+     */
     public static Command parse(String command) {
         if (command.equals("bye")) return new ExitCommand();
         if (command.equals("list")) return new ListCommand();
@@ -31,7 +36,13 @@ public class Parser {
         return new UnknownCommand(command);
     }
 
-    /** Converts a todo, deadline, or event command into a task. */
+    /**
+     * Converts a todo, deadline, or event command into an unfinished task.
+     *
+     * @param command non-null task-creation command with its arguments
+     * @return a task with parsed dates where applicable
+     * @throws MaryException if the command, description, markers, or dates are invalid
+     */
     public static Task parseTask(String command) throws MaryException {
         if (command.startsWith("todo ")) {
             String description = command.substring(5).trim();

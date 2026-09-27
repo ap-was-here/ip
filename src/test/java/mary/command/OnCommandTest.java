@@ -10,6 +10,9 @@ import static org.junit.jupiter.api.Assertions.*;
 
 /** Tests inclusive event boundaries and date filtering without persistence writes. */
 class OnCommandTest extends CommandTestSupport {
+    /**
+     * Tests execute: matching date; includes deadline and event but not todo.
+     */
     @Test
     void execute_matchingDate_includesDeadlineAndEventButNotTodo() {
         tasks.add(new Todo("hidden"));
@@ -23,6 +26,9 @@ class OnCommandTest extends CommandTestSupport {
         assertFalse(Files.exists(directory.resolve("tasks.txt")));
     }
 
+    /**
+     * Tests execute: multi day event; includes start interior and end dates.
+     */
     @Test
     void execute_multiDayEvent_includesStartInteriorAndEndDates() {
         tasks.add(new Event("camp", LocalDateTime.of(2019, 12, 2, 14, 0),
@@ -35,12 +41,18 @@ class OnCommandTest extends CommandTestSupport {
         }
     }
 
+    /**
+     * Tests execute: empty list; reports no matches.
+     */
     @Test
     void execute_emptyList_reportsNoMatches() {
         assertEquals(" No deadlines or events occur on 2019-12-02.\n",
                 execute(new OnCommand("on 2/12/2019")));
     }
 
+    /**
+     * Tests execute: missing and malformed date; reports usage.
+     */
     @Test
     void execute_missingAndMalformedDate_reportsUsage() {
         for (String input : new String[]{"on", "on ", "on tomorrow", "on 1/13/2019"}) {

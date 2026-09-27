@@ -16,7 +16,11 @@ public class Task {
     protected String description;
     protected boolean isDone;
 
-    /** Creates an unfinished task with the given description. */
+    /**
+     * Creates an unfinished task with the given description.
+     *
+     * @param description task text to retain
+     */
     public Task(String description) {
         this.description = description;
         this.isDone = false;
@@ -32,27 +36,53 @@ public class Task {
         isDone = false;
     }
 
-    /** Sets the completion state when loading a saved task. */
+    /**
+     * Sets the completion state when loading a saved task.
+     *
+     * @param done true for completed, false for unfinished
+     */
     public void setDone(boolean done) {
         isDone = done;
     }
 
-    /** Returns the portable record used for saving this task. */
+    /**
+     * Serializes this task as a todo record; dated subtypes override this format.
+     * Fields are separated by {@code  | }; descriptions are not escaped.
+     *
+     * @return type, completion flag (1 or 0), and description
+     */
     public String toStorageRecord() {
         return "T | " + (isDone ? "1" : "0") + " | " + description;
     }
 
-    /** Parses the date/time format accepted by MARY commands. */
+    /**
+     * Parses a date/time strictly, rejecting impossible dates and times.
+     *
+     * @param value date/time in {@code d/M/uuuu HHmm} format using a 24-hour clock
+     * @return the parsed local date/time, without a time zone
+     * @throws java.time.format.DateTimeParseException if the format or value is invalid
+     */
     public static LocalDateTime parseDateTime(String value) {
         return LocalDateTime.parse(value, INPUT_DATE_TIME);
     }
 
-    /** Parses a date used by the date search command. */
+    /**
+     * Parses a date strictly for date-based task searches.
+     *
+     * @param value date in {@code d/M/uuuu} format
+     * @return the parsed local date
+     * @throws java.time.format.DateTimeParseException if the format or date is invalid
+     */
     public static LocalDate parseDate(String value) {
         return LocalDate.parse(value, INPUT_DATE);
     }
 
-    /** Formats a date/time for display. */
+    /**
+     * Formats a date/time with an abbreviated month name in the default format locale.
+     *
+     * @param value local date/time to display
+     * @return text in {@code d MMM uuuu HH:mm} format
+     */
     public static String formatDateTime(LocalDateTime value) {
         return value.format(DISPLAY_DATE_TIME);
     }
@@ -66,7 +96,11 @@ public class Task {
         return isDone ? "X" : " ";
     }
 
-    /** Returns the task with its completion status. */
+    /**
+     * Returns the task with its completion status.
+     *
+     * @return bracketed status followed by the description
+     */
     @Override
     public String toString() {
         return "[" + getStatusIcon() + "] " + description;

@@ -6,6 +6,9 @@ import static org.junit.jupiter.api.Assertions.*;
 
 /** Verifies multi-day event display and both stored endpoints. */
 class EventTest {
+    /**
+     * Tests to string: and storage record; preserve both endpoints and status.
+     */
     @Test
     void toString_andStorageRecord_preserveBothEndpointsAndStatus() {
         Event task = new Event("camp", LocalDateTime.of(2019, 12, 2, 14, 0),

@@ -23,6 +23,7 @@ abstract class CommandTestSupport {
     private PrintStream capturedOutput;
     private ByteArrayOutputStream output;
 
+    /** Creates a fresh task list, isolated storage, and UTF-8 console capture for each test. */
     @BeforeEach
     void prepareCommandEnvironment() {
         tasks = new TaskList();
@@ -34,13 +35,19 @@ abstract class CommandTestSupport {
         System.setOut(capturedOutput);
     }
 
+    /** Restores standard output before closing the test-only capture stream. */
     @AfterEach
     void restoreConsole() {
         System.setOut(originalOutput);
         capturedOutput.close();
     }
 
-    /** Runs one command and returns only its output, normalizing line endings. */
+    /**
+     * Clears previous output and executes a command against the test fixtures.
+     *
+     * @param command command to execute
+     * @return captured output with CRLF normalized to LF
+     */
     String execute(Command command) {
         output.reset();
         command.execute(tasks, ui, storage);

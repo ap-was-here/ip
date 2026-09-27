@@ -17,6 +17,9 @@ class StorageTest {
     @TempDir
     Path directory;
 
+    /**
+     * Tests load: missing file; returns empty without creating file.
+     */
     @Test
     void load_missingFile_returnsEmptyWithoutCreatingFile() throws Exception {
         Path file = directory.resolve("missing.txt");
@@ -24,6 +27,9 @@ class StorageTest {
         assertFalse(Files.exists(file));
     }
 
+    /**
+     * Tests load: empty and blank lines; returns empty list.
+     */
     @Test
     void load_emptyAndBlankLines_returnsEmptyList() throws Exception {
         Path file = directory.resolve("tasks.txt");
@@ -31,6 +37,9 @@ class StorageTest {
         assertTrue(new Storage(file.toString()).load().isEmpty());
     }
 
+    /**
+     * Tests save and load: all subtypes and states; preserves order and values.
+     */
     @Test
     void saveAndLoad_allSubtypesAndStates_preservesOrderAndValues() throws Exception {
         Path file = directory.resolve("tasks.txt");
@@ -50,6 +59,9 @@ class StorageTest {
         assertEquals(event.getTo(), assertInstanceOf(Event.class, loaded.get(2)).getTo());
     }
 
+    /**
+     * Tests save: replacement and empty list; removes old records.
+     */
     @Test
     void save_replacementAndEmptyList_removesOldRecords() throws Exception {
         Path file = directory.resolve("tasks.txt");
@@ -62,6 +74,9 @@ class StorageTest {
         assertTrue(storage.load().isEmpty());
     }
 
+    /**
+     * Tests load: bad types and field counts; reports record line.
+     */
     @Test
     void load_badTypesAndFieldCounts_reportsRecordLine() throws Exception {
         for (String record : List.of("nonsense", "Q | 0 | read", "T | 0",
@@ -75,6 +90,9 @@ class StorageTest {
         }
     }
 
+    /**
+     * Tests load: extra todo fields; rejects corrupt record.
+     */
     @Test
     void load_extraTodoFields_rejectsCorruptRecord() throws Exception {
         Path file = directory.resolve("tasks.txt");
@@ -85,6 +103,9 @@ class StorageTest {
         }
     }
 
+    /**
+     * Tests load: bad status and empty description; reports specific error.
+     */
     @Test
     void load_badStatusAndEmptyDescription_reportsSpecificError() throws Exception {
         Path file = directory.resolve("tasks.txt");
@@ -97,6 +118,9 @@ class StorageTest {
                 assertThrows(MaryException.class, storage::load).getMessage());
     }
 
+    /**
+     * Tests load: bad dates; reports date error.
+     */
     @Test
     void load_badDates_reportsDateError() throws Exception {
         Path file = directory.resolve("tasks.txt");
@@ -109,12 +133,18 @@ class StorageTest {
         }
     }
 
+    /**
+     * Tests load: directory instead of file; wraps io failure.
+     */
     @Test
     void load_directoryInsteadOfFile_wrapsIoFailure() {
         assertEquals("could not read " + directory + ".", assertThrows(MaryException.class,
                 () -> new Storage(directory.toString()).load()).getMessage());
     }
 
+    /**
+     * Tests save: directory instead of file; wraps io failure.
+     */
     @Test
     void save_directoryInsteadOfFile_wrapsIoFailure() {
         assertEquals("could not save tasks to " + directory + ".", assertThrows(MaryException.class,
