@@ -13,6 +13,11 @@ repositories {
     mavenCentral()
 }
 
+tasks.withType(JavaCompile).configureEach {
+    // Preserve the Unicode banner regardless of the build machine's default encoding.
+    options.encoding = 'UTF-8'
+}
+
 dependencies {
     String jUnitVersion = '5.14.4'
 
@@ -52,6 +57,8 @@ jar {
 }
 
 shadowJar {
+    // Bundles main classes and runtime dependencies; the application plugin supplies Main-Class.
+    // Test dependencies (such as JUnit) are not included.
     archiveFileName = 'mary.jar'
 }
 

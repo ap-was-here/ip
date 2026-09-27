@@ -46,7 +46,36 @@ For example, `mary.task.Deadline` extends `mary.task.Task`. Classes in other
 packages use explicit imports to refer to these types. Enums live beside the
 classes they describe.
 
-## Compile and run from PowerShell
+#
+
+The executable fat JAR is **`build/libs/mary.jar`**. Shadow is configured in
+`build.gradle` using `com.gradleup.shadow`, and the application entry point is
+`mary.MARY`. It packages the application and its runtime dependencies together.
+There are currently no external runtime dependencies; JUnit is test-only and is
+not bundled. The ordinary, non-fat `jar` task is disabled to avoid confusion.
+
+`shadowJar` does not run the tests. To run JUnit tests and build the JAR:
+
+```powershell
+.\gradlew.bat test shadowJar
+```
+
+Run the application with Java 25:
+
+```powershell
+java -jar .\build\libs\mary.jar
+```
+
+Type `bye` to exit. You can copy `mary.jar` to another folder or computer with
+Java 25 installed; Gradle and the source files are not needed to run it.
+Tasks are stored in `mary-data.txt` in the **working directory from which you
+launch Java**, not necessarily beside the JAR. Run from the project root to
+keep using your existing project task data.
+
+On macOS/Linux, use `./gradlew test shadowJar` and
+`java -jar build/libs/mary.jar` instead.
+
+## Compile and run from PowerShell (without Gradle)
 
 From the project root, with JDK 25 on `PATH`:
 
