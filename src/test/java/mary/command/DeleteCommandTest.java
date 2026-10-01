@@ -43,8 +43,9 @@ class DeleteCommandTest extends CommandTestSupport {
     @Test
     void execute_missingOrInvalidNumber_doesNotRemoveTask() {
         tasks.add(new Todo("keep"));
-        for (String input : new String[] {"delete", "delete ", "delete abc", "delete 1.5",
-                "delete 0", "delete -1", "delete 2", "delete 2147483648"}) {
+        String[] inputs = {"delete", "delete ", "delete abc", "delete 1.5",
+            "delete 0", "delete -1", "delete 2", "delete 2147483648"};
+        for (String input : inputs) {
             assertTrue(execute(new DeleteCommand(input)).startsWith(" Error:"), input);
             assertEquals(1, tasks.size(), input);
         }

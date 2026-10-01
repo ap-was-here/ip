@@ -94,6 +94,32 @@ keep using your existing project task data.
 On macOS/Linux, use `./gradlew test shadowJar` and
 `java -jar build/libs/mary.jar` instead.
 
+## Check Java coding style
+
+With JDK 25 configured, run these commands from the project root:
+
+```powershell
+.\gradlew.bat checkstyleMain checkstyleTest
+```
+
+Checkstyle 14.1.0 checks both production and test Java sources. The configuration
+in `config/checkstyle/checkstyle.xml` and `suppressions.xml` is copied from
+[AddressBook Level 3](https://github.com/se-edu/addressbook-level3/tree/master/config/checkstyle),
+following the [SE-EDU setup guide](https://se-education.org/guides/tutorials/checkstyle.html).
+No project-specific rule suppressions have been added. Warnings and errors both
+fail the build; fix the reported source file and line rather than disabling rules.
+
+Open `build/reports/checkstyle/main.html` and `build/reports/checkstyle/test.html`
+for readable reports. XML reports are generated alongside them. Checkstyle checks
+formatting and selected conventions, not correctness or every coding-standard rule.
+Manual review and tests are still needed.
+
+To run JUnit and Checkstyle together, use `.\gradlew.bat check`.
+To also build the executable JAR, use `.\gradlew.bat check shadowJar`.
+On macOS/Linux, replace `.\gradlew.bat` with `./gradlew`.
+In IntelliJ, select JDK 25 as the Gradle JVM and reload the Gradle project;
+these tasks are also available in the Gradle tool window.
+
 ## Compile and run from PowerShell (without Gradle)
 
 From the project root, with JDK 25 on `PATH`:

@@ -75,8 +75,9 @@ class TaskTest {
      */
     @Test
     void parseDateTime_malformedValues_throwsParseException() {
-        for (String input : new String[] {"", "2/12/2019", "2/12/2019 18:00",
-                "2/12/2019 2500", "2/12/2019 1860", "2/13/2019 1800"}) {
+        String[] inputs = {"", "2/12/2019", "2/12/2019 18:00",
+            "2/12/2019 2500", "2/12/2019 1860", "2/13/2019 1800"};
+        for (String input : inputs) {
             assertThrows(DateTimeParseException.class, () -> Task.parseDateTime(input), input);
         }
     }

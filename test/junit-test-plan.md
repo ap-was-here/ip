@@ -37,6 +37,19 @@ than changing an assertion to bless incorrect behavior.
 
 ## Latest execution
 
+2026-10-02, Checkstyle setup: Java 25 Gradle `check shadowJar --rerun-tasks`
+passed all 62 tests across 14 test classes (zero failures, errors, or skipped tests).
+Both Checkstyle tasks passed with zero violations. Reviewed the prioritized
+method selection; it is unchanged because production behavior is unchanged.
+Test changes retain all existing checks and expected values while replacing
+wildcard imports, correcting wrapping/indentation, and encapsulating fixtures.
+Parser dispatch uses individual assertions instead of `assertAll`; a failed
+assertion now stops that test method rather than collecting its remaining failures.
+UI cases R1, R2, P1–P4, F1 and F2 passed in nine sessions; full input/output is
+recorded in `ui-test-plan.md`.
+
+### Earlier keyword-search execution
+
 2026-09-27, keyword search: Java 25 Gradle `test shadowJar --rerun-tasks`
 passed all 62 tests. Search tests cover parser boundaries, blank keywords,
 case-insensitive literal matching, phrases, punctuation, non-ASCII descriptions,
