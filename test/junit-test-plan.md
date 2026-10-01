@@ -19,6 +19,7 @@ No coverage percentage is inferred from test counts.
 | Search (3) | `Task.matchesDescription`, `TaskList.find`, `FindCommand.execute` | Literal matching, locale independence, stable results, input validation, no writes |
 | Shared session | `Mary.execute`, constructor/loading; `Ui.showMessage`, `showLine` via commands | One output destination, restart persistence, validation and storage errors, no writes after bye |
 | GUI interaction | `ChatWindow.submit`, `addMessage`, suggestion action through controls | Send/Enter, errors, close lifecycle, startup errors, draft preservation, resizing/scrolling |
+| Grouped replies | `Ui.showMessages` | Zero, one, or multiple messages; order, formatting, Unicode and existing array inputs |
 
 Test files mirror source packages under `src/test/java/mary`, with names such
 as `ParserTest.java` and `StorageTest.java`. Test names use
@@ -41,6 +42,15 @@ An existing defect should be reported with its failing regression test rather
 than changing an assertion to bless incorrect behavior.
 
 ## Latest execution
+
+2026-10-02, varargs: Java 25 Gradle `check guiTest shadowJar` passed 71 unit
+tests and seven GUI tests, with no failures, errors, skipped tests, or Checkstyle
+violations. Four new tests cover the grouped-message helper, supplementing the
+existing high-value method selection. Console cases R1, R2, P1–P4, F1 and F2
+passed in nine sessions with unchanged expected output; the full record is in
+`ui-test-plan.md`. The fat JAR was rebuilt.
+
+### Earlier JavaFX execution
 
 GUI validation uses `gradlew.bat check guiTest shadowJar` with Java 25.
 `test` covers the 62 existing tests and five shared-session tests without starting

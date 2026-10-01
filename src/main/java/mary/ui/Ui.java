@@ -43,13 +43,22 @@ public class Ui {
     }
 
     /**
+     * Displays zero or more messages in order, preserving their text and spacing.
+     *
+     * @param messages non-null array of lines to display; may be empty.
+     */
+    public void showMessages(String... messages) {
+        for (String message : messages) {
+            showMessage(message);
+        }
+    }
+
+    /**
      * Displays the startup greeting.
      */
     public void showWelcome() {
         showLine();
-        showMessage(BANNER);
-        showMessage("");
-        showMessage("What's on your list today?");
+        showMessages(BANNER, "", "What's on your list today?");
         showLine();
     }
 
