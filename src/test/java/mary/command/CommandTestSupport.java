@@ -17,11 +17,11 @@ import mary.ui.Ui;
  * Captures command output and isolates persistence for each test.
  */
 abstract class CommandTestSupport {
+    protected TaskList tasks;
+    protected Storage storage;
     @TempDir
     Path directory;
-    TaskList tasks;
-    Storage storage;
-    Ui ui;
+    private Ui ui;
     private PrintStream originalOutput;
     private PrintStream capturedOutput;
     private ByteArrayOutputStream output;

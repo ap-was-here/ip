@@ -17,31 +17,49 @@ import mary.task.Event;
 import mary.task.Task;
 import mary.task.Todo;
 
-/** Interprets task-creation commands and validates their arguments. */
+/**
+ * Interprets task-creation commands and validates their arguments.
+ */
 public class Parser {
-    /** Creates a command object for the exit command, if applicable. */
+    /**
+     * Creates the command object matching the input command.
+     */
     public static Command parse(String command) {
         if (command.equals("find")
                 || (command.startsWith("find") && command.length() > 4
                 && Character.isWhitespace(command.charAt(4)))) {
             return new FindCommand(command.substring(4));
         }
-        if (command.equals("bye")) return new ExitCommand();
-        if (command.equals("list")) return new ListCommand();
-        if (command.startsWith("delete")) return new DeleteCommand(command);
-        if (command.startsWith("mark") || command.startsWith("unmark")) return new MarkCommand(command);
-        if (command.startsWith("on")) return new OnCommand(command);
+        if (command.equals("bye")) {
+            return new ExitCommand();
+        }
+        if (command.equals("list")) {
+            return new ListCommand();
+        }
+        if (command.startsWith("delete")) {
+            return new DeleteCommand(command);
+        }
+        if (command.startsWith("mark") || command.startsWith("unmark")) {
+            return new MarkCommand(command);
+        }
+        if (command.startsWith("on")) {
+            return new OnCommand(command);
+        }
         if (command.startsWith("todo") || command.startsWith("deadline") || command.startsWith("event")) {
             return new AddCommand(command);
         }
         return new UnknownCommand(command);
     }
 
-    /** Converts a todo, deadline, or event command into a task. */
+    /**
+     * Converts a todo, deadline, or event command into a task.
+     */
     public static Task parseTask(String command) throws MaryException {
         if (command.startsWith("todo ")) {
             String description = command.substring(5).trim();
-            if (description.isEmpty()) throw new MaryException("please add a task description after 'todo'.");
+            if (description.isEmpty()) {
+                throw new MaryException("please add a task description after 'todo'.");
+            }
             return new Todo(description);
         }
         if (command.startsWith("deadline ")) {

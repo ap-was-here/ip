@@ -37,8 +37,9 @@ class MarkCommandTest extends CommandTestSupport {
     @Test
     void execute_invalidNumber_reportsErrorWithoutChangingStatus() {
         tasks.add(new Todo("keep"));
-        for (String input : new String[] {"mark abc", "mark 0", "mark -1", "mark 2",
-                "unmark 0", "unmark 1.5", "mark 2147483648"}) {
+        String[] inputs = {"mark abc", "mark 0", "mark -1", "mark 2",
+            "unmark 0", "unmark 1.5", "mark 2147483648"};
+        for (String input : inputs) {
             assertTrue(execute(new MarkCommand(input)).startsWith(" Error:"), input);
             assertEquals(" ", tasks.get(0).getStatusIcon());
         }
@@ -49,8 +50,9 @@ class MarkCommandTest extends CommandTestSupport {
      */
     @Test
     void execute_missingNumber_reportsUsageInsteadOfCrashing() {
-        for (String input : new String[] {"mark", "unmark", "mark ", "unmark ",
-                "markSomething", "unmarkSomething"}) {
+        String[] inputs = {"mark", "unmark", "mark ", "unmark ",
+            "markSomething", "unmarkSomething"};
+        for (String input : inputs) {
             String output = assertDoesNotThrow(() -> execute(new MarkCommand(input)), input);
             assertEquals(" Error: use 'mark N' or 'unmark N', where N is a task number.\n", output);
         }

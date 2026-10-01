@@ -94,8 +94,8 @@ class StorageTest {
                 "D | 0 | read | 2019-12-02T18:00 | extra")) {
             Path file = directory.resolve("tasks.txt");
             Files.writeString(file, "T | 0 | valid\n" + record + "\n");
-            MaryException error = assertThrows(MaryException.class,
-                    () -> new Storage(file.toString()).load(), record);
+            MaryException error = assertThrows(MaryException.class, () ->
+                    new Storage(file.toString()).load(), record);
             assertEquals("invalid record on line 2.", error.getMessage());
         }
     }
@@ -108,8 +108,8 @@ class StorageTest {
         Path file = directory.resolve("tasks.txt");
         for (String record : List.of("T | 0 | read | unexpected", "T | 0 | read | ")) {
             Files.writeString(file, record + "\n");
-            assertEquals("invalid record on line 1.", assertThrows(MaryException.class,
-                    () -> new Storage(file.toString()).load(), record).getMessage());
+            assertEquals("invalid record on line 1.", assertThrows(MaryException.class, () ->
+                    new Storage(file.toString()).load(), record).getMessage());
         }
     }
 
@@ -138,8 +138,8 @@ class StorageTest {
                 "E | 0 | camp | bad | 2019-12-02T16:00",
                 "E | 0 | camp | 2019-12-02T14:00 | bad")) {
             Files.writeString(file, record);
-            assertEquals("invalid date/time on line 1.", assertThrows(MaryException.class,
-                    () -> new Storage(file.toString()).load()).getMessage());
+            assertEquals("invalid date/time on line 1.", assertThrows(MaryException.class, () ->
+                    new Storage(file.toString()).load()).getMessage());
         }
     }
 
@@ -148,8 +148,8 @@ class StorageTest {
      */
     @Test
     void load_directoryInsteadOfFile_wrapsIoFailure() {
-        assertEquals("could not read " + directory + ".", assertThrows(MaryException.class,
-                () -> new Storage(directory.toString()).load()).getMessage());
+        assertEquals("could not read " + directory + ".", assertThrows(MaryException.class, () ->
+                new Storage(directory.toString()).load()).getMessage());
     }
 
     /**
@@ -157,7 +157,7 @@ class StorageTest {
      */
     @Test
     void save_directoryInsteadOfFile_wrapsIoFailure() {
-        assertEquals("could not save tasks to " + directory + ".", assertThrows(MaryException.class,
-                () -> new Storage(directory.toString()).save(List.of(new Todo("read")))).getMessage());
+        assertEquals("could not save tasks to " + directory + ".", assertThrows(MaryException.class, () ->
+                new Storage(directory.toString()).save(List.of(new Todo("read")))).getMessage());
     }
 }
