@@ -1,0 +1,49 @@
+.chat-window {
+    -fx-font-family: "Segoe UI", "Helvetica Neue", sans-serif;
+    -fx-font-size: 14px;
+    -fx-background-color: #f6f4ee;
+    -fx-text-fill: #203c3b;
+}
+.header { -fx-padding: 24 28 12 28; }
+.cat {
+    -fx-font-family: monospace;
+    -fx-font-size: 19px;
+    -fx-text-fill: #23675c;
+    -fx-background-color: #e2ece3;
+    -fx-background-radius: 18;
+    -fx-padding: 12;
+}
+.app-title { -fx-font-size: 28px; -fx-font-weight: bold; -fx-text-fill: #193f37; }
+.subtitle { -fx-font-size: 13px; -fx-text-fill: #51635e; }
+.titled-pane { -fx-text-fill: #275e51; -fx-font-size: 13px; }
+.titled-pane > .title { -fx-background-color: #e5ebe2; -fx-background-radius: 8; }
+.titled-pane > .content { -fx-background-color: #ffffff; -fx-border-color: #d9e2d8; }
+.guide-text { -fx-padding: 8; -fx-font-size: 12px; -fx-text-fill: #334b43; }
+.scroll-pane, .scroll-pane > .viewport { -fx-background-color: transparent; }
+.scroll-pane { -fx-background-insets: 0; -fx-padding: 0; }
+.messages { -fx-padding: 16 28 24 28; }
+.bubble { -fx-padding: 15 18; -fx-background-radius: 15; }
+.mary-bubble { -fx-background-color: #ffffff; -fx-border-color: #e2e5dc; -fx-border-radius: 15; }
+.user-bubble { -fx-background-color: #235b4c; }
+.sender { -fx-font-size: 10px; -fx-font-weight: bold; -fx-text-fill: #587267; }
+.message-text { -fx-text-fill: #243d35; -fx-line-spacing: 3; }
+.user-bubble .sender { -fx-text-fill: #c2e1cf; }
+.user-bubble .message-text { -fx-text-fill: #ffffff; }
+.footer { -fx-padding: 16 28 20 28; -fx-background-color: #eeeee5; }
+.button { -fx-cursor: hand; -fx-background-radius: 8; }
+.suggestion { -fx-background-color: #ffffff; -fx-text-fill: #2c604e; -fx-padding: 7 12; -fx-font-size: 12px; }
+.suggestion:hover { -fx-background-color: #dbe6d9; }
+.text-field {
+    -fx-background-color: #ffffff;
+    -fx-background-radius: 10;
+    -fx-border-radius: 10;
+    -fx-border-color: #becfc1;
+    -fx-padding: 13;
+    -fx-prompt-text-fill: #64756a;
+    -fx-text-fill: #243d35;
+}
+.text-field:focused { -fx-border-color: #235b4c; -fx-border-width: 2; -fx-padding: 12; }
+.send-button { -fx-background-color: #235b4c; -fx-text-fill: white; -fx-font-weight: bold; -fx-padding: 13 22; }
+.send-button:hover { -fx-background-color: #174335; }
+.button:focused { -fx-border-color: #a36b20; -fx-border-width: 2; -fx-border-radius: 8; }
+.status { -fx-text-fill: #59665a; -fx-font-size: 11px; }

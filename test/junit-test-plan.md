@@ -1,10 +1,12 @@
 # JUnit test selection
 
 Target: focus on approximately the highest-value 50% of implemented methods,
-not an exact line-coverage percentage. There are about 45 non-constructor
-implemented methods before search support, plus three search methods. The following
-26 methods are the primary targets (roughly 54% of 48); collaborators and accessors may also be
-exercised indirectly. No coverage percentage is inferred from test counts.
+not an exact line-coverage percentage. The pre-GUI selection targets 26 of roughly
+48 implemented non-constructor methods. The GUI increment also prioritizes shared
+session execution/loading, output routing and GUI submission/rendering instead of
+trivial layout factories or accessors. This keeps the focus around the highest-value
+half as the code grows; constructors and collaborators are also exercised indirectly.
+No coverage percentage is inferred from test counts.
 
 | Area | Primary methods | Why |
 | --- | --- | --- |
@@ -15,6 +17,8 @@ exercised indirectly. No coverage percentage is inferred from test counts.
 | Task subtypes (5) | `Todo.toString`, `Deadline.toString`, `Deadline.toStorageRecord`, `Event.toString`, `Event.toStorageRecord` | Polymorphic display and persistence contracts |
 | Commands (4) | `AddCommand.execute`, `DeleteCommand.execute`, `MarkCommand.execute`, `OnCommand.execute` | State changes, persistence, errors, inclusive date filtering |
 | Search (3) | `Task.matchesDescription`, `TaskList.find`, `FindCommand.execute` | Literal matching, locale independence, stable results, input validation, no writes |
+| Shared session | `Mary.execute`, constructor/loading; `Ui.showMessage`, `showLine` via commands | One output destination, restart persistence, validation and storage errors, no writes after bye |
+| GUI interaction | `ChatWindow.submit`, `addMessage`, suggestion action through controls | Send/Enter, errors, close lifecycle, startup errors, draft preservation, resizing/scrolling |
 
 Test files mirror source packages under `src/test/java/mary`, with names such
 as `ParserTest.java` and `StorageTest.java`. Test names use
@@ -31,11 +35,25 @@ not replace unit tests for boundaries and failure paths.
 
 Review and update JUnit tests after every code change to maintain the prioritized
 50% target. Leave trivial enums, basic getters, and console decoration to lower
-priority; avoid testing the unused duplicate task parser in `MARY` directly.
+priority. The GUI refactor removes the unused duplicate task parser in `Mary`;
+the active parser remains tested in `ParserTest`.
 An existing defect should be reported with its failing regression test rather
 than changing an assertion to bless incorrect behavior.
 
 ## Latest execution
+
+GUI validation uses `gradlew.bat check guiTest shadowJar` with Java 25.
+`test` covers the 62 existing tests and five shared-session tests without starting
+JavaFX. `guiTest` runs seven additional tests tagged `gui` on a graphical desktop,
+using temporary files and bounded FX-thread waits; it stops on the first failure.
+The GUI suite is deliberately separate from `check` so headless CI can still run
+the unit suite. Java sources for both test suites are checked by `checkstyleTest`.
+2026-10-02 result: 67 unit tests and seven GUI tests passed, with zero skipped
+tests and zero Checkstyle violations. The rendered scene was visually reviewed;
+the packaged GUI launched and closed normally in a separate smoke test.
+See the JavaFX session record in `ui-test-plan.md` for executed results.
+
+### Earlier Checkstyle execution
 
 2026-10-02, Checkstyle setup: Java 25 Gradle `check shadowJar --rerun-tasks`
 passed all 62 tests across 14 test classes (zero failures, errors, or skipped tests).

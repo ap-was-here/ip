@@ -2,6 +2,7 @@ plugins {
     id 'java'
     id 'checkstyle'
     id 'application'
+    id 'org.openjfx.javafxplugin' version '0.1.0'
     id 'com.gradleup.shadow' version '9.5.1'
 }
 
@@ -12,6 +13,11 @@ java {
 
 repositories {
     mavenCentral()
+}
+
+javafx {
+    version = '25.0.2'
+    modules = ['javafx.controls']
 }
 
 checkstyle {
@@ -40,12 +46,14 @@ dependencies {
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher:1.14.4'
 }
 
-test {
+tasks.withType(Test).configureEach {
     useJUnitPlatform()
 
     // Keep month names deterministic in date-display assertions on all machines.
     systemProperty 'user.language', 'en'
     systemProperty 'user.country', 'US'
+    systemProperty 'javafx.cachedir', layout.buildDirectory.dir('javafx-cache').get().asFile.absolutePath
+    jvmArgs '--enable-native-access=ALL-UNNAMED'
 
     testLogging {
         events 'passed', 'skipped', 'failed'
@@ -59,7 +67,23 @@ test {
 }
 
 application {
-    mainClass = 'mary.Mary'
+    mainClass = 'mary.Launcher'
+    applicationDefaultJvmArgs = ['--enable-native-access=ALL-UNNAMED']
+}
+
+test {
+    useJUnitPlatform { excludeTags 'gui' }
+}
+
+tasks.register('guiTest', Test) {
+    group = 'verification'
+    failFast = true
+    description = 'Run JavaFX interaction tests (requires a graphical desktop).'
+    testClassesDirs = sourceSets.test.output.classesDirs
+    classpath = sourceSets.test.runtimeClasspath
+    useJUnitPlatform { includeTags 'gui' }
+    systemProperty 'mary.guiSnapshot', layout.buildDirectory.file('reports/gui/mary.png').get().asFile.absolutePath
+    shouldRunAfter test
 }
 
 jar {
@@ -77,26 +101,5 @@ shadowJar {
 
 run {
     standardInput = System.in
-}
-
-repositories {
-    mavenCentral()
-}
-
-dependencies {
-    String javaFxVersion = '17.0.7'
-
-    implementation("org.openjfx:javafx-base:${javaFxVersion}:win")
-    implementation("org.openjfx:javafx-base:${javaFxVersion}:mac")
-    implementation("org.openjfx:javafx-base:${javaFxVersion}:linux")
-    implementation("org.openjfx:javafx-controls:${javaFxVersion}:win")
-    implementation("org.openjfx:javafx-controls:${javaFxVersion}:mac")
-    implementation("org.openjfx:javafx-controls:${javaFxVersion}:linux")
-    implementation("org.openjfx:javafx-fxml:${javaFxVersion}:win")
-    implementation("org.openjfx:javafx-fxml:${javaFxVersion}:mac")
-    implementation("org.openjfx:javafx-fxml:${javaFxVersion}:linux")
-    implementation("org.openjfx:javafx-graphics:${javaFxVersion}:win")
-    implementation("org.openjfx:javafx-graphics:${javaFxVersion}:mac")
-    implementation("org.openjfx:javafx-graphics:${javaFxVersion}:linux")
 }
 

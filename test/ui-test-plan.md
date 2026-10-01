@@ -1,5 +1,28 @@
 # UI Test Plan
 
+## JavaFX interaction plan (2026-10-02)
+
+The default launch now opens JavaFX; the recorded console cases below still run
+unchanged via `java -jar build/libs/mary.jar --cli`. Use Java 25 and isolated
+working directories, compare exact output and saved records, and stop on the
+first failure. GUI automation is separate: `gradlew.bat guiTest` requires a
+graphical desktop and uses temporary task files. It exercises actual JavaFX
+controls on the application thread; text-field action events represent Enter.
+
+| Case | Aim and input | Expected result |
+| --- | --- | --- |
+| G1 | Send `todo read book`; Enter `mark 1`, `list`; reopen and `list` | Visible add/mark replies; `1.[T][X] read book`; input clears; stored `T \| 1 \| read book` reloads |
+| G2 | Submit blank, `blah`, then `todo read` | Specific errors appear in bubbles; subsequent valid command succeeds |
+| G3 | Click Add a to-do; expand Command guide | Input becomes `todo ` without saving; suggestions disable while draft exists; guide explains types, dates, task numbers |
+| G4 | Enter `bye`, then click Close | Farewell remains readable; input/suggestions disabled; Close hides the window |
+| G5 | Start with file containing `broken` | Loading-error bubble names line 1; file remains unchanged |
+| G6 | Resize to 480x600; add a long task and run `list` twelve times | Wrapped messages fit the viewport, transcript scrolls to latest reply, composer stays usable |
+| G7 | `todo read book`, `mark 1` in a 760x780 scene | Render preview at `build/reports/gui/mary.png`; inspect contrast, spacing and clipping |
+
+The shared-session JUnit tests additionally cover deadlines, events, date search,
+keyword search, unmark, delete, Unicode, persistence errors and commands after bye.
+The GUI delegates to this same session; it does not maintain a second task list.
+
 ## Bug-fix UI regression run (2026-09-27)
 
 Run R1–R2 and P1–P4 from the shared JSON specification against the newly built
@@ -3778,6 +3801,500 @@ ____________________________________________________________
 ```
 
 ### F2, session 1 — PASS
+
+Console input:
+
+```json
+[
+  "find book",
+  "bye"
+]
+```
+
+Console output:
+
+```text
+____________________________________________________________
+____________________________________________________________
+ /\_/\
+( o.o )   M A R Y
+ > ^ <    Your purr-sonal task assistant.
+
+What's on your list today?
+____________________________________________________________
+____________________________________________________________
+ No matching tasks found.
+____________________________________________________________
+____________________________________________________________
+See you later. Complete your tasks on time!
+____________________________________________________________
+```
+
+## JavaFX regression session — 2026-10-02
+
+Result: PASS. Java 25 `check guiTest shadowJar` completed successfully:
+67 non-graphical JUnit tests and seven JavaFX control tests passed with no failures
+or skips. Checkstyle reported zero violations for production and test sources.
+Reviewed the rendered scene at `build/reports/gui/mary.png`; corrected an oversized
+command-guide title and reran the checks. The GUI run covers G1–G7 above.
+
+The packaged JAR's default GUI launcher created its MARY window and closed
+normally (exit 0) in an isolated working directory. No task file was created;
+JavaFX extracted native libraries only into that directory's `.mary/javafx-cache`.
+An initial smoke-harness check using Process.MainWindowHandle timed out because
+the window was deliberately launched hidden. That session stopped immediately;
+a separate corrected check enumerated only windows owned by its test process,
+verified MARY's title, and closed the window normally. No app fix was needed.
+
+The classpath-based JavaFX tests and fat JAR emitted this runtime warning:
+
+```text
+WARNING: Unsupported JavaFX configuration: classes were loaded from 'unnamed module ...'
+```
+
+No JavaFX exceptions or CSS errors occurred. This warning is distinct from
+Checkstyle; the non-modular fat JAR was verified to launch and exit successfully.
+Only Windows was executed here; other platforms require their own build/test run.
+
+The test-ui skill ran R1, R2, P1–P4, F1 and F2 using `mary.jar --cli`:
+eight cases, nine processes, all passed. Exact stdout (normalizing only CRLF),
+empty stderr, exit status and saved data matched the unchanged JSON expectations.
+Input below uses JSON arrays to preserve empty commands and trailing spaces.
+Each command ends in a newline; stdin closes afterward. Output is complete.
+
+### JavaFX CLI regression R1, session 1 — PASS
+
+Console input:
+
+```json
+[
+  "todo read",
+  "mark",
+  "unmark",
+  "mark ",
+  "unmark ",
+  "on 29/2/2023",
+  "deadline invalid /by 31/4/2024 1800",
+  "event invalid /from 29/2/2023 1400 /to 1/3/2023 1600",
+  "list",
+  "bye"
+]
+```
+
+Console output:
+
+```text
+____________________________________________________________
+____________________________________________________________
+ /\_/\
+( o.o )   M A R Y
+ > ^ <    Your purr-sonal task assistant.
+
+What's on your list today?
+____________________________________________________________
+____________________________________________________________
+ Got it. I've added this task:
+   [T][ ] read
+ Now you have 1 tasks in the list.
+____________________________________________________________
+____________________________________________________________
+ Error: use 'mark N' or 'unmark N', where N is a task number.
+____________________________________________________________
+____________________________________________________________
+ Error: use 'mark N' or 'unmark N', where N is a task number.
+____________________________________________________________
+____________________________________________________________
+ Error: use 'mark N' or 'unmark N', where N is a task number.
+____________________________________________________________
+____________________________________________________________
+ Error: use 'mark N' or 'unmark N', where N is a task number.
+____________________________________________________________
+____________________________________________________________
+ Error: use date format d/M/yyyy, for example 2/12/2019.
+____________________________________________________________
+____________________________________________________________
+ Error: use date/time format d/M/yyyy HHmm, for example 2/12/2019 1800.
+____________________________________________________________
+____________________________________________________________
+ Error: use event date/time format d/M/yyyy HHmm for both /from and /to.
+____________________________________________________________
+____________________________________________________________
+ Here are the tasks in your list:
+ 1.[T][ ] read
+____________________________________________________________
+____________________________________________________________
+See you later. Complete your tasks on time!
+____________________________________________________________
+```
+
+### JavaFX CLI regression R2, session 1 — PASS
+
+Console input:
+
+```json
+[
+  "list",
+  "bye"
+]
+```
+
+Console output:
+
+```text
+____________________________________________________________
+ Error: the saved task data is corrupted: invalid record on line 1.
+____________________________________________________________
+____________________________________________________________
+ /\_/\
+( o.o )   M A R Y
+ > ^ <    Your purr-sonal task assistant.
+
+What's on your list today?
+____________________________________________________________
+____________________________________________________________
+ MARY has no saved tasks yet.
+____________________________________________________________
+____________________________________________________________
+See you later. Complete your tasks on time!
+____________________________________________________________
+```
+
+### JavaFX CLI regression P1, session 1 — PASS
+
+Console input:
+
+```json
+[
+  "list",
+  "todo read book",
+  "deadline return book /by 2/12/2019 1800",
+  "event project meeting /from 2/12/2019 1400 /to 4/12/2019 1600",
+  "list",
+  "mark 2",
+  "unmark 2",
+  "mark 1",
+  "delete 2",
+  "list",
+  "on 3/12/2019",
+  "on 1/12/2019",
+  "bye"
+]
+```
+
+Console output:
+
+```text
+____________________________________________________________
+____________________________________________________________
+ /\_/\
+( o.o )   M A R Y
+ > ^ <    Your purr-sonal task assistant.
+
+What's on your list today?
+____________________________________________________________
+____________________________________________________________
+ MARY has no saved tasks yet.
+____________________________________________________________
+____________________________________________________________
+ Got it. I've added this task:
+   [T][ ] read book
+ Now you have 1 tasks in the list.
+____________________________________________________________
+____________________________________________________________
+ Got it. I've added this task:
+   [D][ ] return book (by: 2 Dec 2019 18:00)
+ Now you have 2 tasks in the list.
+____________________________________________________________
+____________________________________________________________
+ Got it. I've added this task:
+   [E][ ] project meeting (from: 2 Dec 2019 14:00 to: 4 Dec 2019 16:00)
+ Now you have 3 tasks in the list.
+____________________________________________________________
+____________________________________________________________
+ Here are the tasks in your list:
+ 1.[T][ ] read book
+ 2.[D][ ] return book (by: 2 Dec 2019 18:00)
+ 3.[E][ ] project meeting (from: 2 Dec 2019 14:00 to: 4 Dec 2019 16:00)
+____________________________________________________________
+____________________________________________________________
+ Nice! I've marked this task as done:
+   [D][X] return book (by: 2 Dec 2019 18:00)
+____________________________________________________________
+____________________________________________________________
+ OK, I've marked this task as not done yet:
+   [D][ ] return book (by: 2 Dec 2019 18:00)
+____________________________________________________________
+____________________________________________________________
+ Nice! I've marked this task as done:
+   [T][X] read book
+____________________________________________________________
+____________________________________________________________
+ Noted. I've removed this task:
+   [D][ ] return book (by: 2 Dec 2019 18:00)
+ Now you have 2 tasks in the list.
+____________________________________________________________
+____________________________________________________________
+ Here are the tasks in your list:
+ 1.[T][X] read book
+ 2.[E][ ] project meeting (from: 2 Dec 2019 14:00 to: 4 Dec 2019 16:00)
+____________________________________________________________
+____________________________________________________________
+ Tasks occurring on 2019-12-03:
+ [E][ ] project meeting (from: 2 Dec 2019 14:00 to: 4 Dec 2019 16:00)
+____________________________________________________________
+____________________________________________________________
+ No deadlines or events occur on 2019-12-01.
+____________________________________________________________
+____________________________________________________________
+See you later. Complete your tasks on time!
+____________________________________________________________
+```
+
+### JavaFX CLI regression P1, session 2 — PASS
+
+Console input:
+
+```json
+[
+  "list",
+  "on 3/12/2019",
+  "bye"
+]
+```
+
+Console output:
+
+```text
+____________________________________________________________
+____________________________________________________________
+ /\_/\
+( o.o )   M A R Y
+ > ^ <    Your purr-sonal task assistant.
+
+What's on your list today?
+____________________________________________________________
+____________________________________________________________
+ Here are the tasks in your list:
+ 1.[T][X] read book
+ 2.[E][ ] project meeting (from: 2 Dec 2019 14:00 to: 4 Dec 2019 16:00)
+____________________________________________________________
+____________________________________________________________
+ Tasks occurring on 2019-12-03:
+ [E][ ] project meeting (from: 2 Dec 2019 14:00 to: 4 Dec 2019 16:00)
+____________________________________________________________
+____________________________________________________________
+See you later. Complete your tasks on time!
+____________________________________________________________
+```
+
+### JavaFX CLI regression P2, session 1 — PASS
+
+Console input:
+
+```json
+[
+  "",
+  "blah",
+  "todo",
+  "deadline homework",
+  "event meeting /from 2pm",
+  "mark abc",
+  "delete 0",
+  "deadline return book /by tomorrow",
+  "event meeting /from 2/12/2019 /to 2/12/2019 1600",
+  "on tomorrow",
+  "list",
+  "bye"
+]
+```
+
+Console output:
+
+```text
+____________________________________________________________
+____________________________________________________________
+ /\_/\
+( o.o )   M A R Y
+ > ^ <    Your purr-sonal task assistant.
+
+What's on your list today?
+____________________________________________________________
+____________________________________________________________
+ Error: please enter a command or task.
+____________________________________________________________
+____________________________________________________________
+ Error: I don't recognize that command; use todo, deadline, event, on, list, find, mark, unmark, delete, or bye.
+____________________________________________________________
+____________________________________________________________
+ Error: use 'todo description' to add a task without a date.
+____________________________________________________________
+____________________________________________________________
+ Error: use 'deadline description /by date or time'.
+____________________________________________________________
+____________________________________________________________
+ Error: use 'event description /from start /to end'.
+____________________________________________________________
+____________________________________________________________
+ Error: 'abc' is not a valid task number; use a positive whole number.
+____________________________________________________________
+____________________________________________________________
+ Error: task 0 does not exist; use 'list' to see valid task numbers.
+____________________________________________________________
+____________________________________________________________
+ Error: use date/time format d/M/yyyy HHmm, for example 2/12/2019 1800.
+____________________________________________________________
+____________________________________________________________
+ Error: use event date/time format d/M/yyyy HHmm for both /from and /to.
+____________________________________________________________
+____________________________________________________________
+ Error: use date format d/M/yyyy, for example 2/12/2019.
+____________________________________________________________
+____________________________________________________________
+ MARY has no saved tasks yet.
+____________________________________________________________
+____________________________________________________________
+See you later. Complete your tasks on time!
+____________________________________________________________
+```
+
+### JavaFX CLI regression P3, session 1 — PASS
+
+Console input:
+
+```json
+[
+  "list",
+  "bye"
+]
+```
+
+Console output:
+
+```text
+____________________________________________________________
+ Error: the saved task data is corrupted: invalid record on line 1.
+____________________________________________________________
+____________________________________________________________
+ /\_/\
+( o.o )   M A R Y
+ > ^ <    Your purr-sonal task assistant.
+
+What's on your list today?
+____________________________________________________________
+____________________________________________________________
+ MARY has no saved tasks yet.
+____________________________________________________________
+____________________________________________________________
+See you later. Complete your tasks on time!
+____________________________________________________________
+```
+
+### JavaFX CLI regression P4, session 1 — PASS
+
+Console input:
+
+```json
+[]
+```
+
+Console output:
+
+```text
+____________________________________________________________
+____________________________________________________________
+ /\_/\
+( o.o )   M A R Y
+ > ^ <    Your purr-sonal task assistant.
+
+What's on your list today?
+____________________________________________________________
+```
+
+### JavaFX CLI regression F1, session 1 — PASS
+
+Console input:
+
+```json
+[
+  "find book",
+  "find   BOOK  ",
+  "find ook",
+  "find read book",
+  "find Dec",
+  "find [X]",
+  "find missing",
+  "find",
+  "find   ",
+  "finder book",
+  "list",
+  "bye"
+]
+```
+
+Console output:
+
+```text
+____________________________________________________________
+____________________________________________________________
+ /\_/\
+( o.o )   M A R Y
+ > ^ <    Your purr-sonal task assistant.
+
+What's on your list today?
+____________________________________________________________
+____________________________________________________________
+ Here are the matching tasks in your list:
+ 1.[T][X] read book
+ 2.[D][X] return Book (by: 2 Dec 2019 18:00)
+ 3.[E][ ] BOOK club (from: 2 Dec 2019 14:00 to: 2 Dec 2019 16:00)
+____________________________________________________________
+____________________________________________________________
+ Here are the matching tasks in your list:
+ 1.[T][X] read book
+ 2.[D][X] return Book (by: 2 Dec 2019 18:00)
+ 3.[E][ ] BOOK club (from: 2 Dec 2019 14:00 to: 2 Dec 2019 16:00)
+____________________________________________________________
+____________________________________________________________
+ Here are the matching tasks in your list:
+ 1.[T][X] read book
+ 2.[D][X] return Book (by: 2 Dec 2019 18:00)
+ 3.[E][ ] BOOK club (from: 2 Dec 2019 14:00 to: 2 Dec 2019 16:00)
+____________________________________________________________
+____________________________________________________________
+ Here are the matching tasks in your list:
+ 1.[T][X] read book
+____________________________________________________________
+____________________________________________________________
+ No matching tasks found.
+____________________________________________________________
+____________________________________________________________
+ No matching tasks found.
+____________________________________________________________
+____________________________________________________________
+ No matching tasks found.
+____________________________________________________________
+____________________________________________________________
+ Error: use 'find keyword', for example 'find book'.
+____________________________________________________________
+____________________________________________________________
+ Error: use 'find keyword', for example 'find book'.
+____________________________________________________________
+____________________________________________________________
+ Error: I don't recognize that command; use todo, deadline, event, on, list, find, mark, unmark, delete, or bye.
+____________________________________________________________
+____________________________________________________________
+ Here are the tasks in your list:
+ 1.[T][ ] buy bread
+ 2.[T][X] read book
+ 3.[D][X] return Book (by: 2 Dec 2019 18:00)
+ 4.[E][ ] BOOK club (from: 2 Dec 2019 14:00 to: 2 Dec 2019 16:00)
+____________________________________________________________
+____________________________________________________________
+See you later. Complete your tasks on time!
+____________________________________________________________
+```
+
+### JavaFX CLI regression F2, session 1 — PASS
 
 Console input:
 

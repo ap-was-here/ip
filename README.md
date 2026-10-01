@@ -1,6 +1,8 @@
-# MARY project template
+# MARY
 
-This is a project template for a greenfield Java project. It's named after the Java mascot _Duke_. Given below are instructions on how to use it.
+MARY is a JavaFX task chatbot: keep to-dos, deadlines, and events in one
+conversation. The desktop app and optional console share the same commands and
+saved task file.
 
 ## Setting up in Intellij
 
@@ -13,16 +15,39 @@ Prerequisites: JDK 25, update Intellij to the most recent version.
    1. If there are any further prompts, accept the defaults.
 1. Configure the project to use **JDK 25** (not other versions) as explained in [here](https://www.jetbrains.com/help/idea/sdk.html#set-up-jdk).<br>
    In the same dialog, set the **Project language level** field to the `SDK default` option.
-1. After that, locate the `src/main/java/mary/Mary.java` file, right-click it, and choose `Run Mary.main()` (if the code editor is showing compile errors, try restarting the IDE). If you have an existing run configuration, change its main class to `mary.Mary`. If the setup is correct, you should see something like the below as the output:
-   ```
-    /\_/\
-   ( o.o )   M A R Y
-    > ^ <    Your purr-sonal task assistant.
-
-   What's on your list today?
-   ```
+1. Set the **Gradle JVM** to JDK 25 and reload the Gradle project so JavaFX
+   dependencies are downloaded. Run the Gradle `run` task or run
+   `src/main/java/mary/Launcher.java` (`mary.Launcher`) in IntelliJ.
+   Keep the project root as the run configuration's working directory.
+1. A resizable MARY chat window opens. Type a command and press **Enter** or
+   click **Send**. All replies, including errors, appear in the conversation.
 
 **Warning:** Keep the `src\main\java` folder as the root folder for Java files (i.e., don't rename those folders or move Java files to another folder outside of this folder path), as this is the default location some tools (e.g., Gradle) expect to find Java files.
+
+## Use the desktop chatbot
+
+From the project root with Java 25 configured:
+
+```powershell
+.\gradlew.bat run
+```
+
+- Try `todo read book`, `list`, `mark 1`, `unmark 1`, `delete 1`, or `find book`.
+- Use `deadline return book /by 2/12/2026 1800` or
+  `event meeting /from 2/12/2026 1400 /to 2/12/2026 1600` for dated tasks.
+- `on 2/12/2026` finds deadlines and events on that date. Dates use day/month/year
+  and a 24-hour time without a colon.
+- Expand **Command guide & examples** for a reminder. The suggestion buttons
+  only fill the input; they do not execute commands or overwrite a draft.
+- Replies wrap and the transcript scrolls. Use `list` to get the full-list task
+  numbers before marking or deleting (search-result numbers are separate).
+- `bye` ends the session and displays the farewell. Click **Close** or close
+  the window afterward. Closing the window directly is also safe: each successful
+  task-changing command saves immediately.
+
+Input and replies are local, not sent to an online service. Conversation history
+is not saved; tasks are loaded when you reopen the app. Use one app instance at a
+time to avoid concurrent edits to the same file.
 
 ## Find tasks
 
@@ -51,13 +76,13 @@ package directories sit underneath it.
 
 ```text
 src/main/java/mary/
-├── Mary.java
+├── Launcher.java, Mary.java
 ├── task/       Task, Todo, Deadline, Event, TaskList, TaskType, TaskStatus
 ├── command/    Command, AddCommand, DeleteCommand, ExitCommand, ListCommand,
-│               MarkCommand, OnCommand, UnknownCommand, CommandType
+│               MarkCommand, OnCommand, FindCommand, UnknownCommand, CommandType
 ├── parser/     Parser
 ├── storage/    Storage
-├── ui/         Ui
+├── ui/         Ui, MaryApplication, ChatWindow
 └── exception/  MaryException, ErrorType
 ```
 
@@ -65,34 +90,46 @@ For example, `mary.task.Deadline` extends `mary.task.Task`. Classes in other
 packages use explicit imports to refer to these types. Enums live beside the
 classes they describe.
 
-#
+## Build and run the JAR
 
 The executable fat JAR is **`build/libs/mary.jar`**. Shadow is configured in
 `build.gradle` using `com.gradleup.shadow`, and the application entry point is
-`mary.Mary`. It packages the application and its runtime dependencies together.
-There are currently no external runtime dependencies; JUnit is test-only and is
-not bundled. The ordinary, non-fat `jar` task is disabled to avoid confusion.
+`mary.Launcher`. It packages JavaFX 25.0.2 and its native libraries for the
+**build machine's operating system and architecture**. Build on each target
+platform when distributing the app; this Windows build is not a universal JAR.
+JUnit is test-only and is not bundled. The ordinary, non-fat `jar` task is disabled.
 
 `shadowJar` does not run the tests. To run JUnit tests and build the JAR:
 
 ```powershell
-.\gradlew.bat test shadowJar
+.\gradlew.bat check shadowJar
 ```
 
 Run the application with Java 25:
 
 ```powershell
-java -jar .\build\libs\mary.jar
+java --enable-native-access=ALL-UNNAMED -jar .\build\libs\mary.jar
 ```
 
-Type `bye` to exit. You can copy `mary.jar` to another folder or computer with
+You can copy `mary.jar` to another folder or a matching-platform computer with
 Java 25 installed; Gradle and the source files are not needed to run it.
 Tasks are stored in `mary-data.txt` in the **working directory from which you
 launch Java**, not necessarily beside the JAR. Run from the project root to
 keep using your existing project task data.
 
-On macOS/Linux, use `./gradlew test shadowJar` and
-`java -jar build/libs/mary.jar` instead.
+JavaFX may extract its native libraries into `.mary/javafx-cache` in that working
+directory. This ignored cache is separate from your tasks. The launcher sets this
+location to avoid writing JavaFX cache files into your home directory.
+
+For the original console interface, append `--cli`:
+
+```powershell
+java -jar .\build\libs\mary.jar --cli
+```
+
+Alternatively use `.\gradlew.bat run --args="--cli"` or run `mary.Mary` directly.
+
+On macOS/Linux, use `./gradlew check shadowJar` and forward slashes in paths.
 
 ## Check Java coding style
 
@@ -120,17 +157,19 @@ On macOS/Linux, replace `.\gradlew.bat` with `./gradlew`.
 In IntelliJ, select JDK 25 as the Gradle JVM and reload the Gradle project;
 these tasks are also available in the Gradle tool window.
 
-## Compile and run from PowerShell (without Gradle)
+## Test the GUI
 
-From the project root, with JDK 25 on `PATH`:
+The regular `check` task runs Checkstyle and non-graphical JUnit tests. To also
+test real JavaFX controls, run this on a machine with a graphical desktop:
 
 ```powershell
-$sources = Get-ChildItem src/main/java -Recurse -Filter '*.java' | Select-Object -ExpandProperty FullName
-javac -encoding UTF-8 -d out $sources
-if ($LASTEXITCODE -eq 0) { java -cp out mary.Mary }
+.\gradlew.bat check guiTest shadowJar
 ```
 
-The recursive source search includes every package. `-d out` keeps compiled
-classes in the ignored output folder, and `mary.Mary` is the fully qualified
-entry point. In IntelliJ, keep `src/main/java` marked as Sources Root and use
-the project root as the working directory so `mary-data.txt` stays in place.
+`guiTest` briefly opens test windows and uses temporary task files, never your
+real data. It checks command submission, errors, persistence, suggestions, exit,
+wrapping and scrolling, and writes a rendered preview to
+`build/reports/gui/mary.png`. Reports are in `build/reports/tests/guiTest`.
+See `test/ui-test-plan.md` for the exact scenarios and console transcripts.
+Use Gradle for compilation now that JavaFX is a dependency; plain `javac`
+without a JavaFX classpath is no longer sufficient.

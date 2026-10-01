@@ -53,14 +53,14 @@ public class OnCommand extends Command {
                         && !((Event) task).getTo().toLocalDate().isBefore(date);
                 if (doesOccur) {
                     if (!isFound) {
-                        System.out.println(" Tasks occurring on " + date + ":");
+                        ui.showMessage(" Tasks occurring on " + date + ":");
                     }
                     isFound = true;
-                    System.out.println(" " + task);
+                    ui.showMessage(" " + task);
                 }
             }
             if (!isFound) {
-                System.out.println(" No deadlines or events occur on " + date + ".");
+                ui.showMessage(" No deadlines or events occur on " + date + ".");
             }
         } catch (MaryException exception) {
             ui.showError(exception.getMessage());
