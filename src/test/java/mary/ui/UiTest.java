@@ -6,13 +6,57 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.junit.jupiter.api.Test;
 
 /**
- * Verifies the ASCII welcome banner independently of task commands.
+ * Verifies the welcome banner and message routing independently of task commands.
  */
 class UiTest {
+    /**
+     * Checks that an empty varargs call emits nothing.
+     */
+    @Test
+    void showMessages_noArguments_emitsNothing() {
+        List<String> output = new ArrayList<>();
+        new Ui(output::add, false).showMessages();
+        assertTrue(output.isEmpty());
+    }
+
+    /**
+     * Checks that one argument is delivered exactly once without modification.
+     */
+    @Test
+    void showMessages_oneArgument_preservesMessage() {
+        List<String> output = new ArrayList<>();
+        new Ui(output::add, false).showMessages("   read café book  ");
+        assertEquals(List.of("   read café book  "), output);
+    }
+
+    /**
+     * Checks message order, duplicates, blank lines, and embedded newlines.
+     */
+    @Test
+    void showMessages_multipleArguments_preservesOrderAndFormatting() {
+        List<String> output = new ArrayList<>();
+        new Ui(output::add, false).showMessages("first", "", "  second\nline  ", "first");
+        assertEquals(List.of("first", "", "  second\nline  ", "first"), output);
+    }
+
+    /**
+     * Checks that callers can pass an existing array without it being changed.
+     */
+    @Test
+    void showMessages_arrayArgument_preservesArrayAndOutput() {
+        List<String> output = new ArrayList<>();
+        String[] messages = {"first", "second"};
+        new Ui(output::add, false).showMessages(messages);
+        assertEquals(List.of("first", "second"), output);
+        assertEquals(List.of("first", "second"), List.of(messages));
+    }
+
     /**
      * Checks the cat artwork, greeting, and separators without non-ASCII characters.
      */

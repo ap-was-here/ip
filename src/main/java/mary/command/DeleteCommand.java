@@ -44,9 +44,9 @@ public class DeleteCommand extends Command {
             }
             Task removed = tasks.remove(index);
             storage.save(tasks.getTasks());
-            ui.showMessage(" Noted. I've removed this task:");
-            ui.showMessage("   " + removed);
-            ui.showMessage(" Now you have " + tasks.size() + " tasks in the list.");
+            ui.showMessages(" Noted. I've removed this task:",
+                    "   " + removed,
+                    " Now you have " + tasks.size() + " tasks in the list.");
         } catch (NumberFormatException exception) {
             ui.showError("'" + numberText + "' is not a valid task number; use a positive whole number.");
         } catch (MaryException exception) {
