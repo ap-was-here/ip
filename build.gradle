@@ -62,6 +62,7 @@ dependencies {
 
 tasks.withType(Test).configureEach {
     useJUnitPlatform()
+    enableAssertions = true
 
     // Keep month names deterministic in date-display assertions on all machines.
     systemProperty 'user.language', 'en'
@@ -164,7 +165,7 @@ tasks.register('jarGuiSmoke', JavaExec) {
     // Do not add runtimeClasspath: it could hide libraries missing from the JAR.
     classpath = files(tasks.shadowJar.archiveFile, sourceSets.test.output.classesDirs)
     mainClass = 'mary.PackagedGuiSmoke'
-    jvmArgs '--enable-native-access=ALL-UNNAMED'
+    jvmArgs '-ea', '--enable-native-access=ALL-UNNAMED'
     workingDir layout.buildDirectory.dir('packaged-smoke')
     doFirst {
         workingDir.mkdirs()

@@ -43,6 +43,18 @@ than changing an assertion to bless incorrect behavior.
 
 ## Latest execution
 
+2026-10-03, internal assertions: Java 25 `check guiTest jarGuiSmoke` passed
+72 unit tests and eight GUI tests, with zero failures, errors, skipped tests, or
+Checkstyle violations. Test JVMs explicitly enable Java assertions. Added tests
+for physical file-line numbering after blank lines and rejected off-FX-thread
+submission. Existing dispatch, corrupt-file, all-task-type round-trip and GUI
+tests exercise the other assertions through normal entry points, without
+reflection or artificial production hooks. The prioritized method selection is
+unchanged. All eight console cases passed both with and without `-ea` (18 process
+sessions); full shared input/output records appear in `ui-test-plan.md`.
+
+### Earlier cross-platform packaging execution
+
 2026-10-03, cross-platform packaging: Java 25 Gradle
 `check guiTest jarGuiSmoke --rerun-tasks` passed all 71 unit tests and seven
 GUI tests, with no failures or skipped tests and zero Checkstyle violations.

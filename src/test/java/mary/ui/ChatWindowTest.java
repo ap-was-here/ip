@@ -2,6 +2,7 @@ package mary.ui;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.awt.image.BufferedImage;
@@ -46,6 +47,20 @@ class ChatWindowTest {
     private ChatWindow chat;
     private TextField input;
     private Button send;
+
+    /**
+     * Checks that an incorrectly dispatched callback fails before changing session state.
+     */
+    @Test
+    void submit_offFxThread_assertionFailsBeforeMutation() {
+        assertTrue(ChatWindow.class.desiredAssertionStatus(), "Run tests with Java assertions enabled");
+        assertFalse(Platform.isFxApplicationThread());
+        AssertionError error = assertThrows(AssertionError.class, () -> {
+            send.getOnAction().handle(new ActionEvent());
+        });
+        assertEquals("Command submission must run on the JavaFX thread", error.getMessage());
+        assertFalse(Files.exists(directory.resolve("tasks.txt")));
+    }
 
     /**
      * Starts one JavaFX toolkit for the test class with a bounded startup wait.

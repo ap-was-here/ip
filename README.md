@@ -148,6 +148,26 @@ If graphics initialization still fails, use
 system libraries or display problems. The native-access warning alone is not the
 cause of a `no suitable pipeline found` crash.
 
+## Development assertions
+
+Java `assert` statements document internal assumptions, not user-input rules.
+They are disabled by default when launching Java. Enable them with
+`java -ea -jar build/libs/mary.jar` (append `--cli` for console mode), or add
+`-ea` to IntelliJ's VM options. Gradle's JUnit and packaged GUI smoke tasks enable
+assertions explicitly. Invalid commands and corrupt files still use ordinary
+exceptions, whether assertions are enabled or disabled.
+
+| Location | Assumption and justification |
+| --- | --- |
+| `Mary.execute`, after parsing | A parser result is never null, even for invalid input: an `UnknownCommand` handles that case. A null result signals a broken parser contract. |
+| `Storage.parseRecord`, entry | The private caller supplies a positive, one-based physical line number. This catches programmer indexing mistakes, not malformed file content. |
+| `Storage.parseRecord`, event branch | After explicit type validation and the todo/deadline branches, the remaining type must be `E`. This detects future inconsistencies between validation and dispatch. |
+| `ChatWindow.submit`, entry | Submission runs on the JavaFX application thread because it changes controls and session state. This catches accidentally wiring callbacks to background threads. |
+| `ChatWindow.addMessage`, entry | Startup and reply rendering run on the JavaFX application thread because they modify the scene graph. This also protects future message sources outside submission. |
+
+Assertions have no side effects and are not caught as normal chatbot errors.
+An `AssertionError` indicates a programming defect that should be fixed.
+
 ## Check Java coding style
 
 With JDK 25 configured, run these commands from the project root:

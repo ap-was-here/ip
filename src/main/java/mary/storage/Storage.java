@@ -81,6 +81,8 @@ public class Storage {
      * @throws MaryException if the type, field count, status, description, or dates are invalid.
      */
     private Task parseRecord(String record, int lineNumber) throws MaryException {
+        // load supplies a one-based physical line number, including skipped blank lines.
+        assert lineNumber > 0 : "Saved-record line numbers must be positive";
         String[] fields = record.split(" \\| ", -1);
         if (fields.length < 3 || (fields[0].equals("T") && fields.length != 3)
                 || (fields[0].equals("D") && fields.length != 4)
@@ -101,6 +103,8 @@ public class Storage {
             } else if (fields[0].equals("D")) {
                 task = new Deadline(fields[2], LocalDateTime.parse(fields[3]));
             } else {
+                // Validation above leaves only an event after the todo/deadline branches.
+                assert fields[0].equals("E") : "Validated remaining record type must be E";
                 task = new Event(fields[2], LocalDateTime.parse(fields[3]), LocalDateTime.parse(fields[4]));
             }
             task.setDone(fields[1].equals("1"));
