@@ -1,5 +1,23 @@
 # UI Test Plan
 
+## Cross-platform JAR launch plan (2026-10-03)
+
+Run with Java 25 in isolated working directories; stop at the first failed case.
+Existing console expectations are unchanged by the packaging fix.
+
+| Case | Aim / input | Expected output or result |
+| --- | --- | --- |
+| J1 | `gradlew verifyJar` | Build succeeds; Windows, Linux and Mac Glass/software-renderer libraries and native-access manifest attribute exist |
+| J2 | `gradlew jarGuiSmoke` on Windows | `GUI_SMOKE_PASS: MARY opened and rendered successfully.`; exit 0; no renderer/toolkit exception |
+| J3 | Run `mary.PackagedGuiSmoke` with only the built JAR and test classes on Linux/WSLg, Java 25 | Same success line as J2; exit 0; no renderer/toolkit exception |
+| J4 | Launch `java -jar mary.jar` on a graphical desktop | MARY window opens; no restricted-native-access warning or renderer exception; close window afterward |
+
+The smoke helper opens the real application window, takes a scene snapshot and
+closes it. Its classpath intentionally excludes Gradle runtime dependencies so
+missing native libraries cannot be supplied by the development environment.
+The known JavaFX unnamed-module configuration warning is not a test failure.
+macOS execution requires a Mac and must not be inferred from archive checks.
+
 ## JavaFX interaction plan (2026-10-02)
 
 The default launch now opens JavaFX; the recorded console cases below still run
@@ -4767,6 +4785,548 @@ ____________________________________________________________
 ```
 
 ### Varargs F2, session 1 — PASS
+
+Console input:
+
+```json
+[
+  "find book",
+  "bye"
+]
+```
+
+Console output:
+
+```text
+____________________________________________________________
+____________________________________________________________
+ /\_/\
+( o.o )   M A R Y
+ > ^ <    Your purr-sonal task assistant.
+
+What's on your list today?
+____________________________________________________________
+____________________________________________________________
+ No matching tasks found.
+____________________________________________________________
+____________________________________________________________
+See you later. Complete your tasks on time!
+____________________________________________________________
+```
+
+## Cross-platform packaging execution — 2026-10-03
+
+Final build: Java 25, `check guiTest jarGuiSmoke --rerun-tasks`.
+J1 and J2 passed. 71 unit tests, seven GUI tests and Checkstyle passed.
+R1, R2, P1–P4, F1 and F2 passed in nine isolated console sessions below.
+
+During development, the first packaging check failed and the run stopped:
+expected `verifyJar` success; actual:
+`Missing JavaFX native library: com/sun/glass/ui/gtk/GtkApplication.class`.
+An already-dispatched Linux probe against that incomplete artifact also failed
+(exit 1): expected the J3 success line; actual `ClassNotFoundException:
+com.sun.glass.ui.gtk.GtkPlatformFactory`, followed by
+`Failed to load Glass factory class` and a NullPointerException.
+Including platform Java classes as well as native libraries and forcing a fresh
+build resolved this. The final build and Linux rerun passed.
+
+### J2 — Windows packaged rendering
+
+Input: `gradlew.bat jarGuiSmoke`, Java 25.
+
+```text
+Oct 03, 2026 10:08:13 PM com.sun.javafx.application.PlatformImpl startup
+WARNING: Unsupported JavaFX configuration: classes were loaded from 'unnamed module @20fa23c1'
+GUI_SMOKE_PASS: MARY opened and rendered successfully.
+```
+
+Exit: 0.
+
+### J3 — Linux packaged rendering
+
+Ubuntu 24.04 / WSLg x86_64, Temurin Java 25.0.4.1.
+Working directory: isolated `_temp/linux-smoke/run`.
+Input (JAR and compiled helper paths supplied as absolute paths at execution):
+
+```sh
+java --enable-native-access=ALL-UNNAMED -cp mary.jar:test-classes mary.PackagedGuiSmoke
+```
+
+Complete combined console output:
+
+```text
+Oct 03, 2026 10:09:19 PM com.sun.javafx.application.PlatformImpl startup
+WARNING: Unsupported JavaFX configuration: classes were loaded from 'unnamed module @593634ad'
+MESA: error: ZINK: failed to choose pdev
+glx: failed to create drisw screen
+MESA: error: ZINK: failed to choose pdev
+glx: failed to create drisw screen
+GUI_SMOKE_PASS: MARY opened and rendered successfully.
+```
+
+Exit: 0. WSL emitted graphics-driver diagnostics, but JavaFX successfully opened
+and rendered the application. No QuantumRenderer/no-toolkit crash occurred.
+macOS runtime testing and the optional Apple Silicon build were not performed.
+
+### J4 — Windows executable launch
+
+Input: `java -jar C:/iP/ip/build/libs/mary.jar`, without native-access flags.
+Working directory: a fresh ignored temporary directory. Wait for the MARY-titled
+window, then request normal close. Expected: window opens, exit 0, no restricted
+native-access warning. Actual harness record and full application stderr:
+
+```text
+WINDOW: MARY | Your purr-sonal task assistant
+EXIT: 0
+
+Oct 03, 2026 10:10:47 PM com.sun.javafx.application.PlatformImpl startup
+WARNING: Unsupported JavaFX configuration: classes were loaded from 'unnamed module @20a4d60'
+```
+
+Application stdout was empty. A first harness attempt selected a temporary
+untitled JavaFX window and timed out closing it; that process was terminated.
+Waiting specifically for the MARY title corrected the harness and the rerun
+above passed. This was a test-harness issue, not a renderer failure.
+
+### Console regression records
+
+Each JSON input entry was followed by a newline; stdin was then closed. Empty
+input means immediate EOF. Output comparisons allow only line-ending differences.
+All sessions exited 0 with empty stderr; saved-file checks also passed.
+
+#### Packaging R1, session 1 — PASS
+
+Console input:
+
+```json
+[
+  "todo read",
+  "mark",
+  "unmark",
+  "mark ",
+  "unmark ",
+  "on 29/2/2023",
+  "deadline invalid /by 31/4/2024 1800",
+  "event invalid /from 29/2/2023 1400 /to 1/3/2023 1600",
+  "list",
+  "bye"
+]
+```
+
+Console output:
+
+```text
+____________________________________________________________
+____________________________________________________________
+ /\_/\
+( o.o )   M A R Y
+ > ^ <    Your purr-sonal task assistant.
+
+What's on your list today?
+____________________________________________________________
+____________________________________________________________
+ Got it. I've added this task:
+   [T][ ] read
+ Now you have 1 tasks in the list.
+____________________________________________________________
+____________________________________________________________
+ Error: use 'mark N' or 'unmark N', where N is a task number.
+____________________________________________________________
+____________________________________________________________
+ Error: use 'mark N' or 'unmark N', where N is a task number.
+____________________________________________________________
+____________________________________________________________
+ Error: use 'mark N' or 'unmark N', where N is a task number.
+____________________________________________________________
+____________________________________________________________
+ Error: use 'mark N' or 'unmark N', where N is a task number.
+____________________________________________________________
+____________________________________________________________
+ Error: use date format d/M/yyyy, for example 2/12/2019.
+____________________________________________________________
+____________________________________________________________
+ Error: use date/time format d/M/yyyy HHmm, for example 2/12/2019 1800.
+____________________________________________________________
+____________________________________________________________
+ Error: use event date/time format d/M/yyyy HHmm for both /from and /to.
+____________________________________________________________
+____________________________________________________________
+ Here are the tasks in your list:
+ 1.[T][ ] read
+____________________________________________________________
+____________________________________________________________
+See you later. Complete your tasks on time!
+____________________________________________________________
+```
+
+#### Packaging R2, session 1 — PASS
+
+Console input:
+
+```json
+[
+  "list",
+  "bye"
+]
+```
+
+Console output:
+
+```text
+____________________________________________________________
+ Error: the saved task data is corrupted: invalid record on line 1.
+____________________________________________________________
+____________________________________________________________
+ /\_/\
+( o.o )   M A R Y
+ > ^ <    Your purr-sonal task assistant.
+
+What's on your list today?
+____________________________________________________________
+____________________________________________________________
+ MARY has no saved tasks yet.
+____________________________________________________________
+____________________________________________________________
+See you later. Complete your tasks on time!
+____________________________________________________________
+```
+
+#### Packaging P1, session 1 — PASS
+
+Console input:
+
+```json
+[
+  "list",
+  "todo read book",
+  "deadline return book /by 2/12/2019 1800",
+  "event project meeting /from 2/12/2019 1400 /to 4/12/2019 1600",
+  "list",
+  "mark 2",
+  "unmark 2",
+  "mark 1",
+  "delete 2",
+  "list",
+  "on 3/12/2019",
+  "on 1/12/2019",
+  "bye"
+]
+```
+
+Console output:
+
+```text
+____________________________________________________________
+____________________________________________________________
+ /\_/\
+( o.o )   M A R Y
+ > ^ <    Your purr-sonal task assistant.
+
+What's on your list today?
+____________________________________________________________
+____________________________________________________________
+ MARY has no saved tasks yet.
+____________________________________________________________
+____________________________________________________________
+ Got it. I've added this task:
+   [T][ ] read book
+ Now you have 1 tasks in the list.
+____________________________________________________________
+____________________________________________________________
+ Got it. I've added this task:
+   [D][ ] return book (by: 2 Dec 2019 18:00)
+ Now you have 2 tasks in the list.
+____________________________________________________________
+____________________________________________________________
+ Got it. I've added this task:
+   [E][ ] project meeting (from: 2 Dec 2019 14:00 to: 4 Dec 2019 16:00)
+ Now you have 3 tasks in the list.
+____________________________________________________________
+____________________________________________________________
+ Here are the tasks in your list:
+ 1.[T][ ] read book
+ 2.[D][ ] return book (by: 2 Dec 2019 18:00)
+ 3.[E][ ] project meeting (from: 2 Dec 2019 14:00 to: 4 Dec 2019 16:00)
+____________________________________________________________
+____________________________________________________________
+ Nice! I've marked this task as done:
+   [D][X] return book (by: 2 Dec 2019 18:00)
+____________________________________________________________
+____________________________________________________________
+ OK, I've marked this task as not done yet:
+   [D][ ] return book (by: 2 Dec 2019 18:00)
+____________________________________________________________
+____________________________________________________________
+ Nice! I've marked this task as done:
+   [T][X] read book
+____________________________________________________________
+____________________________________________________________
+ Noted. I've removed this task:
+   [D][ ] return book (by: 2 Dec 2019 18:00)
+ Now you have 2 tasks in the list.
+____________________________________________________________
+____________________________________________________________
+ Here are the tasks in your list:
+ 1.[T][X] read book
+ 2.[E][ ] project meeting (from: 2 Dec 2019 14:00 to: 4 Dec 2019 16:00)
+____________________________________________________________
+____________________________________________________________
+ Tasks occurring on 2019-12-03:
+ [E][ ] project meeting (from: 2 Dec 2019 14:00 to: 4 Dec 2019 16:00)
+____________________________________________________________
+____________________________________________________________
+ No deadlines or events occur on 2019-12-01.
+____________________________________________________________
+____________________________________________________________
+See you later. Complete your tasks on time!
+____________________________________________________________
+```
+
+#### Packaging P1, session 2 — PASS
+
+Console input:
+
+```json
+[
+  "list",
+  "on 3/12/2019",
+  "bye"
+]
+```
+
+Console output:
+
+```text
+____________________________________________________________
+____________________________________________________________
+ /\_/\
+( o.o )   M A R Y
+ > ^ <    Your purr-sonal task assistant.
+
+What's on your list today?
+____________________________________________________________
+____________________________________________________________
+ Here are the tasks in your list:
+ 1.[T][X] read book
+ 2.[E][ ] project meeting (from: 2 Dec 2019 14:00 to: 4 Dec 2019 16:00)
+____________________________________________________________
+____________________________________________________________
+ Tasks occurring on 2019-12-03:
+ [E][ ] project meeting (from: 2 Dec 2019 14:00 to: 4 Dec 2019 16:00)
+____________________________________________________________
+____________________________________________________________
+See you later. Complete your tasks on time!
+____________________________________________________________
+```
+
+#### Packaging P2, session 1 — PASS
+
+Console input:
+
+```json
+[
+  "",
+  "blah",
+  "todo",
+  "deadline homework",
+  "event meeting /from 2pm",
+  "mark abc",
+  "delete 0",
+  "deadline return book /by tomorrow",
+  "event meeting /from 2/12/2019 /to 2/12/2019 1600",
+  "on tomorrow",
+  "list",
+  "bye"
+]
+```
+
+Console output:
+
+```text
+____________________________________________________________
+____________________________________________________________
+ /\_/\
+( o.o )   M A R Y
+ > ^ <    Your purr-sonal task assistant.
+
+What's on your list today?
+____________________________________________________________
+____________________________________________________________
+ Error: please enter a command or task.
+____________________________________________________________
+____________________________________________________________
+ Error: I don't recognize that command; use todo, deadline, event, on, list, find, mark, unmark, delete, or bye.
+____________________________________________________________
+____________________________________________________________
+ Error: use 'todo description' to add a task without a date.
+____________________________________________________________
+____________________________________________________________
+ Error: use 'deadline description /by date or time'.
+____________________________________________________________
+____________________________________________________________
+ Error: use 'event description /from start /to end'.
+____________________________________________________________
+____________________________________________________________
+ Error: 'abc' is not a valid task number; use a positive whole number.
+____________________________________________________________
+____________________________________________________________
+ Error: task 0 does not exist; use 'list' to see valid task numbers.
+____________________________________________________________
+____________________________________________________________
+ Error: use date/time format d/M/yyyy HHmm, for example 2/12/2019 1800.
+____________________________________________________________
+____________________________________________________________
+ Error: use event date/time format d/M/yyyy HHmm for both /from and /to.
+____________________________________________________________
+____________________________________________________________
+ Error: use date format d/M/yyyy, for example 2/12/2019.
+____________________________________________________________
+____________________________________________________________
+ MARY has no saved tasks yet.
+____________________________________________________________
+____________________________________________________________
+See you later. Complete your tasks on time!
+____________________________________________________________
+```
+
+#### Packaging P3, session 1 — PASS
+
+Console input:
+
+```json
+[
+  "list",
+  "bye"
+]
+```
+
+Console output:
+
+```text
+____________________________________________________________
+ Error: the saved task data is corrupted: invalid record on line 1.
+____________________________________________________________
+____________________________________________________________
+ /\_/\
+( o.o )   M A R Y
+ > ^ <    Your purr-sonal task assistant.
+
+What's on your list today?
+____________________________________________________________
+____________________________________________________________
+ MARY has no saved tasks yet.
+____________________________________________________________
+____________________________________________________________
+See you later. Complete your tasks on time!
+____________________________________________________________
+```
+
+#### Packaging P4, session 1 — PASS
+
+Console input:
+
+```json
+[]
+```
+
+Console output:
+
+```text
+____________________________________________________________
+____________________________________________________________
+ /\_/\
+( o.o )   M A R Y
+ > ^ <    Your purr-sonal task assistant.
+
+What's on your list today?
+____________________________________________________________
+```
+
+#### Packaging F1, session 1 — PASS
+
+Console input:
+
+```json
+[
+  "find book",
+  "find   BOOK  ",
+  "find ook",
+  "find read book",
+  "find Dec",
+  "find [X]",
+  "find missing",
+  "find",
+  "find   ",
+  "finder book",
+  "list",
+  "bye"
+]
+```
+
+Console output:
+
+```text
+____________________________________________________________
+____________________________________________________________
+ /\_/\
+( o.o )   M A R Y
+ > ^ <    Your purr-sonal task assistant.
+
+What's on your list today?
+____________________________________________________________
+____________________________________________________________
+ Here are the matching tasks in your list:
+ 1.[T][X] read book
+ 2.[D][X] return Book (by: 2 Dec 2019 18:00)
+ 3.[E][ ] BOOK club (from: 2 Dec 2019 14:00 to: 2 Dec 2019 16:00)
+____________________________________________________________
+____________________________________________________________
+ Here are the matching tasks in your list:
+ 1.[T][X] read book
+ 2.[D][X] return Book (by: 2 Dec 2019 18:00)
+ 3.[E][ ] BOOK club (from: 2 Dec 2019 14:00 to: 2 Dec 2019 16:00)
+____________________________________________________________
+____________________________________________________________
+ Here are the matching tasks in your list:
+ 1.[T][X] read book
+ 2.[D][X] return Book (by: 2 Dec 2019 18:00)
+ 3.[E][ ] BOOK club (from: 2 Dec 2019 14:00 to: 2 Dec 2019 16:00)
+____________________________________________________________
+____________________________________________________________
+ Here are the matching tasks in your list:
+ 1.[T][X] read book
+____________________________________________________________
+____________________________________________________________
+ No matching tasks found.
+____________________________________________________________
+____________________________________________________________
+ No matching tasks found.
+____________________________________________________________
+____________________________________________________________
+ No matching tasks found.
+____________________________________________________________
+____________________________________________________________
+ Error: use 'find keyword', for example 'find book'.
+____________________________________________________________
+____________________________________________________________
+ Error: use 'find keyword', for example 'find book'.
+____________________________________________________________
+____________________________________________________________
+ Error: I don't recognize that command; use todo, deadline, event, on, list, find, mark, unmark, delete, or bye.
+____________________________________________________________
+____________________________________________________________
+ Here are the tasks in your list:
+ 1.[T][ ] buy bread
+ 2.[T][X] read book
+ 3.[D][X] return Book (by: 2 Dec 2019 18:00)
+ 4.[E][ ] BOOK club (from: 2 Dec 2019 14:00 to: 2 Dec 2019 16:00)
+____________________________________________________________
+____________________________________________________________
+See you later. Complete your tasks on time!
+____________________________________________________________
+```
+
+#### Packaging F2, session 1 — PASS
 
 Console input:
 

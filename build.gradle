@@ -20,6 +20,20 @@ javafx {
     modules = ['javafx.controls']
 }
 
+// Keep foreign-platform artifacts out of the development runtime classpath.
+def macPlatform = providers.gradleProperty('javafxMacPlatform').getOrElse('mac')
+if (!(macPlatform in ['mac', 'mac-aarch64'])) {
+    throw new GradleException('javafxMacPlatform must be mac or mac-aarch64')
+}
+def nativeConfigurations = ['win', 'linux', macPlatform].collect { platform ->
+    def nativeConfiguration = configurations.create("javafxNatives_${platform}")
+    dependencies.add(nativeConfiguration.name,
+            "org.openjfx:javafx-graphics:${javafx.version}:${platform}@jar") {
+        transitive = false
+    }
+    nativeConfiguration
+}
+
 checkstyle {
     toolVersion = '14.1.0'
     maxWarnings = 0
@@ -97,6 +111,64 @@ shadowJar {
     // Bundles main classes and runtime dependencies; the application plugin supplies Main-Class.
     // Test dependencies (such as JUnit) are not included.
     archiveFileName = 'mary.jar'
+    manifest {
+        attributes 'Enable-Native-Access': 'ALL-UNNAMED'
+    }
+    configurations = []
+    from({ project.configurations.runtimeClasspath.collect { zipTree(it) } }) {
+        exclude '*.dll', '*.so', '*.dylib'
+    }
+    // Include platform-specific Glass classes as well as native libraries.
+    // Shared classes are identical within this pinned JavaFX version.
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+    from({ nativeConfigurations.collectMany { it.files }.collect { zipTree(it) } }) {
+        include '*.dll', '*.so', '*.dylib', 'com/**', 'javafx/**'
+    }
+    // A fat JAR runs on the classpath, not as separate JavaFX modules.
+    exclude 'META-INF/versions/**/module-info.class', 'module-info.class'
+}
+
+tasks.register('verifyJar') {
+    group = 'verification'
+    description = 'Check that the executable JAR contains natives for all three desktop systems.'
+    dependsOn shadowJar
+    doLast {
+        def archive = new java.util.jar.JarFile(tasks.shadowJar.archiveFile.get().asFile)
+        try {
+            ['glass.dll', 'prism_sw.dll', 'libglass.so', 'libglassgtk3.so',
+             'libprism_sw.so', 'libglass.dylib', 'libprism_sw.dylib',
+             'com/sun/glass/ui/gtk/GtkApplication.class',
+             'com/sun/glass/ui/mac/MacApplication.class',
+             'com/sun/glass/ui/win/WinApplication.class'].each { name ->
+                if (archive.getJarEntry(name) == null) {
+                    throw new GradleException("Missing JavaFX native library: ${name}")
+                }
+            }
+            def attributes = archive.manifest.mainAttributes
+            if (attributes.getValue('Main-Class') != 'mary.Launcher'
+                    || attributes.getValue('Enable-Native-Access') != 'ALL-UNNAMED') {
+                throw new GradleException('The executable JAR launch manifest is incomplete')
+            }
+        } finally {
+            archive.close()
+        }
+    }
+}
+
+check.dependsOn tasks.named('verifyJar')
+
+tasks.register('jarGuiSmoke', JavaExec) {
+    group = 'verification'
+    description = 'Open and render MARY using the fat JAR (requires a graphical desktop).'
+    dependsOn testClasses, shadowJar
+    // Do not add runtimeClasspath: it could hide libraries missing from the JAR.
+    classpath = files(tasks.shadowJar.archiveFile, sourceSets.test.output.classesDirs)
+    mainClass = 'mary.PackagedGuiSmoke'
+    jvmArgs '--enable-native-access=ALL-UNNAMED'
+    workingDir layout.buildDirectory.dir('packaged-smoke')
+    doFirst {
+        workingDir.mkdirs()
+    }
 }
 
 run {

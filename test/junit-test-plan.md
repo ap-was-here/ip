@@ -43,6 +43,18 @@ than changing an assertion to bless incorrect behavior.
 
 ## Latest execution
 
+2026-10-03, cross-platform packaging: Java 25 Gradle
+`check guiTest jarGuiSmoke --rerun-tasks` passed all 71 unit tests and seven
+GUI tests, with no failures or skipped tests and zero Checkstyle violations.
+No business logic changed, so the prioritized JUnit method selection is unchanged.
+Added `PackagedGuiSmoke`, a standalone test helper run by `jarGuiSmoke`, to render
+the real GUI against the fat JAR without development runtime dependencies.
+`verifyJar` checks platform classes, native libraries and launch manifest as part
+of `check`. The helper passed on Windows and Linux/WSLg with Java 25. macOS was
+not executed. See `ui-test-plan.md` for limitations and full console records.
+
+### Earlier varargs execution
+
 2026-10-02, varargs: Java 25 Gradle `check guiTest shadowJar` passed 71 unit
 tests and seven GUI tests, with no failures, errors, skipped tests, or Checkstyle
 violations. Four new tests cover the grouped-message helper, supplementing the

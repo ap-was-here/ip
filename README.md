@@ -94,9 +94,12 @@ classes they describe.
 
 The executable fat JAR is **`build/libs/mary.jar`**. Shadow is configured in
 `build.gradle` using `com.gradleup.shadow`, and the application entry point is
-`mary.Launcher`. It packages JavaFX 25.0.2 and its native libraries for the
-**build machine's operating system and architecture**. Build on each target
-platform when distributing the app; this Windows build is not a universal JAR.
+`mary.Launcher`. It packages JavaFX 25.0.2 with native libraries for
+**Windows x64, Linux x64, and Intel macOS** in the same JAR, regardless of the
+build machine. For Apple Silicon using an ARM Java installation, build with
+`-PjavafxMacPlatform=mac-aarch64` instead; this replaces the Intel Mac libraries
+and still includes Windows/Linux x64. Do not mix Intel and ARM Mac libraries in
+one flat JAR: their filenames collide. Linux ARM and Windows ARM are not bundled.
 JUnit is test-only and is not bundled. The ordinary, non-fat `jar` task is disabled.
 
 `shadowJar` does not run the tests. To run JUnit tests and build the JAR:
@@ -108,10 +111,14 @@ JUnit is test-only and is not bundled. The ordinary, non-fat `jar` task is disab
 Run the application with Java 25:
 
 ```powershell
-java --enable-native-access=ALL-UNNAMED -jar .\build\libs\mary.jar
+java -jar .\build\libs\mary.jar
 ```
 
-You can copy `mary.jar` to another folder or a matching-platform computer with
+Native access is enabled in the JAR manifest; no extra JVM flag is required for
+`java -jar`. The `check` task includes `verifyJar`, which checks the native
+libraries for all three operating systems and the launch manifest.
+
+You can copy `mary.jar` to another folder or a supported-platform computer with
 Java 25 installed; Gradle and the source files are not needed to run it.
 Tasks are stored in `mary-data.txt` in the **working directory from which you
 launch Java**, not necessarily beside the JAR. Run from the project root to
@@ -130,6 +137,16 @@ java -jar .\build\libs\mary.jar --cli
 Alternatively use `.\gradlew.bat run --args="--cli"` or run `mary.Mary` directly.
 
 On macOS/Linux, use `./gradlew check shadowJar` and forward slashes in paths.
+
+### Linux / WSL launch requirements
+
+The GUI requires a working graphical session (for example WSLg), GTK 3 and its
+system dependencies. Bundling JavaFX does not provide a display server. On a
+headless server or a console-only smoke test, use `java -jar mary.jar --cli`.
+If graphics initialization still fails, use
+`java -Djavafx.verbose=true -Dprism.verbose=true -jar mary.jar` to identify missing
+system libraries or display problems. The native-access warning alone is not the
+cause of a `no suitable pipeline found` crash.
 
 ## Check Java coding style
 
@@ -173,3 +190,8 @@ wrapping and scrolling, and writes a rendered preview to
 See `test/ui-test-plan.md` for the exact scenarios and console transcripts.
 Use Gradle for compilation now that JavaFX is a dependency; plain `javac`
 without a JavaFX classpath is no longer sufficient.
+
+Run `./gradlew jarGuiSmoke` (Windows: `.\gradlew.bat jarGuiSmoke`) to open,
+render and close the real GUI using dependencies from the fat JAR alone.
+This complements `guiTest`, whose development classpath can otherwise hide
+missing packaged libraries. A graphical desktop is required for both tasks.
