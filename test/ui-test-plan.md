@@ -10888,3 +10888,749 @@ ____________________________________________________________
 Time for a catnap. See you soon!
 ____________________________________________________________
 ```
+
+## Linux JAR execution — 2026-10-04
+
+Tested the existing `build/libs/mary.jar` on Ubuntu 24.04 x86_64 under WSL2/WSLg,
+using Temurin Java 25.0.4.1. No source changes or JAR rebuild were needed.
+All 12 console cases passed in 14 isolated sessions: exact stdout, empty stderr,
+exit code 0, and saved task records matched the active specification.
+The packaged GUI smoke test used only the JAR and the compiled test helper;
+it opened, rendered, and closed successfully with exit code 0.
+
+JAR SHA-256: `169d82cf2b86b881360f6ab7e817212391f51e78e48cb4f5930ad3d39463b1ab`.
+
+GUI stdout:
+
+```text
+GUI_SMOKE_PASS: MARY opened and rendered successfully.
+```
+
+GUI stderr (non-fatal warnings; retained rather than suppressed):
+
+```text
+Oct 04, 2026 2:54:34 AM com.sun.javafx.application.PlatformImpl startup
+WARNING: Unsupported JavaFX configuration: classes were loaded from 'unnamed module @68f7aae2'
+MESA: error: ZINK: failed to choose pdev
+glx: failed to create drisw screen
+MESA: error: ZINK: failed to choose pdev
+glx: failed to create drisw screen
+```
+
+This verifies this Ubuntu/WSLg environment, not every Linux distribution or CPU
+architecture. A graphical session is required for the GUI; console mode uses `--cli`.
+
+### Linux R1, session 1 — PASS
+
+Console input:
+
+```json
+[
+  "todo read",
+  "mark",
+  "unmark",
+  "mark ",
+  "unmark ",
+  "on 29/2/2023",
+  "deadline invalid /by 31/4/2024 1800",
+  "event invalid /from 29/2/2023 1400 /to 1/3/2023 1600",
+  "list",
+  "bye"
+]
+```
+
+Console output:
+
+```text
+____________________________________________________________
+____________________________________________________________
+ /\_/\
+( o.o )   M A R Y
+ > ^ <    Your purr-sonal task assistant.
+
+What's on your list today?
+____________________________________________________________
+____________________________________________________________
+ Purr-fect! I've added this task:
+   [T][ ] read
+ Tasks on your list: 1.
+____________________________________________________________
+____________________________________________________________
+ Error: use 'mark N' or 'unmark N', where N is a task number.
+____________________________________________________________
+____________________________________________________________
+ Error: use 'mark N' or 'unmark N', where N is a task number.
+____________________________________________________________
+____________________________________________________________
+ Error: use 'mark N' or 'unmark N', where N is a task number.
+____________________________________________________________
+____________________________________________________________
+ Error: use 'mark N' or 'unmark N', where N is a task number.
+____________________________________________________________
+____________________________________________________________
+ Error: use date format d/M/yyyy, for example 2/12/2019.
+____________________________________________________________
+____________________________________________________________
+ Error: use date/time format d/M/yyyy HHmm, for example 2/12/2019 1800.
+____________________________________________________________
+____________________________________________________________
+ Error: use event date/time format d/M/yyyy HHmm for both /from and /to.
+____________________________________________________________
+____________________________________________________________
+ Here's your task lineup:
+ 1.[T][ ] read
+____________________________________________________________
+____________________________________________________________
+Time for a catnap. See you soon!
+____________________________________________________________
+```
+
+### Linux R2, session 1 — PASS
+
+Console input:
+
+```json
+[
+  "list",
+  "bye"
+]
+```
+
+Console output:
+
+```text
+____________________________________________________________
+ Error: could not load saved tasks: invalid record on line 1. Repair or move the data file and restart MARY; saving is disabled to protect it.
+____________________________________________________________
+____________________________________________________________
+ /\_/\
+( o.o )   M A R Y
+ > ^ <    Your purr-sonal task assistant.
+
+What's on your list today?
+____________________________________________________________
+____________________________________________________________
+ Nothing to chase yet! Add a task with 'todo description'.
+____________________________________________________________
+____________________________________________________________
+Time for a catnap. See you soon!
+____________________________________________________________
+```
+
+### Linux P1, session 1 — PASS
+
+Console input:
+
+```json
+[
+  "list",
+  "todo read book",
+  "deadline return book /by 2/12/2019 1800",
+  "event project meeting /from 2/12/2019 1400 /to 4/12/2019 1600",
+  "list",
+  "mark 2",
+  "unmark 2",
+  "mark 1",
+  "delete 2",
+  "list",
+  "on 3/12/2019",
+  "on 1/12/2019",
+  "bye"
+]
+```
+
+Console output:
+
+```text
+____________________________________________________________
+____________________________________________________________
+ /\_/\
+( o.o )   M A R Y
+ > ^ <    Your purr-sonal task assistant.
+
+What's on your list today?
+____________________________________________________________
+____________________________________________________________
+ Nothing to chase yet! Add a task with 'todo description'.
+____________________________________________________________
+____________________________________________________________
+ Purr-fect! I've added this task:
+   [T][ ] read book
+ Tasks on your list: 1.
+____________________________________________________________
+____________________________________________________________
+ Purr-fect! I've added this task:
+   [D][ ] return book (by: 2 Dec 2019 18:00)
+ Tasks on your list: 2.
+____________________________________________________________
+____________________________________________________________
+ Purr-fect! I've added this task:
+   [E][ ] project meeting (from: 2 Dec 2019 14:00 to: 4 Dec 2019 16:00)
+ Tasks on your list: 3.
+____________________________________________________________
+____________________________________________________________
+ Here's your task lineup:
+ 1.[T][ ] read book
+ 2.[D][ ] return book (by: 2 Dec 2019 18:00)
+ 3.[E][ ] project meeting (from: 2 Dec 2019 14:00 to: 4 Dec 2019 16:00)
+____________________________________________________________
+____________________________________________________________
+ Pawsome! Task completed:
+   [D][X] return book (by: 2 Dec 2019 18:00)
+____________________________________________________________
+____________________________________________________________
+ Back on your list, ready for another pounce:
+   [D][ ] return book (by: 2 Dec 2019 18:00)
+____________________________________________________________
+____________________________________________________________
+ Pawsome! Task completed:
+   [T][X] read book
+____________________________________________________________
+____________________________________________________________
+ Whisked away! I've removed this task:
+   [D][ ] return book (by: 2 Dec 2019 18:00)
+ Tasks on your list: 2.
+____________________________________________________________
+____________________________________________________________
+ Here's your task lineup:
+ 1.[T][X] read book
+ 2.[E][ ] project meeting (from: 2 Dec 2019 14:00 to: 4 Dec 2019 16:00)
+____________________________________________________________
+____________________________________________________________
+ Tasks occurring on 2019-12-03:
+ [E][ ] project meeting (from: 2 Dec 2019 14:00 to: 4 Dec 2019 16:00)
+____________________________________________________________
+____________________________________________________________
+ No deadlines or events occur on 2019-12-01.
+____________________________________________________________
+____________________________________________________________
+Time for a catnap. See you soon!
+____________________________________________________________
+```
+
+### Linux P1, session 2 — PASS
+
+Console input:
+
+```json
+[
+  "list",
+  "on 3/12/2019",
+  "bye"
+]
+```
+
+Console output:
+
+```text
+____________________________________________________________
+____________________________________________________________
+ /\_/\
+( o.o )   M A R Y
+ > ^ <    Your purr-sonal task assistant.
+
+What's on your list today?
+____________________________________________________________
+____________________________________________________________
+ Here's your task lineup:
+ 1.[T][X] read book
+ 2.[E][ ] project meeting (from: 2 Dec 2019 14:00 to: 4 Dec 2019 16:00)
+____________________________________________________________
+____________________________________________________________
+ Tasks occurring on 2019-12-03:
+ [E][ ] project meeting (from: 2 Dec 2019 14:00 to: 4 Dec 2019 16:00)
+____________________________________________________________
+____________________________________________________________
+Time for a catnap. See you soon!
+____________________________________________________________
+```
+
+### Linux P2, session 1 — PASS
+
+Console input:
+
+```json
+[
+  "",
+  "blah",
+  "todo",
+  "deadline homework",
+  "event meeting /from 2pm",
+  "mark abc",
+  "delete 0",
+  "deadline return book /by tomorrow",
+  "event meeting /from 2/12/2019 /to 2/12/2019 1600",
+  "on tomorrow",
+  "list",
+  "bye"
+]
+```
+
+Console output:
+
+```text
+____________________________________________________________
+____________________________________________________________
+ /\_/\
+( o.o )   M A R Y
+ > ^ <    Your purr-sonal task assistant.
+
+What's on your list today?
+____________________________________________________________
+____________________________________________________________
+ Error: please enter a command or task.
+____________________________________________________________
+____________________________________________________________
+ Error: I can't get my paws around that command; use todo, deadline, event, on, list, find, sort, mark, unmark, delete, or bye.
+____________________________________________________________
+____________________________________________________________
+ Error: please add a task description after 'todo'.
+____________________________________________________________
+____________________________________________________________
+ Error: use 'deadline description /by date or time'.
+____________________________________________________________
+____________________________________________________________
+ Error: use 'event description /from start /to end'.
+____________________________________________________________
+____________________________________________________________
+ Error: 'abc' is not a valid task number; use a positive whole number.
+____________________________________________________________
+____________________________________________________________
+ Error: task 0 does not exist; use 'list' to see valid task numbers.
+____________________________________________________________
+____________________________________________________________
+ Error: use date/time format d/M/yyyy HHmm, for example 2/12/2019 1800.
+____________________________________________________________
+____________________________________________________________
+ Error: use event date/time format d/M/yyyy HHmm for both /from and /to.
+____________________________________________________________
+____________________________________________________________
+ Error: use date format d/M/yyyy, for example 2/12/2019.
+____________________________________________________________
+____________________________________________________________
+ Nothing to chase yet! Add a task with 'todo description'.
+____________________________________________________________
+____________________________________________________________
+Time for a catnap. See you soon!
+____________________________________________________________
+```
+
+### Linux P3, session 1 — PASS
+
+Console input:
+
+```json
+[
+  "list",
+  "todo do not overwrite",
+  "bye"
+]
+```
+
+Console output:
+
+```text
+____________________________________________________________
+ Error: could not load saved tasks: invalid record on line 1. Repair or move the data file and restart MARY; saving is disabled to protect it.
+____________________________________________________________
+____________________________________________________________
+ /\_/\
+( o.o )   M A R Y
+ > ^ <    Your purr-sonal task assistant.
+
+What's on your list today?
+____________________________________________________________
+____________________________________________________________
+ Nothing to chase yet! Add a task with 'todo description'.
+____________________________________________________________
+____________________________________________________________
+ Error: saving is disabled because loading failed; repair or move the data file and restart MARY. Your original file has not been changed.
+____________________________________________________________
+____________________________________________________________
+Time for a catnap. See you soon!
+____________________________________________________________
+```
+
+### Linux P4, session 1 — PASS
+
+Console input:
+
+```json
+[]
+```
+
+Console output:
+
+```text
+____________________________________________________________
+____________________________________________________________
+ /\_/\
+( o.o )   M A R Y
+ > ^ <    Your purr-sonal task assistant.
+
+What's on your list today?
+____________________________________________________________
+```
+
+### Linux F1, session 1 — PASS
+
+Console input:
+
+```json
+[
+  "find book",
+  "find   BOOK  ",
+  "find ook",
+  "find read book",
+  "find Dec",
+  "find [X]",
+  "find missing",
+  "find",
+  "find   ",
+  "finder book",
+  "list",
+  "bye"
+]
+```
+
+Console output:
+
+```text
+____________________________________________________________
+____________________________________________________________
+ /\_/\
+( o.o )   M A R Y
+ > ^ <    Your purr-sonal task assistant.
+
+What's on your list today?
+____________________________________________________________
+____________________________________________________________
+ Look what I sniffed out:
+ 1.[T][X] read book
+ 2.[D][X] return Book (by: 2 Dec 2019 18:00)
+ 3.[E][ ] BOOK club (from: 2 Dec 2019 14:00 to: 2 Dec 2019 16:00)
+____________________________________________________________
+____________________________________________________________
+ Look what I sniffed out:
+ 1.[T][X] read book
+ 2.[D][X] return Book (by: 2 Dec 2019 18:00)
+ 3.[E][ ] BOOK club (from: 2 Dec 2019 14:00 to: 2 Dec 2019 16:00)
+____________________________________________________________
+____________________________________________________________
+ Look what I sniffed out:
+ 1.[T][X] read book
+ 2.[D][X] return Book (by: 2 Dec 2019 18:00)
+ 3.[E][ ] BOOK club (from: 2 Dec 2019 14:00 to: 2 Dec 2019 16:00)
+____________________________________________________________
+____________________________________________________________
+ Look what I sniffed out:
+ 1.[T][X] read book
+____________________________________________________________
+____________________________________________________________
+ No matching tasks in sight. Try another keyword.
+____________________________________________________________
+____________________________________________________________
+ No matching tasks in sight. Try another keyword.
+____________________________________________________________
+____________________________________________________________
+ No matching tasks in sight. Try another keyword.
+____________________________________________________________
+____________________________________________________________
+ Error: use 'find keyword', for example 'find book'.
+____________________________________________________________
+____________________________________________________________
+ Error: use 'find keyword', for example 'find book'.
+____________________________________________________________
+____________________________________________________________
+ Error: I can't get my paws around that command; use todo, deadline, event, on, list, find, sort, mark, unmark, delete, or bye.
+____________________________________________________________
+____________________________________________________________
+ Here's your task lineup:
+ 1.[T][ ] buy bread
+ 2.[T][X] read book
+ 3.[D][X] return Book (by: 2 Dec 2019 18:00)
+ 4.[E][ ] BOOK club (from: 2 Dec 2019 14:00 to: 2 Dec 2019 16:00)
+____________________________________________________________
+____________________________________________________________
+Time for a catnap. See you soon!
+____________________________________________________________
+```
+
+### Linux F2, session 1 — PASS
+
+Console input:
+
+```json
+[
+  "find book",
+  "bye"
+]
+```
+
+Console output:
+
+```text
+____________________________________________________________
+____________________________________________________________
+ /\_/\
+( o.o )   M A R Y
+ > ^ <    Your purr-sonal task assistant.
+
+What's on your list today?
+____________________________________________________________
+____________________________________________________________
+ No matching tasks in sight. Try another keyword.
+____________________________________________________________
+____________________________________________________________
+Time for a catnap. See you soon!
+____________________________________________________________
+```
+
+### Linux S1, session 1 — PASS
+
+Console input:
+
+```json
+[
+  "sort",
+  "sort",
+  "bye"
+]
+```
+
+Console output:
+
+```text
+____________________________________________________________
+____________________________________________________________
+ /\_/\
+( o.o )   M A R Y
+ > ^ <    Your purr-sonal task assistant.
+
+What's on your list today?
+____________________________________________________________
+____________________________________________________________
+ Tasks lined up chronologically (deadlines by due time, events by start time; todos last).
+ Here's your task lineup:
+ 1.[D][ ] early (by: 2 Dec 2026 13:00)
+ 2.[E][ ] meeting (from: 2 Dec 2026 14:00 to: 2 Dec 2026 16:00)
+ 3.[D][X] tie (by: 2 Dec 2026 14:00)
+ 4.[D][ ] late (by: 1 Jan 2027 00:00)
+ 5.[T][ ] read
+ 6.[T][ ] buy
+____________________________________________________________
+____________________________________________________________
+ Tasks lined up chronologically (deadlines by due time, events by start time; todos last).
+ Here's your task lineup:
+ 1.[D][ ] early (by: 2 Dec 2026 13:00)
+ 2.[E][ ] meeting (from: 2 Dec 2026 14:00 to: 2 Dec 2026 16:00)
+ 3.[D][X] tie (by: 2 Dec 2026 14:00)
+ 4.[D][ ] late (by: 1 Jan 2027 00:00)
+ 5.[T][ ] read
+ 6.[T][ ] buy
+____________________________________________________________
+____________________________________________________________
+Time for a catnap. See you soon!
+____________________________________________________________
+```
+
+### Linux S1, session 2 — PASS
+
+Console input:
+
+```json
+[
+  "list",
+  "mark 1",
+  "delete 4",
+  "list",
+  "bye"
+]
+```
+
+Console output:
+
+```text
+____________________________________________________________
+____________________________________________________________
+ /\_/\
+( o.o )   M A R Y
+ > ^ <    Your purr-sonal task assistant.
+
+What's on your list today?
+____________________________________________________________
+____________________________________________________________
+ Here's your task lineup:
+ 1.[D][ ] early (by: 2 Dec 2026 13:00)
+ 2.[E][ ] meeting (from: 2 Dec 2026 14:00 to: 2 Dec 2026 16:00)
+ 3.[D][X] tie (by: 2 Dec 2026 14:00)
+ 4.[D][ ] late (by: 1 Jan 2027 00:00)
+ 5.[T][ ] read
+ 6.[T][ ] buy
+____________________________________________________________
+____________________________________________________________
+ Pawsome! Task completed:
+   [D][X] early (by: 2 Dec 2026 13:00)
+____________________________________________________________
+____________________________________________________________
+ Whisked away! I've removed this task:
+   [D][ ] late (by: 1 Jan 2027 00:00)
+ Tasks on your list: 5.
+____________________________________________________________
+____________________________________________________________
+ Here's your task lineup:
+ 1.[D][X] early (by: 2 Dec 2026 13:00)
+ 2.[E][ ] meeting (from: 2 Dec 2026 14:00 to: 2 Dec 2026 16:00)
+ 3.[D][X] tie (by: 2 Dec 2026 14:00)
+ 4.[T][ ] read
+ 5.[T][ ] buy
+____________________________________________________________
+____________________________________________________________
+Time for a catnap. See you soon!
+____________________________________________________________
+```
+
+### Linux S2, session 1 — PASS
+
+Console input:
+
+```json
+[
+  "sort",
+  "sort descending",
+  "sorter",
+  "bye"
+]
+```
+
+Console output:
+
+```text
+____________________________________________________________
+____________________________________________________________
+ /\_/\
+( o.o )   M A R Y
+ > ^ <    Your purr-sonal task assistant.
+
+What's on your list today?
+____________________________________________________________
+____________________________________________________________
+ Nothing to chase yet! Add a task with 'todo description'.
+____________________________________________________________
+____________________________________________________________
+ Error: use 'sort' without arguments to order tasks chronologically.
+____________________________________________________________
+____________________________________________________________
+ Error: I can't get my paws around that command; use todo, deadline, event, on, list, find, sort, mark, unmark, delete, or bye.
+____________________________________________________________
+____________________________________________________________
+Time for a catnap. See you soon!
+____________________________________________________________
+```
+
+### Linux S3, session 1 — PASS
+
+Console input:
+
+```json
+[
+  "sort \t",
+  "bye"
+]
+```
+
+Console output:
+
+```text
+____________________________________________________________
+____________________________________________________________
+ /\_/\
+( o.o )   M A R Y
+ > ^ <    Your purr-sonal task assistant.
+
+What's on your list today?
+____________________________________________________________
+____________________________________________________________
+ Tasks lined up chronologically (deadlines by due time, events by start time; todos last).
+ Here's your task lineup:
+ 1.[T][X] z task
+ 2.[T][ ] a task
+____________________________________________________________
+____________________________________________________________
+Time for a catnap. See you soon!
+____________________________________________________________
+```
+
+### Linux H1, session 1 — PASS
+
+Console input:
+
+```json
+[
+  "  todo\tread book  ",
+  "todo read book",
+  "todo a | b",
+  "list extra",
+  "bye now",
+  "deadline read /by 1/1/2026 1200 /by 2/1/2026 1200",
+  "event camp /from 1/1/2026 1200 /to 1/1/2026 1200",
+  "event camp /from 2/1/2026 1200 /to 1/1/2026 1200",
+  "mark +1",
+  " mark\t1 ",
+  " list ",
+  " bye "
+]
+```
+
+Console output:
+
+```text
+____________________________________________________________
+____________________________________________________________
+ /\_/\
+( o.o )   M A R Y
+ > ^ <    Your purr-sonal task assistant.
+
+What's on your list today?
+____________________________________________________________
+____________________________________________________________
+ Purr-fect! I've added this task:
+   [T][ ] read book
+ Tasks on your list: 1.
+____________________________________________________________
+____________________________________________________________
+ Error: that task already exists; use 'list' to find it or change its details.
+____________________________________________________________
+____________________________________________________________
+ Error: task descriptions cannot contain '|'; replace it with another character.
+____________________________________________________________
+____________________________________________________________
+ Error: use 'list' without arguments.
+____________________________________________________________
+____________________________________________________________
+ Error: use 'bye' without arguments.
+____________________________________________________________
+____________________________________________________________
+ Error: parameter /by is repeated; specify it only once.
+____________________________________________________________
+____________________________________________________________
+ Error: event end must be after its start; correct /from or /to.
+____________________________________________________________
+____________________________________________________________
+ Error: event end must be after its start; correct /from or /to.
+____________________________________________________________
+____________________________________________________________
+ Error: '+1' is not a valid task number; use a positive whole number.
+____________________________________________________________
+____________________________________________________________
+ Pawsome! Task completed:
+   [T][X] read book
+____________________________________________________________
+____________________________________________________________
+ Here's your task lineup:
+ 1.[T][X] read book
+____________________________________________________________
+____________________________________________________________
+Time for a catnap. See you soon!
+____________________________________________________________
+```
