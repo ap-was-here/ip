@@ -15,6 +15,25 @@ import org.junit.jupiter.api.Test;
  */
 class TaskSearchTest {
     /**
+     * Checks that stream filtering retains every matching subtype and snapshot ownership.
+     */
+    @Test
+    void find_mixedTaskTypes_preservesOrderAndIndependentSnapshot() {
+        Task todo = new Todo("read book");
+        Task deadline = new Deadline("return BOOK", LocalDateTime.of(2026, 12, 2, 18, 0));
+        Task event = new Event("book club", LocalDateTime.of(2026, 12, 2, 14, 0),
+                LocalDateTime.of(2026, 12, 2, 16, 0));
+        TaskList tasks = new TaskList(List.of(todo, new Todo("buy bread"), deadline, event));
+        List<Task> matches = tasks.find("book");
+        assertEquals(List.of(todo, deadline, event), matches);
+        tasks.add(new Todo("another book"));
+        assertEquals(List.of(todo, deadline, event), matches);
+        matches.add(new Todo("result only"));
+        assertEquals(5, tasks.size());
+        assertTrue(tasks.find("result only").isEmpty());
+    }
+
+    /**
      * Checks literal substrings, punctuation, and non-ASCII descriptions.
      */
     @Test

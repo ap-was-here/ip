@@ -2,6 +2,7 @@ package mary.task;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Owns the collection of tasks and task-list operations.
@@ -72,12 +73,8 @@ public class TaskList {
      * @return a new list of matching task objects in their original order.
      */
     public List<Task> find(String keyword) {
-        List<Task> matches = new ArrayList<>();
-        for (Task task : tasks) {
-            if (task.matchesDescription(keyword)) {
-                matches.add(task);
-            }
-        }
-        return matches;
+        return tasks.stream()
+                .filter(task -> task.matchesDescription(keyword))
+                .collect(Collectors.toCollection(ArrayList::new));
     }
 }
