@@ -10,7 +10,7 @@ No coverage percentage is inferred from test counts.
 
 | Area | Primary methods | Why |
 | --- | --- | --- |
-| Parser (2) | `parse`, `parseTask` | Dispatch, required arguments, date validation |
+| Parser | `parse`, `parseTask`, private `parseTodo`, `parseDeadline`, `parseEvent` through `parseTask` | Dispatch, required arguments, date validation |
 | Storage (3) | `load`, `save`, `parseRecord` via `load` | Data integrity, round-trips, corrupted data, I/O errors |
 | Task (6) | `markAsDone`, `markAsNotDone`, `setDone`, `parseDate`, `parseDateTime`, `formatDateTime` via display | Completion state and date semantics |
 | TaskList (3) | `add`, `remove`, `getTasks` | Ordering, index boundaries, ownership of the collection |
@@ -42,6 +42,15 @@ An existing defect should be reported with its failing regression test rather
 than changing an assertion to bless incorrect behavior.
 
 ## Latest execution
+
+2026-10-03, parser extraction: Java 25 `check guiTest` passed 73 unit tests,
+eight GUI tests, Checkstyle and JAR verification. Added a padded-argument/Unicode
+regression for dated tasks; existing malformed-input tests still exercise each
+private parser through the public API. The highest-value method selection now
+includes the extracted parsing helpers. All eight UI cases passed (nine sessions)
+with assertions enabled; see the parser-extraction record in `ui-test-plan.md`.
+
+### Earlier assertion execution
 
 2026-10-03, internal assertions: Java 25 `check guiTest jarGuiSmoke` passed
 72 unit tests and eight GUI tests, with zero failures, errors, skipped tests, or
