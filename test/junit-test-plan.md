@@ -43,6 +43,16 @@ than changing an assertion to bless incorrect behavior.
 
 ## Latest execution
 
+2026-10-03, stream-based search: Java 25 `check guiTest` passed 75 unit tests,
+eight GUI tests, Checkstyle and JAR verification. Added a mixed-task-type test
+for ordered filtering and an independently mutable result snapshot. Existing
+duplicate, empty-result, literal matching and locale tests remain unchanged.
+The prioritized method selection is unchanged: `TaskList.find` was already
+selected. All eight UI cases passed in nine processes with assertions enabled;
+see the stream-search console records in `ui-test-plan.md`.
+
+### Earlier storage validation execution
+
 2026-10-03, storage validation: Java 25 `check guiTest` passed 74 unit tests,
 eight GUI tests, Checkstyle and JAR verification. Expanded malformed-record
 coverage for missing/extra fields and unknown types, and added a test preserving
