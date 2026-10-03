@@ -20,6 +20,7 @@ No coverage percentage is inferred from test counts.
 | Shared session | `Mary.execute`, constructor/loading; `Ui.showMessage`, `showLine` via commands | One output destination, restart persistence, validation and storage errors, no writes after bye |
 | GUI interaction | `ChatWindow.submit`, `addMessage`, suggestion action through controls | Send/Enter, errors, close lifecycle, startup errors, draft preservation, resizing/scrolling |
 | Grouped replies | `Ui.showMessages` | Zero, one, or multiple messages; order, formatting, Unicode and existing array inputs |
+| Sorting | `TaskList.sortChronologically`, private `getScheduledTime`, `SortCommand.execute`, parser dispatch | Stable chronology, type-specific dates, renumbering, persistence and failures |
 
 Test files mirror source packages under `src/test/java/mary`, with names such
 as `ParserTest.java` and `StorageTest.java`. Test names use
@@ -42,6 +43,17 @@ An existing defect should be reported with its failing regression test rather
 than changing an assertion to bless incorrect behavior.
 
 ## Latest execution
+
+2026-10-04, chronological sorting: Java 25 `check guiTest` passed 83 unit tests
+and nine GUI tests, plus Checkstyle and JAR verification. Added coverage for mixed
+types, date/time/year boundaries, maximum dates, stable ties/duplicates, completion
+state, empty/single/undated lists, repeated sorting, invalid options, save failure,
+reload order and subsequent mark/delete numbering. A GUI test verifies submission,
+display and saved order. These core methods extend the prioritized ~50% selection.
+All 11 UI cases passed in 13 isolated sessions with assertions enabled; full
+console records are in `ui-test-plan.md`.
+
+### Earlier stream-search execution
 
 2026-10-03, stream-based search: Java 25 `check guiTest` passed 75 unit tests,
 eight GUI tests, Checkstyle and JAR verification. Added a mixed-task-type test

@@ -144,6 +144,24 @@ class ChatWindowTest {
     }
 
     /**
+     * Checks that chronological sorting is available through the GUI and persists its order.
+     */
+    @Test
+    void submit_sort_displaysNewNumbersAndSavesOrder() throws Exception {
+        onFxThread(() -> {
+            enter("todo read");
+            enter("deadline return /by 2/12/2026 1800");
+            enter("sort");
+            assertTrue(transcript().contains("Sorted chronologically"));
+            assertTrue(transcript().contains("1.[D][ ] return (by: 2 Dec 2026 18:00)"));
+            assertTrue(transcript().contains("2.[T][ ] read"));
+            return null;
+        });
+        assertEquals("D | 0 | return | 2026-12-02T18:00\nT | 0 | read\n",
+                Files.readString(directory.resolve("tasks.txt")).replace("\r\n", "\n"));
+    }
+
+    /**
      * Keeps blank and invalid input errors visible without preventing later commands.
      */
     @Test

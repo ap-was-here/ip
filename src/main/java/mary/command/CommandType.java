@@ -9,6 +9,7 @@ public enum CommandType {
     EVENT,
     LIST,
     FIND,
+    SORT,
     MARK,
     UNMARK,
     DELETE,

@@ -26,7 +26,7 @@ public class UnknownCommand extends Command {
             ui.showError("please enter a command or task.");
         } else {
             ui.showError("I don't recognize that command; use todo, deadline, event, on, list, find,"
-                    + " mark, unmark, delete, or bye.");
+                    + " sort, mark, unmark, delete, or bye.");
         }
     }
 }

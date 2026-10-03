@@ -1255,7 +1255,7 @@ older cases without relying on obsolete date strings such as "Sunday".
             {
               "input": "blah",
               "output": [
-                " Error: I don't recognize that command; use todo, deadline, event, on, list, find, mark, unmark, delete, or bye."
+                " Error: I don't recognize that command; use todo, deadline, event, on, list, find, sort, mark, unmark, delete, or bye."
               ]
             },
             {
@@ -1432,7 +1432,7 @@ older cases without relying on obsolete date strings such as "Sunday".
             {
               "input": "finder book",
               "output": [
-                " Error: I don't recognize that command; use todo, deadline, event, on, list, find, mark, unmark, delete, or bye."
+                " Error: I don't recognize that command; use todo, deadline, event, on, list, find, sort, mark, unmark, delete, or bye."
               ]
             },
             {
@@ -1478,6 +1478,160 @@ older cases without relying on obsolete date strings such as "Sunday".
         }
       ],
       "saved": null
+    },
+    {
+      "id": "S1",
+      "aim": "Sort mixed tasks chronologically with stable ties and todos last; repeat, restart, mark and delete using the new numbers.",
+      "seed": "T | 0 | read\nD | 0 | late | 2027-01-01T00:00\nE | 0 | meeting | 2026-12-02T14:00 | 2026-12-02T16:00\nD | 0 | early | 2026-12-02T13:00\nT | 0 | buy\nD | 1 | tie | 2026-12-02T14:00\n",
+      "sessions": [
+        {
+          "steps": [
+            {
+              "input": "sort",
+              "output": [
+                " Sorted chronologically (deadlines by due time, events by start time; todos last).",
+                " Here are the tasks in your list:",
+                " 1.[D][ ] early (by: 2 Dec 2026 13:00)",
+                " 2.[E][ ] meeting (from: 2 Dec 2026 14:00 to: 2 Dec 2026 16:00)",
+                " 3.[D][X] tie (by: 2 Dec 2026 14:00)",
+                " 4.[D][ ] late (by: 1 Jan 2027 00:00)",
+                " 5.[T][ ] read",
+                " 6.[T][ ] buy"
+              ]
+            },
+            {
+              "input": "sort",
+              "output": [
+                " Sorted chronologically (deadlines by due time, events by start time; todos last).",
+                " Here are the tasks in your list:",
+                " 1.[D][ ] early (by: 2 Dec 2026 13:00)",
+                " 2.[E][ ] meeting (from: 2 Dec 2026 14:00 to: 2 Dec 2026 16:00)",
+                " 3.[D][X] tie (by: 2 Dec 2026 14:00)",
+                " 4.[D][ ] late (by: 1 Jan 2027 00:00)",
+                " 5.[T][ ] read",
+                " 6.[T][ ] buy"
+              ]
+            },
+            {
+              "input": "bye",
+              "output": [
+                "See you later. Complete your tasks on time!"
+              ]
+            }
+          ]
+        },
+        {
+          "steps": [
+            {
+              "input": "list",
+              "output": [
+                " Here are the tasks in your list:",
+                " 1.[D][ ] early (by: 2 Dec 2026 13:00)",
+                " 2.[E][ ] meeting (from: 2 Dec 2026 14:00 to: 2 Dec 2026 16:00)",
+                " 3.[D][X] tie (by: 2 Dec 2026 14:00)",
+                " 4.[D][ ] late (by: 1 Jan 2027 00:00)",
+                " 5.[T][ ] read",
+                " 6.[T][ ] buy"
+              ]
+            },
+            {
+              "input": "mark 1",
+              "output": [
+                " Nice! I've marked this task as done:",
+                "   [D][X] early (by: 2 Dec 2026 13:00)"
+              ]
+            },
+            {
+              "input": "delete 4",
+              "output": [
+                " Noted. I've removed this task:",
+                "   [D][ ] late (by: 1 Jan 2027 00:00)",
+                " Now you have 5 tasks in the list."
+              ]
+            },
+            {
+              "input": "list",
+              "output": [
+                " Here are the tasks in your list:",
+                " 1.[D][X] early (by: 2 Dec 2026 13:00)",
+                " 2.[E][ ] meeting (from: 2 Dec 2026 14:00 to: 2 Dec 2026 16:00)",
+                " 3.[D][X] tie (by: 2 Dec 2026 14:00)",
+                " 4.[T][ ] read",
+                " 5.[T][ ] buy"
+              ]
+            },
+            {
+              "input": "bye",
+              "output": [
+                "See you later. Complete your tasks on time!"
+              ]
+            }
+          ]
+        }
+      ],
+      "saved": "D | 1 | early | 2026-12-02T13:00\nE | 0 | meeting | 2026-12-02T14:00 | 2026-12-02T16:00\nD | 1 | tie | 2026-12-02T14:00\nT | 0 | read\nT | 0 | buy\n"
+    },
+    {
+      "id": "S2",
+      "aim": "Empty sort creates no file; invalid sort options give usage and longer words stay unknown.",
+      "sessions": [
+        {
+          "steps": [
+            {
+              "input": "sort",
+              "output": [
+                " MARY has no saved tasks yet."
+              ]
+            },
+            {
+              "input": "sort descending",
+              "output": [
+                " Error: use 'sort' without arguments to order tasks chronologically."
+              ]
+            },
+            {
+              "input": "sorter",
+              "output": [
+                " Error: I don't recognize that command; use todo, deadline, event, on, list, find, sort, mark, unmark, delete, or bye."
+              ]
+            },
+            {
+              "input": "bye",
+              "output": [
+                "See you later. Complete your tasks on time!"
+              ]
+            }
+          ]
+        }
+      ],
+      "saved": null
+    },
+    {
+      "id": "S3",
+      "aim": "Todo-only sorting is stable and accepts trailing whitespace without changing completion states.",
+      "seed": "T | 1 | z task\nT | 0 | a task\n",
+      "sessions": [
+        {
+          "steps": [
+            {
+              "input": "sort \t",
+              "output": [
+                " Sorted chronologically (deadlines by due time, events by start time; todos last).",
+                " Here are the tasks in your list:",
+                " 1.[T][X] z task",
+                " 2.[T][ ] a task"
+              ]
+            },
+            {
+              "input": "bye",
+              "output": [
+                "See you later. Complete your tasks on time!"
+              ]
+            }
+          ]
+        }
+      ],
+      "saved": "T | 1 | z task\nT | 0 | a task\n"
     }
   ]
 }
@@ -7239,6 +7393,653 @@ What's on your list today?
 ____________________________________________________________
 ____________________________________________________________
  No matching tasks found.
+____________________________________________________________
+____________________________________________________________
+See you later. Complete your tasks on time!
+____________________________________________________________
+```
+
+## Chronological sorting execution — 2026-10-04
+
+Java 25, assertions enabled, rebuilt fat JAR, isolated working directories.
+All 11 cases (R1, R2, P1–P4, F1, F2, S1–S3) passed across 13 sessions, including
+restart persistence. Exact stdout, empty stderr, exit 0 and saved contents matched
+the recorded plan. Each JSON input entry below is followed by a newline; stdin is
+then closed. Unknown-command help now includes sort; historical records remain
+unchanged. New sorting cases cover ties, todos, repeat sorting, renumbering,
+restart, empty lists and invalid arguments.
+
+### Chronological sorting R1, session 1 — PASS
+
+Console input:
+
+```json
+[
+  "todo read",
+  "mark",
+  "unmark",
+  "mark ",
+  "unmark ",
+  "on 29/2/2023",
+  "deadline invalid /by 31/4/2024 1800",
+  "event invalid /from 29/2/2023 1400 /to 1/3/2023 1600",
+  "list",
+  "bye"
+]
+```
+
+Console output:
+
+```text
+____________________________________________________________
+____________________________________________________________
+ /\_/\
+( o.o )   M A R Y
+ > ^ <    Your purr-sonal task assistant.
+
+What's on your list today?
+____________________________________________________________
+____________________________________________________________
+ Got it. I've added this task:
+   [T][ ] read
+ Now you have 1 tasks in the list.
+____________________________________________________________
+____________________________________________________________
+ Error: use 'mark N' or 'unmark N', where N is a task number.
+____________________________________________________________
+____________________________________________________________
+ Error: use 'mark N' or 'unmark N', where N is a task number.
+____________________________________________________________
+____________________________________________________________
+ Error: use 'mark N' or 'unmark N', where N is a task number.
+____________________________________________________________
+____________________________________________________________
+ Error: use 'mark N' or 'unmark N', where N is a task number.
+____________________________________________________________
+____________________________________________________________
+ Error: use date format d/M/yyyy, for example 2/12/2019.
+____________________________________________________________
+____________________________________________________________
+ Error: use date/time format d/M/yyyy HHmm, for example 2/12/2019 1800.
+____________________________________________________________
+____________________________________________________________
+ Error: use event date/time format d/M/yyyy HHmm for both /from and /to.
+____________________________________________________________
+____________________________________________________________
+ Here are the tasks in your list:
+ 1.[T][ ] read
+____________________________________________________________
+____________________________________________________________
+See you later. Complete your tasks on time!
+____________________________________________________________
+```
+
+### Chronological sorting R2, session 1 — PASS
+
+Console input:
+
+```json
+[
+  "list",
+  "bye"
+]
+```
+
+Console output:
+
+```text
+____________________________________________________________
+ Error: the saved task data is corrupted: invalid record on line 1.
+____________________________________________________________
+____________________________________________________________
+ /\_/\
+( o.o )   M A R Y
+ > ^ <    Your purr-sonal task assistant.
+
+What's on your list today?
+____________________________________________________________
+____________________________________________________________
+ MARY has no saved tasks yet.
+____________________________________________________________
+____________________________________________________________
+See you later. Complete your tasks on time!
+____________________________________________________________
+```
+
+### Chronological sorting P1, session 1 — PASS
+
+Console input:
+
+```json
+[
+  "list",
+  "todo read book",
+  "deadline return book /by 2/12/2019 1800",
+  "event project meeting /from 2/12/2019 1400 /to 4/12/2019 1600",
+  "list",
+  "mark 2",
+  "unmark 2",
+  "mark 1",
+  "delete 2",
+  "list",
+  "on 3/12/2019",
+  "on 1/12/2019",
+  "bye"
+]
+```
+
+Console output:
+
+```text
+____________________________________________________________
+____________________________________________________________
+ /\_/\
+( o.o )   M A R Y
+ > ^ <    Your purr-sonal task assistant.
+
+What's on your list today?
+____________________________________________________________
+____________________________________________________________
+ MARY has no saved tasks yet.
+____________________________________________________________
+____________________________________________________________
+ Got it. I've added this task:
+   [T][ ] read book
+ Now you have 1 tasks in the list.
+____________________________________________________________
+____________________________________________________________
+ Got it. I've added this task:
+   [D][ ] return book (by: 2 Dec 2019 18:00)
+ Now you have 2 tasks in the list.
+____________________________________________________________
+____________________________________________________________
+ Got it. I've added this task:
+   [E][ ] project meeting (from: 2 Dec 2019 14:00 to: 4 Dec 2019 16:00)
+ Now you have 3 tasks in the list.
+____________________________________________________________
+____________________________________________________________
+ Here are the tasks in your list:
+ 1.[T][ ] read book
+ 2.[D][ ] return book (by: 2 Dec 2019 18:00)
+ 3.[E][ ] project meeting (from: 2 Dec 2019 14:00 to: 4 Dec 2019 16:00)
+____________________________________________________________
+____________________________________________________________
+ Nice! I've marked this task as done:
+   [D][X] return book (by: 2 Dec 2019 18:00)
+____________________________________________________________
+____________________________________________________________
+ OK, I've marked this task as not done yet:
+   [D][ ] return book (by: 2 Dec 2019 18:00)
+____________________________________________________________
+____________________________________________________________
+ Nice! I've marked this task as done:
+   [T][X] read book
+____________________________________________________________
+____________________________________________________________
+ Noted. I've removed this task:
+   [D][ ] return book (by: 2 Dec 2019 18:00)
+ Now you have 2 tasks in the list.
+____________________________________________________________
+____________________________________________________________
+ Here are the tasks in your list:
+ 1.[T][X] read book
+ 2.[E][ ] project meeting (from: 2 Dec 2019 14:00 to: 4 Dec 2019 16:00)
+____________________________________________________________
+____________________________________________________________
+ Tasks occurring on 2019-12-03:
+ [E][ ] project meeting (from: 2 Dec 2019 14:00 to: 4 Dec 2019 16:00)
+____________________________________________________________
+____________________________________________________________
+ No deadlines or events occur on 2019-12-01.
+____________________________________________________________
+____________________________________________________________
+See you later. Complete your tasks on time!
+____________________________________________________________
+```
+
+### Chronological sorting P1, session 2 — PASS
+
+Console input:
+
+```json
+[
+  "list",
+  "on 3/12/2019",
+  "bye"
+]
+```
+
+Console output:
+
+```text
+____________________________________________________________
+____________________________________________________________
+ /\_/\
+( o.o )   M A R Y
+ > ^ <    Your purr-sonal task assistant.
+
+What's on your list today?
+____________________________________________________________
+____________________________________________________________
+ Here are the tasks in your list:
+ 1.[T][X] read book
+ 2.[E][ ] project meeting (from: 2 Dec 2019 14:00 to: 4 Dec 2019 16:00)
+____________________________________________________________
+____________________________________________________________
+ Tasks occurring on 2019-12-03:
+ [E][ ] project meeting (from: 2 Dec 2019 14:00 to: 4 Dec 2019 16:00)
+____________________________________________________________
+____________________________________________________________
+See you later. Complete your tasks on time!
+____________________________________________________________
+```
+
+### Chronological sorting P2, session 1 — PASS
+
+Console input:
+
+```json
+[
+  "",
+  "blah",
+  "todo",
+  "deadline homework",
+  "event meeting /from 2pm",
+  "mark abc",
+  "delete 0",
+  "deadline return book /by tomorrow",
+  "event meeting /from 2/12/2019 /to 2/12/2019 1600",
+  "on tomorrow",
+  "list",
+  "bye"
+]
+```
+
+Console output:
+
+```text
+____________________________________________________________
+____________________________________________________________
+ /\_/\
+( o.o )   M A R Y
+ > ^ <    Your purr-sonal task assistant.
+
+What's on your list today?
+____________________________________________________________
+____________________________________________________________
+ Error: please enter a command or task.
+____________________________________________________________
+____________________________________________________________
+ Error: I don't recognize that command; use todo, deadline, event, on, list, find, sort, mark, unmark, delete, or bye.
+____________________________________________________________
+____________________________________________________________
+ Error: use 'todo description' to add a task without a date.
+____________________________________________________________
+____________________________________________________________
+ Error: use 'deadline description /by date or time'.
+____________________________________________________________
+____________________________________________________________
+ Error: use 'event description /from start /to end'.
+____________________________________________________________
+____________________________________________________________
+ Error: 'abc' is not a valid task number; use a positive whole number.
+____________________________________________________________
+____________________________________________________________
+ Error: task 0 does not exist; use 'list' to see valid task numbers.
+____________________________________________________________
+____________________________________________________________
+ Error: use date/time format d/M/yyyy HHmm, for example 2/12/2019 1800.
+____________________________________________________________
+____________________________________________________________
+ Error: use event date/time format d/M/yyyy HHmm for both /from and /to.
+____________________________________________________________
+____________________________________________________________
+ Error: use date format d/M/yyyy, for example 2/12/2019.
+____________________________________________________________
+____________________________________________________________
+ MARY has no saved tasks yet.
+____________________________________________________________
+____________________________________________________________
+See you later. Complete your tasks on time!
+____________________________________________________________
+```
+
+### Chronological sorting P3, session 1 — PASS
+
+Console input:
+
+```json
+[
+  "list",
+  "bye"
+]
+```
+
+Console output:
+
+```text
+____________________________________________________________
+ Error: the saved task data is corrupted: invalid record on line 1.
+____________________________________________________________
+____________________________________________________________
+ /\_/\
+( o.o )   M A R Y
+ > ^ <    Your purr-sonal task assistant.
+
+What's on your list today?
+____________________________________________________________
+____________________________________________________________
+ MARY has no saved tasks yet.
+____________________________________________________________
+____________________________________________________________
+See you later. Complete your tasks on time!
+____________________________________________________________
+```
+
+### Chronological sorting P4, session 1 — PASS
+
+Console input:
+
+```json
+[]
+```
+
+Console output:
+
+```text
+____________________________________________________________
+____________________________________________________________
+ /\_/\
+( o.o )   M A R Y
+ > ^ <    Your purr-sonal task assistant.
+
+What's on your list today?
+____________________________________________________________
+```
+
+### Chronological sorting F1, session 1 — PASS
+
+Console input:
+
+```json
+[
+  "find book",
+  "find   BOOK  ",
+  "find ook",
+  "find read book",
+  "find Dec",
+  "find [X]",
+  "find missing",
+  "find",
+  "find   ",
+  "finder book",
+  "list",
+  "bye"
+]
+```
+
+Console output:
+
+```text
+____________________________________________________________
+____________________________________________________________
+ /\_/\
+( o.o )   M A R Y
+ > ^ <    Your purr-sonal task assistant.
+
+What's on your list today?
+____________________________________________________________
+____________________________________________________________
+ Here are the matching tasks in your list:
+ 1.[T][X] read book
+ 2.[D][X] return Book (by: 2 Dec 2019 18:00)
+ 3.[E][ ] BOOK club (from: 2 Dec 2019 14:00 to: 2 Dec 2019 16:00)
+____________________________________________________________
+____________________________________________________________
+ Here are the matching tasks in your list:
+ 1.[T][X] read book
+ 2.[D][X] return Book (by: 2 Dec 2019 18:00)
+ 3.[E][ ] BOOK club (from: 2 Dec 2019 14:00 to: 2 Dec 2019 16:00)
+____________________________________________________________
+____________________________________________________________
+ Here are the matching tasks in your list:
+ 1.[T][X] read book
+ 2.[D][X] return Book (by: 2 Dec 2019 18:00)
+ 3.[E][ ] BOOK club (from: 2 Dec 2019 14:00 to: 2 Dec 2019 16:00)
+____________________________________________________________
+____________________________________________________________
+ Here are the matching tasks in your list:
+ 1.[T][X] read book
+____________________________________________________________
+____________________________________________________________
+ No matching tasks found.
+____________________________________________________________
+____________________________________________________________
+ No matching tasks found.
+____________________________________________________________
+____________________________________________________________
+ No matching tasks found.
+____________________________________________________________
+____________________________________________________________
+ Error: use 'find keyword', for example 'find book'.
+____________________________________________________________
+____________________________________________________________
+ Error: use 'find keyword', for example 'find book'.
+____________________________________________________________
+____________________________________________________________
+ Error: I don't recognize that command; use todo, deadline, event, on, list, find, sort, mark, unmark, delete, or bye.
+____________________________________________________________
+____________________________________________________________
+ Here are the tasks in your list:
+ 1.[T][ ] buy bread
+ 2.[T][X] read book
+ 3.[D][X] return Book (by: 2 Dec 2019 18:00)
+ 4.[E][ ] BOOK club (from: 2 Dec 2019 14:00 to: 2 Dec 2019 16:00)
+____________________________________________________________
+____________________________________________________________
+See you later. Complete your tasks on time!
+____________________________________________________________
+```
+
+### Chronological sorting F2, session 1 — PASS
+
+Console input:
+
+```json
+[
+  "find book",
+  "bye"
+]
+```
+
+Console output:
+
+```text
+____________________________________________________________
+____________________________________________________________
+ /\_/\
+( o.o )   M A R Y
+ > ^ <    Your purr-sonal task assistant.
+
+What's on your list today?
+____________________________________________________________
+____________________________________________________________
+ No matching tasks found.
+____________________________________________________________
+____________________________________________________________
+See you later. Complete your tasks on time!
+____________________________________________________________
+```
+
+### Chronological sorting S1, session 1 — PASS
+
+Console input:
+
+```json
+[
+  "sort",
+  "sort",
+  "bye"
+]
+```
+
+Console output:
+
+```text
+____________________________________________________________
+____________________________________________________________
+ /\_/\
+( o.o )   M A R Y
+ > ^ <    Your purr-sonal task assistant.
+
+What's on your list today?
+____________________________________________________________
+____________________________________________________________
+ Sorted chronologically (deadlines by due time, events by start time; todos last).
+ Here are the tasks in your list:
+ 1.[D][ ] early (by: 2 Dec 2026 13:00)
+ 2.[E][ ] meeting (from: 2 Dec 2026 14:00 to: 2 Dec 2026 16:00)
+ 3.[D][X] tie (by: 2 Dec 2026 14:00)
+ 4.[D][ ] late (by: 1 Jan 2027 00:00)
+ 5.[T][ ] read
+ 6.[T][ ] buy
+____________________________________________________________
+____________________________________________________________
+ Sorted chronologically (deadlines by due time, events by start time; todos last).
+ Here are the tasks in your list:
+ 1.[D][ ] early (by: 2 Dec 2026 13:00)
+ 2.[E][ ] meeting (from: 2 Dec 2026 14:00 to: 2 Dec 2026 16:00)
+ 3.[D][X] tie (by: 2 Dec 2026 14:00)
+ 4.[D][ ] late (by: 1 Jan 2027 00:00)
+ 5.[T][ ] read
+ 6.[T][ ] buy
+____________________________________________________________
+____________________________________________________________
+See you later. Complete your tasks on time!
+____________________________________________________________
+```
+
+### Chronological sorting S1, session 2 — PASS
+
+Console input:
+
+```json
+[
+  "list",
+  "mark 1",
+  "delete 4",
+  "list",
+  "bye"
+]
+```
+
+Console output:
+
+```text
+____________________________________________________________
+____________________________________________________________
+ /\_/\
+( o.o )   M A R Y
+ > ^ <    Your purr-sonal task assistant.
+
+What's on your list today?
+____________________________________________________________
+____________________________________________________________
+ Here are the tasks in your list:
+ 1.[D][ ] early (by: 2 Dec 2026 13:00)
+ 2.[E][ ] meeting (from: 2 Dec 2026 14:00 to: 2 Dec 2026 16:00)
+ 3.[D][X] tie (by: 2 Dec 2026 14:00)
+ 4.[D][ ] late (by: 1 Jan 2027 00:00)
+ 5.[T][ ] read
+ 6.[T][ ] buy
+____________________________________________________________
+____________________________________________________________
+ Nice! I've marked this task as done:
+   [D][X] early (by: 2 Dec 2026 13:00)
+____________________________________________________________
+____________________________________________________________
+ Noted. I've removed this task:
+   [D][ ] late (by: 1 Jan 2027 00:00)
+ Now you have 5 tasks in the list.
+____________________________________________________________
+____________________________________________________________
+ Here are the tasks in your list:
+ 1.[D][X] early (by: 2 Dec 2026 13:00)
+ 2.[E][ ] meeting (from: 2 Dec 2026 14:00 to: 2 Dec 2026 16:00)
+ 3.[D][X] tie (by: 2 Dec 2026 14:00)
+ 4.[T][ ] read
+ 5.[T][ ] buy
+____________________________________________________________
+____________________________________________________________
+See you later. Complete your tasks on time!
+____________________________________________________________
+```
+
+### Chronological sorting S2, session 1 — PASS
+
+Console input:
+
+```json
+[
+  "sort",
+  "sort descending",
+  "sorter",
+  "bye"
+]
+```
+
+Console output:
+
+```text
+____________________________________________________________
+____________________________________________________________
+ /\_/\
+( o.o )   M A R Y
+ > ^ <    Your purr-sonal task assistant.
+
+What's on your list today?
+____________________________________________________________
+____________________________________________________________
+ MARY has no saved tasks yet.
+____________________________________________________________
+____________________________________________________________
+ Error: use 'sort' without arguments to order tasks chronologically.
+____________________________________________________________
+____________________________________________________________
+ Error: I don't recognize that command; use todo, deadline, event, on, list, find, sort, mark, unmark, delete, or bye.
+____________________________________________________________
+____________________________________________________________
+See you later. Complete your tasks on time!
+____________________________________________________________
+```
+
+### Chronological sorting S3, session 1 — PASS
+
+Console input:
+
+```json
+[
+  "sort \t",
+  "bye"
+]
+```
+
+Console output:
+
+```text
+____________________________________________________________
+____________________________________________________________
+ /\_/\
+( o.o )   M A R Y
+ > ^ <    Your purr-sonal task assistant.
+
+What's on your list today?
+____________________________________________________________
+____________________________________________________________
+ Sorted chronologically (deadlines by due time, events by start time; todos last).
+ Here are the tasks in your list:
+ 1.[T][X] z task
+ 2.[T][ ] a task
 ____________________________________________________________
 ____________________________________________________________
 See you later. Complete your tasks on time!

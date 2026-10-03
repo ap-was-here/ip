@@ -49,6 +49,20 @@ Input and replies are local, not sent to an online service. Conversation history
 is not saved; tasks are loaded when you reopen the app. Use one app instance at a
 time to avoid concurrent edits to the same file.
 
+## Sort tasks
+
+Enter `sort` to reorder and display the whole list chronologically:
+
+- Deadlines use their due date/time; events use their start date/time.
+- Earliest dates come first, with todos (no date) at the end.
+- Equal times and todos keep their relative order; completion status is unchanged.
+- The new order is saved and retained after restarting. Use the displayed task
+  numbers for subsequent `mark`, `unmark`, and `delete` commands.
+- `sort` takes no arguments. An empty list is left unchanged without creating a file.
+
+If saving fails, MARY reports the error; the list remains sorted in memory but
+the new order is not guaranteed to persist. Correct the file problem and retry.
+
 ## Find tasks
 
 Enter `find book` to find descriptions containing `book`, ignoring letter case.
@@ -79,7 +93,7 @@ src/main/java/mary/
 ├── Launcher.java, Mary.java
 ├── task/       Task, Todo, Deadline, Event, TaskList, TaskType, TaskStatus
 ├── command/    Command, AddCommand, DeleteCommand, ExitCommand, ListCommand,
-│               MarkCommand, OnCommand, FindCommand, UnknownCommand, CommandType
+│               MarkCommand, OnCommand, FindCommand, SortCommand, UnknownCommand, CommandType
 ├── parser/     Parser
 ├── storage/    Storage
 ├── ui/         Ui, MaryApplication, ChatWindow
