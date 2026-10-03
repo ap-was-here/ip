@@ -11,7 +11,7 @@ No coverage percentage is inferred from test counts.
 | Area | Primary methods | Why |
 | --- | --- | --- |
 | Parser | `parse`, `parseTask`, private `parseTodo`, `parseDeadline`, `parseEvent` through `parseTask` | Dispatch, required arguments, date validation |
-| Storage (3) | `load`, `save`, `parseRecord` via `load` | Data integrity, round-trips, corrupted data, I/O errors |
+| Storage | `load`, `save`, private `parseRecord` and `validateFields` via `load` | Data integrity, round-trips, corrupted data, I/O errors |
 | Task (6) | `markAsDone`, `markAsNotDone`, `setDone`, `parseDate`, `parseDateTime`, `formatDateTime` via display | Completion state and date semantics |
 | TaskList (3) | `add`, `remove`, `getTasks` | Ordering, index boundaries, ownership of the collection |
 | Task subtypes (5) | `Todo.toString`, `Deadline.toString`, `Deadline.toStorageRecord`, `Event.toString`, `Event.toStorageRecord` | Polymorphic display and persistence contracts |
@@ -42,6 +42,17 @@ An existing defect should be reported with its failing regression test rather
 than changing an assertion to bless incorrect behavior.
 
 ## Latest execution
+
+2026-10-03, storage validation: Java 25 `check guiTest` passed 74 unit tests,
+eight GUI tests, Checkstyle and JAR verification. Expanded malformed-record
+coverage for missing/extra fields and unknown types, and added a test preserving
+the precedence of shape, status and description errors. The selected persistence
+methods now include `validateFields`, tested through `load`. An initial switch
+indentation violation was fixed before the successful rerun. All eight UI cases
+passed in nine isolated sessions with assertions enabled; full console records
+are in `ui-test-plan.md`.
+
+### Earlier parser extraction execution
 
 2026-10-03, parser extraction: Java 25 `check guiTest` passed 73 unit tests,
 eight GUI tests, Checkstyle and JAR verification. Added a padded-argument/Unicode

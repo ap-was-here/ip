@@ -104,6 +104,8 @@ class StorageTest {
     void load_badTypesAndFieldCounts_reportsRecordLine() throws Exception {
         for (String record : List.of("nonsense", "Q | 0 | read", "T | 0",
                 "D | 0 | read", "E | 0 | read | 2019-12-02T14:00",
+                "E | 0 | read | 2019-12-02T14:00 | 2019-12-02T16:00 | extra",
+                " | 0 | read", "t | 0 | read", "D", "E",
                 "D | 0 | read | 2019-12-02T18:00 | extra")) {
             Path file = directory.resolve("tasks.txt");
             Files.writeString(file, "T | 0 | valid\n" + record + "\n");
@@ -111,6 +113,24 @@ class StorageTest {
                     new Storage(file.toString()).load(), record);
             assertEquals("invalid record on line 2.", error.getMessage());
         }
+    }
+
+    /**
+     * Checks that structural errors are reported before status, description or date errors.
+     */
+    @Test
+    void load_multipleInvalidFields_preservesValidationOrder() throws Exception {
+        Path file = directory.resolve("tasks.txt");
+        Storage storage = new Storage(file.toString());
+        Files.writeString(file, "D | invalid | \n");
+        assertEquals("invalid record on line 1.",
+                assertThrows(MaryException.class, storage::load).getMessage());
+        Files.writeString(file, "D | invalid |  | bad\n");
+        assertEquals("invalid completion status on line 1.",
+                assertThrows(MaryException.class, storage::load).getMessage());
+        Files.writeString(file, "D | 0 |  | bad\n");
+        assertEquals("empty task description on line 1.",
+                assertThrows(MaryException.class, storage::load).getMessage());
     }
 
     /**
