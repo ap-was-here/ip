@@ -28,6 +28,17 @@ import mary.task.Todo;
  */
 class ParserTest {
     /**
+     * Checks that extracted parsers retain whitespace handling and Unicode descriptions.
+     */
+    @Test
+    void parseTask_paddedDatedArguments_preservesDescriptionAndDates() throws MaryException {
+        Task deadline = Parser.parseTask("deadline   return café book   /by   2/12/2019 1800  ");
+        assertEquals("D | 0 | return café book | 2019-12-02T18:00", deadline.toStorageRecord());
+        Task event = Parser.parseTask("event   book club   /from   2/12/2019 1400   /to   2/12/2019 1600  ");
+        assertEquals("E | 0 | book club | 2019-12-02T14:00 | 2019-12-02T16:00", event.toStorageRecord());
+    }
+
+    /**
      * Checks command-word boundaries and supported whitespace around search text.
      */
     @Test
