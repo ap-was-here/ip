@@ -84,18 +84,7 @@ public class Storage {
         // load supplies a one-based physical line number, including skipped blank lines.
         assert lineNumber > 0 : "Saved-record line numbers must be positive";
         String[] fields = record.split(" \\| ", -1);
-        if (fields.length < 3 || (fields[0].equals("T") && fields.length != 3)
-                || (fields[0].equals("D") && fields.length != 4)
-                || (fields[0].equals("E") && fields.length != 5)
-                || (!fields[0].equals("T") && !fields[0].equals("D") && !fields[0].equals("E"))) {
-            throw new MaryException("invalid record on line " + lineNumber + ".");
-        }
-        if (!fields[1].equals("0") && !fields[1].equals("1")) {
-            throw new MaryException("invalid completion status on line " + lineNumber + ".");
-        }
-        if (fields[2].isBlank()) {
-            throw new MaryException("empty task description on line " + lineNumber + ".");
-        }
+        validateFields(fields, lineNumber);
         try {
             Task task;
             if (fields[0].equals("T")) {
@@ -111,6 +100,28 @@ public class Storage {
             return task;
         } catch (DateTimeParseException exception) {
             throw new MaryException("invalid date/time on line " + lineNumber + ".");
+        }
+    }
+
+    /**
+     * Checks record shape before accessing common fields, preserving error precedence.
+     */
+    private void validateFields(String[] fields, int lineNumber) throws MaryException {
+        int expectedFieldCount = switch (fields[0]) {
+            case "T" -> 3;
+            case "D" -> 4;
+            case "E" -> 5;
+            default -> throw new MaryException("invalid record on line " + lineNumber + ".");
+        };
+        if (fields.length != expectedFieldCount) {
+            throw new MaryException("invalid record on line " + lineNumber + ".");
+        }
+        boolean isValidStatus = fields[1].equals("0") || fields[1].equals("1");
+        if (!isValidStatus) {
+            throw new MaryException("invalid completion status on line " + lineNumber + ".");
+        }
+        if (fields[2].isBlank()) {
+            throw new MaryException("empty task description on line " + lineNumber + ".");
         }
     }
 }
