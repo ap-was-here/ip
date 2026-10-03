@@ -146,6 +146,8 @@ public class ChatWindow extends BorderPane {
      * Executes a single command, keeps errors in the transcript, and ends on bye.
      */
     private void submit() {
+        // UI callbacks must not execute commands or mutate controls from a worker thread.
+        assert Platform.isFxApplicationThread() : "Command submission must run on the JavaFX thread";
         if (isEnded) {
             getScene().getWindow().hide();
             return;
@@ -171,6 +173,8 @@ public class ChatWindow extends BorderPane {
      * Appends a wrapped bubble with a readable sender label and responsive width.
      */
     private void addMessage(String text, boolean isUser) {
+        // Both startup and command replies update the same scene graph.
+        assert Platform.isFxApplicationThread() : "Chat messages must be added on the JavaFX thread";
         Label sender = new Label(isUser ? "YOU" : "MARY");
         sender.getStyleClass().add("sender");
         Label body = new Label(text);

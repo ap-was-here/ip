@@ -55,6 +55,8 @@ public class Mary {
     public boolean execute(String input) {
         if (!isExited) {
             Command command = Parser.parse(input);
+            // Even invalid user input must produce an UnknownCommand, never null.
+            assert command != null : "Parser must return a command for every input";
             command.execute(tasks, ui, storage);
             isExited = command.isExit();
         }

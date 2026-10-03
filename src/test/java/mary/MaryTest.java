@@ -59,6 +59,7 @@ class MaryTest {
      */
     @Test
     void execute_invalidInput_reportsErrorAndAcceptsNextCommand() {
+        assertTrue(Mary.class.desiredAssertionStatus(), "Run tests with Java assertions enabled");
         List<String> replies = new ArrayList<>();
         Mary mary = new Mary(directory.resolve("tasks.txt").toString(), new Ui(replies::add, false));
         for (String input : List.of("", "blah", "todo ", "mark", "deadline read /by tomorrow")) {

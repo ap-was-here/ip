@@ -28,6 +28,19 @@ class StorageTest {
     Path directory;
 
     /**
+     * Checks that skipped blank lines still count toward a corrupt record's location.
+     */
+    @Test
+    void load_blankLinesBeforeInvalidRecord_reportsPhysicalLineNumber() throws Exception {
+        assertTrue(Storage.class.desiredAssertionStatus(), "Run tests with Java assertions enabled");
+        Path file = directory.resolve("tasks.txt");
+        Files.writeString(file, "\n   \ninvalid\n");
+        MaryException error = assertThrows(MaryException.class, () -> new Storage(file.toString()).load());
+        assertEquals("invalid record on line 3.", error.getMessage());
+        assertEquals("\n   \ninvalid\n", Files.readString(file));
+    }
+
+    /**
      * Tests load: missing file; returns empty without creating file.
      */
     @Test
