@@ -5,6 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -14,6 +15,59 @@ import org.junit.jupiter.api.Test;
  * Verifies list ordering, deletion boundaries, and collection ownership.
  */
 class TaskListTest {
+    /**
+     * Checks mixed-type ordering, equal-time stability, duplicate references and completion state.
+     */
+    @Test
+    void sortChronologically_mixedTasks_preservesTiesAndState() {
+        LocalDateTime time = LocalDateTime.of(2026, 12, 2, 14, 0);
+        Task todo = new Todo("read");
+        Task nextTodo = new Todo("buy");
+        Task deadline = new Deadline("return", time);
+        deadline.markAsDone();
+        Task event = new Event("meeting", time, time.plusHours(2));
+        Task earlier = new Deadline("submit", time.minusHours(1));
+        TaskList tasks = new TaskList(List.of(todo, deadline, event, nextTodo, earlier, deadline));
+        tasks.sortChronologically();
+        List<Task> expected = List.of(earlier, deadline, event, deadline, todo, nextTodo);
+        assertEquals(expected, tasks.getTasks());
+        assertEquals("X", deadline.getStatusIcon());
+        tasks.sortChronologically();
+        assertEquals(expected, tasks.getTasks());
+    }
+
+    /**
+     * Checks that empty, single-task and undated lists keep their contents and order.
+     */
+    @Test
+    void sortChronologically_emptySingletonAndTodos_keepsOrder() {
+        TaskList tasks = new TaskList();
+        tasks.sortChronologically();
+        assertTrue(tasks.isEmpty());
+        Task first = new Todo("first");
+        tasks.add(first);
+        tasks.sortChronologically();
+        assertSame(first, tasks.get(0));
+        Task second = new Todo("second");
+        tasks.add(second);
+        tasks.sortChronologically();
+        assertEquals(List.of(first, second), tasks.getTasks());
+    }
+
+    /**
+     * Checks actual date/time ordering rather than formatted text, with undated tasks last.
+     */
+    @Test
+    void sortChronologically_dateBoundaries_ordersByDateAndTime() {
+        Task january = new Deadline("january", LocalDateTime.of(2027, 1, 1, 0, 0));
+        Task december = new Deadline("december", LocalDateTime.of(2026, 12, 31, 23, 59));
+        Task maximum = new Deadline("maximum", LocalDateTime.MAX);
+        Task todo = new Todo("undated");
+        TaskList tasks = new TaskList(List.of(todo, maximum, january, december));
+        tasks.sortChronologically();
+        assertEquals(List.of(december, january, maximum, todo), tasks.getTasks());
+    }
+
     /**
      * Tests add: empty list; preserves insertion order and object identity.
      */

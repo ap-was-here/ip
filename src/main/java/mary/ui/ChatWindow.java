@@ -74,9 +74,10 @@ public class ChatWindow extends BorderPane {
         Label examples = new Label("todo read book\n"
                 + "deadline return book /by 2/12/2026 1800\n"
                 + "event meeting /from 2/12/2026 1400 /to 2/12/2026 1600\n"
-                + "list  |  find book  |  on 2/12/2026\n"
+                + "list  |  find book  |  on 2/12/2026  |  sort\n"
                 + "mark 1  |  unmark 1  |  delete 1  |  bye\n\n"
                 + "Dates: day/month/year; times: 24-hour HHmm.\n"
+                + "Sort: earliest due/start time first; todos last. Saves new task numbers.\n"
                 + "Use list for the task numbers used by mark, unmark, and delete.");
         examples.setWrapText(true);
         examples.getStyleClass().add("guide-text");

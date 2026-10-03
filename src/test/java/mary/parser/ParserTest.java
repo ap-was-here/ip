@@ -7,6 +7,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 import org.junit.jupiter.api.Test;
 
@@ -16,6 +17,7 @@ import mary.command.FindCommand;
 import mary.command.ListCommand;
 import mary.command.MarkCommand;
 import mary.command.OnCommand;
+import mary.command.SortCommand;
 import mary.command.UnknownCommand;
 import mary.exception.MaryException;
 import mary.task.Deadline;
@@ -27,6 +29,19 @@ import mary.task.Todo;
  * Verifies command dispatch and task syntax independently of console I/O.
  */
 class ParserTest {
+    /**
+     * Checks the exact sort word, whitespace and invalid arguments without matching longer words.
+     */
+    @Test
+    void parse_sortCommand_dispatchesOnlyExactWord() {
+        for (String input : List.of("sort", "sort ", "sort\t", "sort descending")) {
+            assertInstanceOf(SortCommand.class, Parser.parse(input));
+        }
+        for (String input : List.of("sorter", "sortbook", "SORT")) {
+            assertInstanceOf(UnknownCommand.class, Parser.parse(input));
+        }
+    }
+
     /**
      * Checks that extracted parsers retain whitespace handling and Unicode descriptions.
      */

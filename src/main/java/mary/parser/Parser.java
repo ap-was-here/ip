@@ -10,6 +10,7 @@ import mary.command.FindCommand;
 import mary.command.ListCommand;
 import mary.command.MarkCommand;
 import mary.command.OnCommand;
+import mary.command.SortCommand;
 import mary.command.UnknownCommand;
 import mary.exception.MaryException;
 import mary.task.Deadline;
@@ -32,6 +33,11 @@ public class Parser {
      * Creates the command object matching the input command.
      */
     public static Command parse(String command) {
+        if (command.equals("sort")
+                || (command.startsWith("sort") && command.length() > 4
+                && Character.isWhitespace(command.charAt(4)))) {
+            return new SortCommand(command.substring(4));
+        }
         if (command.equals("find")
                 || (command.startsWith("find") && command.length() > 4
                 && Character.isWhitespace(command.charAt(4)))) {

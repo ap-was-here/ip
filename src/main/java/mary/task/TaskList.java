@@ -1,6 +1,8 @@
 package mary.task;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -64,6 +66,28 @@ public class TaskList {
      */
     public List<Task> getTasks() {
         return new ArrayList<>(tasks);
+    }
+
+    /**
+     * Sorts by deadline due time or event start time, with undated tasks last.
+     * Equal times and undated tasks retain their relative order and completion state.
+     */
+    public void sortChronologically() {
+        tasks.sort(Comparator.comparing(TaskList::getScheduledTime,
+                Comparator.nullsLast(Comparator.naturalOrder())));
+    }
+
+    /**
+     * Returns the relevant chronological key, or null for an undated task.
+     */
+    private static LocalDateTime getScheduledTime(Task task) {
+        if (task instanceof Deadline deadline) {
+            return deadline.getBy();
+        }
+        if (task instanceof Event event) {
+            return event.getFrom();
+        }
+        return null;
     }
 
     /**
