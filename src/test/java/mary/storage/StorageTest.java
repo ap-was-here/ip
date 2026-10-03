@@ -181,8 +181,8 @@ class StorageTest {
      */
     @Test
     void load_directoryInsteadOfFile_wrapsIoFailure() {
-        assertEquals("could not read " + directory + ".", assertThrows(MaryException.class, () ->
-                new Storage(directory.toString()).load()).getMessage());
+        assertTrue(assertThrows(MaryException.class, () -> new Storage(directory.toString()).load())
+                .getMessage().startsWith("could not read " + directory + ". Check"));
     }
 
     /**
@@ -190,7 +190,8 @@ class StorageTest {
      */
     @Test
     void save_directoryInsteadOfFile_wrapsIoFailure() {
-        assertEquals("could not save tasks to " + directory + ".", assertThrows(MaryException.class, () ->
-                new Storage(directory.toString()).save(List.of(new Todo("read")))).getMessage());
+        assertTrue(assertThrows(MaryException.class, () ->
+                new Storage(directory.toString()).save(List.of(new Todo("read"))))
+                .getMessage().startsWith("could not save tasks to " + directory + ". Check"));
     }
 }

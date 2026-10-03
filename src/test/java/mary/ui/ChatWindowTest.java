@@ -244,6 +244,11 @@ class ChatWindowTest {
         });
         openWindow();
         assertTrue(onFxThread(() -> transcript().contains("invalid record on line 1.")));
+        onFxThread(() -> {
+            enter("todo must not overwrite");
+            assertTrue(transcript().contains("saving is disabled"));
+            return null;
+        });
         assertEquals("broken\n", Files.readString(directory.resolve("tasks.txt")));
     }
 

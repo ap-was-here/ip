@@ -1,10 +1,16 @@
 package mary.parser;
 
+import java.time.LocalDateTime;
 import java.time.format.DateTimeParseException;
+import java.util.HashSet;
+import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import mary.command.AddCommand;
 import mary.command.Command;
 import mary.command.DeleteCommand;
+import mary.command.ErrorCommand;
 import mary.command.ExitCommand;
 import mary.command.FindCommand;
 import mary.command.ListCommand;
@@ -33,41 +39,45 @@ public class Parser {
      * Creates the command object matching the input command.
      */
     public static Command parse(String command) {
-        if (command.equals("sort")
-                || (command.startsWith("sort") && command.length() > 4
-                && Character.isWhitespace(command.charAt(4)))) {
-            return new SortCommand(command.substring(4));
+        if (command == null) {
+            return new UnknownCommand("");
         }
-        if (command.equals("find")
-                || (command.startsWith("find") && command.length() > 4
-                && Character.isWhitespace(command.charAt(4)))) {
-            return new FindCommand(command.substring(4));
+        if (command.chars().anyMatch(value -> Character.isISOControl(value) && value != '\t')) {
+            return new ErrorCommand("enter one command per line; remove control characters.");
         }
-        if (command.equals("bye")) {
-            return new ExitCommand();
-        }
-        if (command.equals("list")) {
-            return new ListCommand();
-        }
-        if (command.startsWith("delete")) {
-            return new DeleteCommand(command);
-        }
-        if (command.startsWith("mark") || command.startsWith("unmark")) {
-            return new MarkCommand(command);
-        }
-        if (command.startsWith("on")) {
-            return new OnCommand(command);
-        }
-        if (command.startsWith("todo") || command.startsWith("deadline") || command.startsWith("event")) {
-            return new AddCommand(command);
-        }
-        return new UnknownCommand(command);
+        String[] parts = command.strip().split("\\s+", 2);
+        String word = parts[0];
+        String arguments = parts.length == 2 ? parts[1].strip() : "";
+        String normalized = word + " " + arguments;
+        return switch (word) {
+            case "sort" -> new SortCommand(arguments);
+            case "find" -> new FindCommand(arguments);
+            case "bye", "list" -> arguments.isEmpty()
+                    ? (word.equals("bye") ? new ExitCommand() : new ListCommand())
+                    : new ErrorCommand("use '" + word + "' without arguments.");
+            case "delete" -> new DeleteCommand(normalized);
+            case "mark", "unmark" -> new MarkCommand(normalized);
+            case "on" -> new OnCommand(normalized);
+            case "todo", "deadline", "event" -> new AddCommand(normalized);
+            default -> new UnknownCommand(command);
+        };
     }
 
     /**
      * Converts a todo, deadline, or event command into a task.
      */
     public static Task parseTask(String command) throws MaryException {
+        if (command == null || command.chars().anyMatch(value -> Character.isISOControl(value) && value != '\t')) {
+            throw new MaryException("enter one command per line; remove control characters.");
+        }
+        if (command.contains("|")) {
+            throw new MaryException("task descriptions cannot contain '|'; replace it with another character.");
+        }
+        command = command.replace('\t', ' ').strip().replaceFirst("\\s+", " ");
+        if (!command.contains(" ")) {
+            command += " ";
+        }
+        validateMarkers(command);
         if (command.startsWith(TODO_PREFIX)) {
             return parseTodo(command.substring(TODO_PREFIX.length()).trim());
         }
@@ -78,6 +88,28 @@ public class Parser {
             return parseEvent(command.substring(EVENT_PREFIX.length()).trim());
         }
         throw new MaryException("use 'todo description' to add a task without a date.");
+    }
+
+    /**
+     * Rejects repeated named date parameters before splitting their values.
+     */
+    private static void validateMarkers(String command) throws MaryException {
+        if (command.startsWith(TODO_PREFIX)) {
+            return;
+        }
+        Matcher markers = Pattern.compile("(?:^|\\s)/(by|from|to)(?=\\s|$)").matcher(command);
+        Set<String> seen = new HashSet<>();
+        while (markers.find()) {
+            if (!seen.add(markers.group(1))) {
+                throw new MaryException("parameter /" + markers.group(1) + " is repeated; specify it only once.");
+            }
+            boolean isDeadlineParameter = command.startsWith(DEADLINE_PREFIX) && markers.group(1).equals("by");
+            boolean isEventParameter = command.startsWith(EVENT_PREFIX) && !markers.group(1).equals("by");
+            if (!isDeadlineParameter && !isEventParameter) {
+                throw new MaryException("parameter /" + markers.group(1)
+                        + " is not supported here; deadlines use /by, events use /from and /to.");
+            }
+        }
     }
 
     /**
@@ -94,13 +126,14 @@ public class Parser {
      * Separates deadline arguments and translates invalid dates into usage guidance.
      */
     private static Deadline parseDeadline(String content) throws MaryException {
+        content = content.replaceAll("\\s+/(by|from|to)\\s+", " /$1 ");
         int marker = content.indexOf(BY_MARKER);
         if (marker < 0 || content.substring(0, marker).trim().isEmpty()
                 || content.substring(marker + BY_MARKER.length()).trim().isEmpty()) {
             throw new MaryException("use 'deadline description /by date or time'.");
         }
         String description = content.substring(0, marker).trim();
-        String by = content.substring(marker + BY_MARKER.length()).trim();
+        String by = content.substring(marker + BY_MARKER.length()).trim().replaceAll("\\s+", " ");
         try {
             return new Deadline(description, Task.parseDateTime(by));
         } catch (DateTimeParseException exception) {
@@ -112,19 +145,25 @@ public class Parser {
      * Separates event arguments, preserving marker order and date validation rules.
      */
     private static Event parseEvent(String content) throws MaryException {
+        content = content.replaceAll("\\s+/(by|from|to)\\s+", " /$1 ");
         int fromMarker = content.indexOf(FROM_MARKER);
         int toMarker = content.indexOf(TO_MARKER);
         if (fromMarker < 0 || toMarker <= fromMarker) {
             throw new MaryException("use 'event description /from start /to end'.");
         }
         String description = content.substring(0, fromMarker).trim();
-        String from = content.substring(fromMarker + FROM_MARKER.length(), toMarker).trim();
-        String to = content.substring(toMarker + TO_MARKER.length()).trim();
+        String from = content.substring(fromMarker + FROM_MARKER.length(), toMarker).trim().replaceAll("\\s+", " ");
+        String to = content.substring(toMarker + TO_MARKER.length()).trim().replaceAll("\\s+", " ");
         if (description.isEmpty() || from.isEmpty() || to.isEmpty()) {
             throw new MaryException("event description, start time, and end time cannot be empty.");
         }
         try {
-            return new Event(description, Task.parseDateTime(from), Task.parseDateTime(to));
+            LocalDateTime start = Task.parseDateTime(from);
+            LocalDateTime end = Task.parseDateTime(to);
+            if (!start.isBefore(end)) {
+                throw new MaryException("event end must be after its start; correct /from or /to.");
+            }
+            return new Event(description, start, end);
         } catch (DateTimeParseException exception) {
             throw new MaryException("use event date/time format d/M/yyyy HHmm for both /from and /to.");
         }

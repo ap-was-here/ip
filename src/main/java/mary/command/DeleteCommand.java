@@ -1,5 +1,7 @@
 package mary.command;
 
+import java.util.List;
+
 import mary.exception.MaryException;
 import mary.storage.Storage;
 import mary.task.Task;
@@ -23,7 +25,7 @@ public class DeleteCommand extends Command {
 
     /**
      * Removes the selected one-based task number, saves the list, and displays confirmation.
-     * Invalid numbers and storage errors are displayed; a save failure does not restore the removed task.
+     * Invalid numbers and storage errors leave the original list unchanged.
      *
      * @param tasks current in-memory task list.
      * @param ui user-facing message handler.
@@ -37,13 +39,18 @@ public class DeleteCommand extends Command {
             if (numberText.isEmpty()) {
                 throw new MaryException("use 'delete N', where N is a task number.");
             }
+            if (!numberText.matches("[0-9]+")) {
+                throw new NumberFormatException();
+            }
             int index = Integer.parseInt(numberText) - 1;
             if (index < 0 || index >= tasks.size()) {
                 throw new MaryException("task " + numberText
                         + " does not exist; use 'list' to see valid task numbers.");
             }
-            Task removed = tasks.remove(index);
-            storage.save(tasks.getTasks());
+            List<Task> proposed = tasks.getTasks();
+            Task removed = proposed.remove(index);
+            storage.save(proposed);
+            tasks.replaceWith(proposed);
             ui.showMessages(" Whisked away! I've removed this task:",
                     "   " + removed,
                     " Tasks on your list: " + tasks.size() + ".");

@@ -44,6 +44,43 @@ than changing an assertion to bless incorrect behavior.
 
 ## Latest execution
 
+2026-10-04, working-folder confinement: 96 unit tests and 10 GUI tests passed
+on Java 25, with zero failures or skips. Checkstyle, JAR verification and the
+Windows packaged GUI smoke test passed. Four new subprocess tests prioritize
+`LocalPaths.validate` and `Launcher.configureLocalCaches` within the ~50%
+highest-value method selection. Tests cover traversal, outside absolute paths,
+local nested paths, Windows junction escapes, cache overrides, and blocked caches.
+Fixture temporary directories now live under `build/tmp`, so production storage
+checks remain active in tests. No containment bypass or configurable alternate root
+was added. JVM warnings for intentionally absent temp directories are captured
+separately; an initial harness-only failure caused by merged output was corrected.
+Unix symlink behavior is covered by the test's Unix branch but was not run on Windows.
+
+### Earlier error-handling execution
+
+2026-10-04, error-handling hardening: 92 unit tests and 10 JavaFX tests passed
+on Java 25 with assertions enabled; no skipped tests. Checkstyle and packaged
+JAR verification/Windows GUI smoke launch passed. The prioritized ~50% selection
+now includes exact command dispatch, repeated markers, event range validation,
+duplicate detail comparison, transactional mutations, and safe persistence.
+
+Added coverage for whitespace/tabs, missing arguments, wrong command boundaries,
+control characters/pipes, numeric overflow/signs, invalid dates, equal/reversed
+event ranges, duplicate details across task types and completion states, missing
+folders, malformed UTF-8, invalid paths/parents, write failures, and recovery.
+The GUI corrupt-file test now attempts an addition and confirms saving is blocked.
+Existing sorting failure expectations intentionally now require the original order,
+instead of documenting the former in-memory/disk divergence.
+
+Pre-existing defects fixed: prefix-based dispatch, invalid event ranges, repeated
+markers, descriptions that corrupt saved records, overwrite after a failed load,
+and mutation despite failed persistence. No regressions were observed.
+Actual disk exhaustion, platform ACL denial, and unsupported atomic-move filesystems
+were not reproduced; their I/O exceptions are handled by the save/load error paths.
+Continue to run one application instance at a time; concurrent writers are not supported.
+
+### Earlier cat-personality execution
+
 2026-10-04, cat-themed MARY: 83 unit tests and 10 JavaFX tests passed on Java 25.
 Updated identity, accessible cat-emblem, ASCII banner, and reply assertions;
 the prioritized ~50% method selection and all persistence checks are unchanged.

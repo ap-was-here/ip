@@ -1,6 +1,5 @@
 package mary;
 
-import java.nio.file.Path;
 import java.util.concurrent.FutureTask;
 import java.util.concurrent.TimeUnit;
 
@@ -19,7 +18,7 @@ public class PackagedGuiSmoke {
      * @throws Exception if JavaFX cannot initialize or render the window.
      */
     public static void main(String[] args) throws Exception {
-        System.setProperty("javafx.cachedir", Path.of(".mary", "javafx-cache").toAbsolutePath().toString());
+        Launcher.configureLocalCaches();
         FutureTask<Void> smoke = new FutureTask<>(() -> {
             Stage stage = new Stage();
             try {

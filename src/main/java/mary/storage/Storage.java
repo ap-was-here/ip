@@ -1,8 +1,12 @@
 package mary.storage;
 
 import java.io.IOException;
+import java.nio.file.AtomicMoveNotSupportedException;
 import java.nio.file.Files;
+import java.nio.file.InvalidPathException;
+import java.nio.file.LinkOption;
 import java.nio.file.Path;
+import java.nio.file.StandardCopyOption;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
@@ -19,6 +23,7 @@ import mary.task.Todo;
  */
 public class Storage {
     private final Path file;
+    private boolean isWriteBlocked;
 
     /**
      * Selects the data file without creating it or its parent directories.
@@ -26,7 +31,14 @@ public class Storage {
      * @param filePath file path; relative paths resolve from the working directory.
      */
     public Storage(String filePath) {
-        file = Path.of(filePath);
+        Path selected;
+        try {
+            // Use the same normalized path for validation and every subsequent file operation.
+            selected = Path.of(filePath).toAbsolutePath().normalize();
+        } catch (InvalidPathException exception) {
+            selected = null;
+        }
+        file = selected;
     }
 
     /**
@@ -37,39 +49,91 @@ public class Storage {
      */
     public List<Task> load() throws MaryException {
         ArrayList<Task> tasks = new ArrayList<>();
-        if (!Files.exists(file)) {
-            return tasks;
-        }
+        isWriteBlocked = true;
+        validatePath();
         try {
+            if (Files.notExists(file, LinkOption.NOFOLLOW_LINKS)) {
+                isWriteBlocked = false;
+                return tasks;
+            }
+            if (Files.isSymbolicLink(file)) {
+                throw new IOException("Symbolic links are not supported");
+            }
             List<String> records = Files.readAllLines(file);
             for (int i = 0; i < records.size(); i++) {
                 if (!records.get(i).isBlank()) {
                     tasks.add(parseRecord(records.get(i), i + 1));
                 }
             }
+            isWriteBlocked = false;
             return tasks;
-        } catch (IOException exception) {
-            throw new MaryException("could not read " + file + ".");
+        } catch (IOException | SecurityException exception) {
+            throw new MaryException("could not read " + file + ". Check that it is a readable UTF-8 file,"
+                    + " not a folder or link, then restart MARY.");
         }
     }
 
     /**
-     * Creates or overwrites the data file with the supplied tasks in list order.
-     * Parent directories must already exist; an empty list clears the file.
+     * Writes a sibling temporary file and atomically replaces the saved file.
+     * Creates missing parent directories; failed loads block writes until reloaded.
      *
      * @param tasks tasks to serialize.
      * @throws MaryException if writing the file fails.
      */
     public void save(List<Task> tasks) throws MaryException {
+        validatePath();
+        if (isWriteBlocked) {
+            throw new MaryException("saving is disabled because loading failed; repair or move the data file"
+                    + " and restart MARY. Your original file has not been changed.");
+        }
+        Path temporary = null;
         try {
+            if (Files.isSymbolicLink(file) || Files.isDirectory(file)
+                    || (Files.exists(file) && !Files.isWritable(file))) {
+                throw new IOException("Not a regular data file");
+            }
             ArrayList<String> records = new ArrayList<>();
             for (Task task : tasks) {
+                // Validate before touching the existing file, including tasks from non-parser callers.
+                parseRecord(task.toStorageRecord(), records.size() + 1);
                 records.add(task.toStorageRecord());
             }
-            Files.write(file, records);
-        } catch (IOException exception) {
-            throw new MaryException("could not save tasks to " + file + ".");
+            Path parent = file.toAbsolutePath().getParent();
+            LocalPaths.validate(parent);
+            Files.createDirectories(parent);
+            LocalPaths.validate(file);
+            temporary = Files.createTempFile(parent, ".mary-save-", ".tmp");
+            LocalPaths.validate(temporary);
+            Files.write(temporary, records);
+            LocalPaths.validate(file);
+            Files.move(temporary, file, StandardCopyOption.ATOMIC_MOVE, StandardCopyOption.REPLACE_EXISTING);
+        } catch (AtomicMoveNotSupportedException exception) {
+            throw new MaryException("this folder does not support safe atomic saves; move MARY and its data"
+                    + " to a local folder and retry. No task changes were applied.");
+        } catch (IOException | SecurityException exception) {
+            throw new MaryException("could not save tasks to " + file
+                    + ". Check folder permissions, free disk space, and file locks; then retry."
+                    + " No task changes were applied.");
+        } finally {
+            if (temporary != null) {
+                try {
+                    LocalPaths.validate(temporary);
+                    Files.deleteIfExists(temporary);
+                } catch (IOException | SecurityException | MaryException exception) {
+                    // Preserve the original error; an unused temporary file is safer than lost task data.
+                }
+            }
         }
+    }
+
+    /**
+     * Turns invalid configured paths into a recoverable application error.
+     */
+    private void validatePath() throws MaryException {
+        if (file == null) {
+            throw new MaryException("invalid data-file path; choose a valid file name and restart MARY.");
+        }
+        LocalPaths.validate(file);
     }
 
     /**
@@ -95,6 +159,10 @@ public class Storage {
                 // Validation above leaves only an event after the todo/deadline branches.
                 assert fields[0].equals("E") : "Validated remaining record type must be E";
                 task = new Event(fields[2], LocalDateTime.parse(fields[3]), LocalDateTime.parse(fields[4]));
+                Event event = (Event) task;
+                if (!event.getFrom().isBefore(event.getTo())) {
+                    throw new MaryException("event end must be after its start on line " + lineNumber + ".");
+                }
             }
             task.setDone(fields[1].equals("1"));
             return task;
@@ -122,6 +190,10 @@ public class Storage {
         }
         if (fields[2].isBlank()) {
             throw new MaryException("empty task description on line " + lineNumber + ".");
+        }
+        if (fields[2].contains("|") || fields[2].chars().anyMatch(Character::isISOControl)) {
+            throw new MaryException("invalid description on line " + lineNumber
+                    + "; remove pipes and control characters.");
         }
     }
 }

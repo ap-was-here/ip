@@ -69,6 +69,14 @@ public class TaskList {
     }
 
     /**
+     * Replaces list order after a proposed change has been saved successfully.
+     */
+    public void replaceWith(List<Task> savedTasks) {
+        tasks.clear();
+        tasks.addAll(savedTasks);
+    }
+
+    /**
      * Sorts by deadline due time or event start time, with undated tasks last.
      * Equal times and undated tasks retain their relative order and completion state.
      */

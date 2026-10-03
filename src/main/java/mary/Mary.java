@@ -31,7 +31,8 @@ public class Mary {
             loadedTasks = new TaskList(storage.load());
         } catch (MaryException exception) {
             loadedTasks = new TaskList();
-            loadingError = "the saved task data is corrupted: " + exception.getMessage();
+            loadingError = "could not load saved tasks: " + exception.getMessage()
+                    + " Repair or move the data file and restart MARY; saving is disabled to protect it.";
         }
         tasks = loadedTasks;
     }

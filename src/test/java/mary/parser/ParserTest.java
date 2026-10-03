@@ -13,6 +13,7 @@ import org.junit.jupiter.api.Test;
 
 import mary.command.AddCommand;
 import mary.command.DeleteCommand;
+import mary.command.ErrorCommand;
 import mary.command.FindCommand;
 import mary.command.ListCommand;
 import mary.command.MarkCommand;
@@ -88,9 +89,10 @@ class ParserTest {
      */
     @Test
     void parse_unknownOrBlank_returnsUnknownCommand() {
-        for (String input : new String[] {"", "   ", "blah", "LIST", "list extra"}) {
+        for (String input : new String[] {"", "   ", "blah", "LIST"}) {
             assertInstanceOf(UnknownCommand.class, Parser.parse(input), input);
         }
+        assertInstanceOf(ErrorCommand.class, Parser.parse("list extra"));
     }
 
     /**
@@ -139,7 +141,7 @@ class ParserTest {
     @Test
     void parseTask_malformedDeadline_rejectsMissingFields() {
         String[] inputs = {"deadline read", "deadline /by 2/12/2019 1800",
-            "deadline read /by ", "deadline read /from 2/12/2019 1800"};
+            "deadline read /by "};
         for (String input : inputs) {
             MaryException error = assertThrows(MaryException.class, () -> Parser.parseTask(input), input);
             assertEquals("use 'deadline description /by date or time'.", error.getMessage());

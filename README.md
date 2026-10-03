@@ -69,8 +69,28 @@ Enter `sort` to reorder and display the whole list chronologically:
   numbers for subsequent `mark`, `unmark`, and `delete` commands.
 - `sort` takes no arguments. An empty list is left unchanged without creating a file.
 
-If saving fails, MARY reports the error; the list remains sorted in memory but
-the new order is not guaranteed to persist. Correct the file problem and retry.
+If saving fails, MARY reports the error and leaves the list in its original order.
+Correct the file problem and retry.
+
+## Recover from errors
+
+- Leading/trailing spaces and repeated command separators are accepted, including tabs.
+  Commands remain lowercase and must match whole words (`todo`, not `todoSomething`).
+- Errors explain missing arguments, repeated or misplaced date markers, invalid task
+  numbers, and impossible dates. Event end times must be strictly after their start.
+- Exact duplicate task details (type, case-sensitive description, and dates) are rejected,
+  even if the existing task is completed. Different dates or types are allowed.
+  Existing duplicate records from older versions are still loaded.
+- Pipes (`|`) and embedded control characters cannot be saved in descriptions.
+  Ordinary punctuation and Unicode text are supported.
+- Missing data files start an empty list; missing parent folders are created on save.
+  A failed load disables saving to protect the original data. Back up and repair the
+  reported file, or move it aside, then restart MARY. Do not delete it without a backup.
+- Failed add/delete/mark/unmark/sort saves leave the original in-memory state unchanged.
+  Check permissions, disk space, and other programs holding the file open before retrying.
+  Saves use a temporary file and atomic replacement; unsupported filesystems report an
+  error instead of attempting a potentially destructive overwrite. The configured data
+  file must not be a symbolic link. Continue to use only one MARY instance at a time.
 
 ## Find tasks
 
@@ -147,9 +167,19 @@ Tasks are stored in `mary-data.txt` in the **working directory from which you
 launch Java**, not necessarily beside the JAR. Run from the project root to
 keep using your existing project task data.
 
-JavaFX may extract its native libraries into `.mary/javafx-cache` in that working
-directory. This ignored cache is separate from your tasks. The launcher sets this
-location to avoid writing JavaFX cache files into your home directory.
+JavaFX extracts its native libraries into `.mary/javafx-cache` in that working
+directory; its fallback temporary directory is `.mary/tmp`. The launcher overrides
+external cache settings and checks these folders before JavaFX starts. If they
+cannot be safely created locally, startup reports an error instead of using your
+home folder or the system temporary directory. Use `mary.Launcher` (or the JAR),
+not `MaryApplication` directly, so this setup runs before JavaFX initialization.
+
+Task saves, temporary save files, and caches are confined to the launch working
+folder and its subfolders. Paths resolving outside it (including `../` escapes,
+outside absolute paths, and directory links/junctions pointing outside) are rejected.
+Choose a writable working folder; placing the JAR elsewhere does not change where
+data is written. Tests use local `build/tmp` fixtures and separate child-process
+working folders to exercise the same rule, without a test-only bypass.
 
 For the original console interface, append `--cli`:
 

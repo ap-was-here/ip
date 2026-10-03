@@ -1,5 +1,7 @@
 package mary.command;
 
+import java.util.List;
+
 import mary.exception.MaryException;
 import mary.parser.Parser;
 import mary.storage.Storage;
@@ -24,7 +26,7 @@ public class AddCommand extends Command {
 
     /**
      * Parses and adds a task, then saves the list and displays confirmation.
-     * Validation and storage errors are displayed through the UI; a save failure does not undo the addition.
+     * Validation and storage errors leave the original list unchanged.
      *
      * @param tasks current in-memory task list.
      * @param ui user-facing message handler.
@@ -34,8 +36,13 @@ public class AddCommand extends Command {
     public void execute(TaskList tasks, Ui ui, Storage storage) {
         try {
             Task task = Parser.parseTask(fullCommand);
-            tasks.add(task);
-            storage.save(tasks.getTasks());
+            List<Task> proposed = tasks.getTasks();
+            if (proposed.stream().anyMatch(task::hasSameDetails)) {
+                throw new MaryException("that task already exists; use 'list' to find it or change its details.");
+            }
+            proposed.add(task);
+            storage.save(proposed);
+            tasks.replaceWith(proposed);
             ui.showMessages(" Purr-fect! I've added this task:",
                     "   " + task,
                     " Tasks on your list: " + tasks.size() + ".");

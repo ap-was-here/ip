@@ -64,6 +64,14 @@ tasks.withType(Test).configureEach {
     useJUnitPlatform()
     enableAssertions = true
 
+    // Test fixtures obey the same working-folder boundary as application data.
+    def localTemp = layout.buildDirectory.dir("tmp/${name}").get().asFile
+    systemProperty 'java.io.tmpdir', localTemp.absolutePath
+    systemProperty 'mary.probeClasspath', sourceSets.test.runtimeClasspath.asPath
+    doFirst {
+        localTemp.mkdirs()
+    }
+
     // Keep month names deterministic in date-display assertions on all machines.
     systemProperty 'user.language', 'en'
     systemProperty 'user.country', 'US'

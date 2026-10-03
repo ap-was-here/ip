@@ -97,7 +97,10 @@ class MaryTest {
         Files.writeString(file, "broken\n");
         List<String> replies = new ArrayList<>();
         Mary mary = new Mary(file.toString(), new Ui(replies::add, false));
-        assertEquals("the saved task data is corrupted: invalid record on line 1.", mary.getLoadingError());
+        assertTrue(mary.getLoadingError().contains("invalid record on line 1."));
+        mary.execute("todo must not overwrite");
+        assertTrue(replies.getLast().contains("saving is disabled"));
+        replies.clear();
         mary.execute("list");
         assertEquals(List.of(" Nothing to chase yet! Add a task with 'todo description'."), replies);
         assertEquals("broken\n", Files.readString(file));
@@ -111,6 +114,7 @@ class MaryTest {
         List<String> replies = new ArrayList<>();
         Mary mary = new Mary(directory.toString(), new Ui(replies::add, false));
         mary.execute("todo read");
-        assertEquals(List.of(" Error: could not save tasks to " + directory + "."), replies);
+        assertEquals(1, replies.size());
+        assertTrue(replies.getFirst().contains("saving is disabled because loading failed"));
     }
 }

@@ -22,7 +22,7 @@ public class SortCommand extends Command {
 
     /**
      * Sorts and saves nonempty lists, then displays the new task numbers.
-     * A save failure reports an error but leaves the in-memory list sorted.
+     * A save failure reports an error and preserves the original list order.
      *
      * @param tasks current task list.
      * @param ui destination for confirmations and errors.
@@ -38,9 +38,11 @@ public class SortCommand extends Command {
             ui.showMessage(" Nothing to chase yet! Add a task with 'todo description'.");
             return;
         }
-        tasks.sortChronologically();
+        TaskList proposed = new TaskList(tasks.getTasks());
+        proposed.sortChronologically();
         try {
-            storage.save(tasks.getTasks());
+            storage.save(proposed.getTasks());
+            tasks.replaceWith(proposed.getTasks());
             ui.showMessage(" Tasks lined up chronologically "
                     + "(deadlines by due time, events by start time; todos last).");
             new ListCommand().execute(tasks, ui, storage);

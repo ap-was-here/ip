@@ -45,6 +45,22 @@ public class Task {
     }
 
     /**
+     * Compares type, exact description, and scheduled dates, ignoring completion.
+     */
+    public boolean hasSameDetails(Task other) {
+        if (getClass() != other.getClass() || !description.equals(other.description)) {
+            return false;
+        }
+        if (this instanceof Deadline deadline && other instanceof Deadline otherDeadline) {
+            return deadline.getBy().equals(otherDeadline.getBy());
+        }
+        if (this instanceof Event event && other instanceof Event otherEvent) {
+            return event.getFrom().equals(otherEvent.getFrom()) && event.getTo().equals(otherEvent.getTo());
+        }
+        return true;
+    }
+
+    /**
      * Marks this task as unfinished.
      */
     public void markAsNotDone() {

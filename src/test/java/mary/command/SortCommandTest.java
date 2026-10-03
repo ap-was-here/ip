@@ -75,7 +75,7 @@ class SortCommandTest extends CommandTestSupport {
         storage = new Storage(directory.toString());
         String output = execute(new SortCommand(""));
         assertTrue(output.startsWith(" Error: could not save tasks"));
-        assertFalse(output.contains("Journal ordered"));
-        assertEquals(List.of(deadline, todo), tasks.getTasks());
+        assertFalse(output.contains("Tasks lined up"));
+        assertEquals(List.of(todo, deadline), tasks.getTasks());
     }
 }
