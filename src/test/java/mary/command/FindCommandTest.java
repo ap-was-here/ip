@@ -31,7 +31,7 @@ class FindCommandTest extends CommandTestSupport {
         storage.save(tasks.getTasks());
         String saved = Files.readString(directory.resolve("tasks.txt"));
 
-        assertEquals(" Here are the matching tasks in your list:\n"
+        assertEquals(" Look what I sniffed out:\n"
                 + " 1.[T][X] read book\n"
                 + " 2.[D][ ] return Book (by: 2 Dec 2019 18:00)\n"
                 + " 3.[E][ ] BOOK club (from: 2 Dec 2019 14:00 to: 2 Dec 2019 16:00)\n",
@@ -46,9 +46,9 @@ class FindCommandTest extends CommandTestSupport {
      */
     @Test
     void execute_noMatches_reportsEmptyResultsWithoutSaving() {
-        assertEquals(" No matching tasks found.\n", execute(new FindCommand("book")));
+        assertEquals(" No matching tasks in sight. Try another keyword.\n", execute(new FindCommand("book")));
         tasks.add(new Todo("read"));
-        assertEquals(" No matching tasks found.\n", execute(new FindCommand("book")));
+        assertEquals(" No matching tasks in sight. Try another keyword.\n", execute(new FindCommand("book")));
         assertFalse(Files.exists(directory.resolve("tasks.txt")));
     }
 
@@ -73,7 +73,7 @@ class FindCommandTest extends CommandTestSupport {
     void execute_phrase_matchesLiteralSubstring() {
         tasks.add(new Todo("read book tonight"));
         tasks.add(new Todo("read another book"));
-        assertEquals(" Here are the matching tasks in your list:\n 1.[T][ ] read book tonight\n",
+        assertEquals(" Look what I sniffed out:\n 1.[T][ ] read book tonight\n",
                 execute(new FindCommand("READ BOOK")));
     }
 }

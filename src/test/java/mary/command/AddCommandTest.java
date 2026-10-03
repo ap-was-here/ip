@@ -19,7 +19,7 @@ class AddCommandTest extends CommandTestSupport {
      */
     @Test
     void execute_validTodo_addsAndSavesTask() throws Exception {
-        assertEquals(" Got it. I've added this task:\n   [T][ ] read book\n Now you have 1 tasks in the list.\n",
+        assertEquals(" Purr-fect! I've added this task:\n   [T][ ] read book\n Tasks on your list: 1.\n",
                 execute(new AddCommand("todo read book")));
         assertEquals(1, tasks.size());
         assertEquals("[T][ ] read book", storage.load().get(0).toString());
@@ -55,6 +55,6 @@ class AddCommandTest extends CommandTestSupport {
         storage = new Storage(directory.toString());
         String output = execute(new AddCommand("todo read"));
         assertTrue(output.contains("Error: could not save tasks"));
-        assertFalse(output.contains("Got it."));
+        assertFalse(output.contains("Purr-fect! I've added this task:"));
     }
 }

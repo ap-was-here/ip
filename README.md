@@ -4,6 +4,15 @@ MARY is a JavaFX task chatbot: keep to-dos, deadlines, and events in one
 conversation. The desktop app and optional console share the same commands and
 saved task file.
 
+## Meet MARY
+
+MARY is your purr-sonal task assistant: a playful, encouraging cat companion.
+The desktop uses cream backgrounds, plum chat bubbles, peach accents, a friendly
+sans-serif heading, and a smiling cat emblem. Command syntax and saved data are unchanged.
+Java packages, `mary.jar`, and `mary-data.txt` retain their original names.
+
+![MARY desktop](docs/Ui.png)
+
 ## Setting up in Intellij
 
 Prerequisites: JDK 25, update Intellij to the most recent version.
@@ -37,7 +46,7 @@ From the project root with Java 25 configured:
   `event meeting /from 2/12/2026 1400 /to 2/12/2026 1600` for dated tasks.
 - `on 2/12/2026` finds deadlines and events on that date. Dates use day/month/year
   and a 24-hour time without a colon.
-- Expand **Command guide & examples** for a reminder. The suggestion buttons
+- Expand **Cat's guide / commands & examples** for a reminder. The suggestion buttons
   only fill the input; they do not execute commands or overwrite a draft.
 - Replies wrap and the transcript scrolls. Use `list` to get the full-list task
   numbers before marking or deleting (search-result numbers are separate).
@@ -77,7 +86,7 @@ Searching never changes tasks or saved data.
 ```text
 find book
 ____________________________________________________________
- Here are the matching tasks in your list:
+ Look what I sniffed out:
  1.[T][X] read book
  2.[D][ ] return book (by: 2 Dec 2019 18:00)
 ____________________________________________________________
@@ -96,7 +105,7 @@ src/main/java/mary/
 │               MarkCommand, OnCommand, FindCommand, SortCommand, UnknownCommand, CommandType
 ├── parser/     Parser
 ├── storage/    Storage
-├── ui/         Ui, MaryApplication, ChatWindow
+├── ui/         Ui, MaryApplication, ChatWindow, Personality
 └── exception/  MaryException, ErrorType
 ```
 

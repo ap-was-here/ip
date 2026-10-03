@@ -10,7 +10,7 @@ public class Ui {
     private static final String SEPARATOR = "____________________________________________________________";
     private static final String BANNER = " /\\_/\\\n"
             + "( o.o )   M A R Y\n"
-            + " > ^ <    Your purr-sonal task assistant.";
+            + " > ^ <    " + Personality.TAGLINE + ".";
     private final Consumer<String> output;
     private final boolean hasDividers;
     private Scanner scanner;
@@ -58,7 +58,7 @@ public class Ui {
      */
     public void showWelcome() {
         showLine();
-        showMessages(BANNER, "", "What's on your list today?");
+        showMessages(BANNER, "", Personality.PROMPT);
         showLine();
     }
 
@@ -106,7 +106,7 @@ public class Ui {
      * Displays the exit message.
      */
     public void showGoodbye() {
-        showMessage("See you later. Complete your tasks on time!");
+        showMessage(Personality.GOODBYE);
         showLine();
     }
 }

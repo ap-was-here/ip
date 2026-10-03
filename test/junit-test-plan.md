@@ -44,6 +44,26 @@ than changing an assertion to bless incorrect behavior.
 
 ## Latest execution
 
+2026-10-04, cat-themed MARY: 83 unit tests and 10 JavaFX tests passed on Java 25.
+Updated identity, accessible cat-emblem, ASCII banner, and reply assertions;
+the prioritized ~50% method selection and all persistence checks are unchanged.
+Checkstyle, JAR verification, and Windows packaged GUI launch passed. All 11
+console cases passed in 13 sessions; see the cat-themed records in `ui-test-plan.md`.
+
+### Earlier woodland personality execution
+
+2026-10-04, Mosswick personality: Java 25 checks passed 83 unit tests and
+10 JavaFX tests, including a new identity/accessibility regression. Updated
+reply assertions and the exact ASCII welcome expectation without changing
+command, persistence, or validation behavior. The prioritized ~50% method
+selection remains unchanged. Checkstyle, archive verification, and the Windows
+packaged GUI launch passed. Console cases R1-R2, P1-P4, F1-F2 and S1-S3 passed
+in 13 isolated sessions; complete input/output is in `ui-test-plan.md`.
+Checkstyle exposed line wrapping and import-spacing issues during development;
+the final code follows the repository's configured import grouping.
+
+### Earlier sorting execution
+
 2026-10-04, chronological sorting: Java 25 `check guiTest` passed 83 unit tests
 and nine GUI tests, plus Checkstyle and JAR verification. Added coverage for mixed
 types, date/time/year boundaries, maximum dates, stable ties/duplicates, completion

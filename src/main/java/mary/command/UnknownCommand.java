@@ -25,7 +25,7 @@ public class UnknownCommand extends Command {
         if (input.isBlank()) {
             ui.showError("please enter a command or task.");
         } else {
-            ui.showError("I don't recognize that command; use todo, deadline, event, on, list, find,"
+            ui.showError("I can't get my paws around that command; use todo, deadline, event, on, list, find,"
                     + " sort, mark, unmark, delete, or bye.");
         }
     }

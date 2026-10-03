@@ -17,7 +17,7 @@ public class MaryApplication extends Application {
     @Override
     public void start(Stage stage) {
         ChatWindow chat = new ChatWindow("mary-data.txt");
-        stage.setTitle("MARY | Your purr-sonal task assistant");
+        stage.setTitle(Personality.NAME + " | " + Personality.TAGLINE);
         stage.setScene(new Scene(chat, 760, 780));
         stage.setMinWidth(480);
         stage.setMinHeight(600);

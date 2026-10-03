@@ -49,6 +49,24 @@ class ChatWindowTest {
     private Button send;
 
     /**
+     * Keeps the visible identity, accessible emblem, and welcome consistent.
+     */
+    @Test
+    void startup_catIdentity_displaysBrandAndWelcome() throws Exception {
+        onFxThread(() -> {
+            assertEquals("MARY", ((Label) chat.lookup("#brand-name")).getText());
+            assertEquals("A smiling cat with pointed ears and whiskers",
+                    chat.lookup("#brand-emblem").getAccessibleText());
+            assertTrue(transcript().contains("I'm MARY, your purr-sonal task assistant."));
+            assertTrue(chat.lookupAll(".sender").stream().map(Label.class::cast)
+                    .anyMatch(label -> label.getText().equals("MARY")));
+            TitledPane guide = (TitledPane) chat.lookup("#command-guide");
+            assertEquals("Cat's guide / commands & examples", guide.getText());
+            return null;
+        });
+    }
+
+    /**
      * Checks that an incorrectly dispatched callback fails before changing session state.
      */
     @Test
@@ -152,7 +170,7 @@ class ChatWindowTest {
             enter("todo read");
             enter("deadline return /by 2/12/2026 1800");
             enter("sort");
-            assertTrue(transcript().contains("Sorted chronologically"));
+            assertTrue(transcript().contains("Tasks lined up chronologically"));
             assertTrue(transcript().contains("1.[D][ ] return (by: 2 Dec 2026 18:00)"));
             assertTrue(transcript().contains("2.[T][ ] read"));
             return null;
@@ -170,7 +188,7 @@ class ChatWindowTest {
             enter("");
             assertTrue(transcript().contains("Error: please enter a command or task."));
             enter("blah");
-            assertTrue(transcript().contains("Error: I don't recognize that command"));
+            assertTrue(transcript().contains("Error: I can't get my paws around that command"));
             enter("todo read");
             assertTrue(transcript().contains("[T][ ] read"));
             assertFalse(input.isDisabled());
@@ -205,7 +223,7 @@ class ChatWindowTest {
     void submit_bye_endsSessionAndOffersClose() throws Exception {
         onFxThread(() -> {
             enter("bye");
-            assertTrue(transcript().contains("See you later. Complete your tasks on time!"));
+            assertTrue(transcript().contains("Time for a catnap. See you soon!"));
             assertTrue(input.isDisabled());
             assertEquals("Close", send.getText());
             send.fire();

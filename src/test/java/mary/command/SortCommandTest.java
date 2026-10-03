@@ -27,8 +27,8 @@ class SortCommandTest extends CommandTestSupport {
         tasks.add(new Todo("read"));
         tasks.add(new Deadline("return", LocalDateTime.of(2026, 12, 2, 18, 0)));
         String output = execute(new SortCommand(" \t"));
-        assertEquals(" Sorted chronologically (deadlines by due time, events by start time; todos last).\n"
-                + " Here are the tasks in your list:\n"
+        assertEquals(" Tasks lined up chronologically (deadlines by due time, events by start time; todos last).\n"
+                + " Here's your task lineup:\n"
                 + " 1.[D][ ] return (by: 2 Dec 2026 18:00)\n 2.[T][ ] read\n", output);
         assertEquals(tasks.getTasks().stream().map(Task::toStorageRecord).toList(),
                 storage.load().stream().map(Task::toStorageRecord).toList());
@@ -44,7 +44,7 @@ class SortCommandTest extends CommandTestSupport {
      */
     @Test
     void execute_emptyList_reportsEmptyWithoutWriting() {
-        assertEquals(" MARY has no saved tasks yet.\n", execute(new SortCommand("")));
+        assertEquals(" Nothing to chase yet! Add a task with 'todo description'.\n", execute(new SortCommand("")));
         assertFalse(Files.exists(directory.resolve("tasks.txt")));
     }
 
@@ -75,7 +75,7 @@ class SortCommandTest extends CommandTestSupport {
         storage = new Storage(directory.toString());
         String output = execute(new SortCommand(""));
         assertTrue(output.startsWith(" Error: could not save tasks"));
-        assertFalse(output.contains("Sorted"));
+        assertFalse(output.contains("Journal ordered"));
         assertEquals(List.of(deadline, todo), tasks.getTasks());
     }
 }

@@ -19,7 +19,7 @@ class DeleteCommandTest extends CommandTestSupport {
         tasks.add(new Todo("a"));
         tasks.add(new Todo("b"));
         tasks.add(new Todo("c"));
-        assertEquals(" Noted. I've removed this task:\n   [T][ ] b\n Now you have 2 tasks in the list.\n",
+        assertEquals(" Whisked away! I've removed this task:\n   [T][ ] b\n Tasks on your list: 2.\n",
                 execute(new DeleteCommand("delete 2")));
         assertEquals("[T][ ] a", tasks.get(0).toString());
         assertEquals("[T][ ] c", tasks.get(1).toString());

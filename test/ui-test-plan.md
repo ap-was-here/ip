@@ -36,6 +36,7 @@ controls on the application thread; text-field action events represent Enter.
 | G5 | Start with file containing `broken` | Loading-error bubble names line 1; file remains unchanged |
 | G6 | Resize to 480x600; add a long task and run `list` twelve times | Wrapped messages fit the viewport, transcript scrolls to latest reply, composer stays usable |
 | G7 | `todo read book`, `mark 1` in a 760x780 scene | Render preview at `build/reports/gui/mary.png`; inspect contrast, spacing and clipping |
+| G8 | Open a fresh window | MARY heading and sender, cat-themed welcome, accessible smiling-cat emblem, Cat's guide title |
 
 The shared-session JUnit tests additionally cover deadlines, events, date search,
 keyword search, unmark, delete, Unicode, persistence errors and commands after bye.
@@ -1019,9 +1020,9 @@ older cases without relying on obsolete date strings such as "Sunday".
             {
               "input": "todo read",
               "output": [
-                " Got it. I've added this task:",
+                " Purr-fect! I've added this task:",
                 "   [T][ ] read",
-                " Now you have 1 tasks in the list."
+                " Tasks on your list: 1."
               ]
             },
             {
@@ -1069,14 +1070,14 @@ older cases without relying on obsolete date strings such as "Sunday".
             {
               "input": "list",
               "output": [
-                " Here are the tasks in your list:",
+                " Here's your task lineup:",
                 " 1.[T][ ] read"
               ]
             },
             {
               "input": "bye",
               "output": [
-                "See you later. Complete your tasks on time!"
+                "Time for a catnap. See you soon!"
               ]
             }
           ]
@@ -1095,13 +1096,13 @@ older cases without relying on obsolete date strings such as "Sunday".
             {
               "input": "list",
               "output": [
-                " MARY has no saved tasks yet."
+                " Nothing to chase yet! Add a task with 'todo description'."
               ]
             },
             {
               "input": "bye",
               "output": [
-                "See you later. Complete your tasks on time!"
+                "Time for a catnap. See you soon!"
               ]
             }
           ]
@@ -1118,37 +1119,37 @@ older cases without relying on obsolete date strings such as "Sunday".
             {
               "input": "list",
               "output": [
-                " MARY has no saved tasks yet."
+                " Nothing to chase yet! Add a task with 'todo description'."
               ]
             },
             {
               "input": "todo read book",
               "output": [
-                " Got it. I've added this task:",
+                " Purr-fect! I've added this task:",
                 "   [T][ ] read book",
-                " Now you have 1 tasks in the list."
+                " Tasks on your list: 1."
               ]
             },
             {
               "input": "deadline return book /by 2/12/2019 1800",
               "output": [
-                " Got it. I've added this task:",
+                " Purr-fect! I've added this task:",
                 "   [D][ ] return book (by: 2 Dec 2019 18:00)",
-                " Now you have 2 tasks in the list."
+                " Tasks on your list: 2."
               ]
             },
             {
               "input": "event project meeting /from 2/12/2019 1400 /to 4/12/2019 1600",
               "output": [
-                " Got it. I've added this task:",
+                " Purr-fect! I've added this task:",
                 "   [E][ ] project meeting (from: 2 Dec 2019 14:00 to: 4 Dec 2019 16:00)",
-                " Now you have 3 tasks in the list."
+                " Tasks on your list: 3."
               ]
             },
             {
               "input": "list",
               "output": [
-                " Here are the tasks in your list:",
+                " Here's your task lineup:",
                 " 1.[T][ ] read book",
                 " 2.[D][ ] return book (by: 2 Dec 2019 18:00)",
                 " 3.[E][ ] project meeting (from: 2 Dec 2019 14:00 to: 4 Dec 2019 16:00)"
@@ -1157,36 +1158,36 @@ older cases without relying on obsolete date strings such as "Sunday".
             {
               "input": "mark 2",
               "output": [
-                " Nice! I've marked this task as done:",
+                " Pawsome! Task completed:",
                 "   [D][X] return book (by: 2 Dec 2019 18:00)"
               ]
             },
             {
               "input": "unmark 2",
               "output": [
-                " OK, I've marked this task as not done yet:",
+                " Back on your list, ready for another pounce:",
                 "   [D][ ] return book (by: 2 Dec 2019 18:00)"
               ]
             },
             {
               "input": "mark 1",
               "output": [
-                " Nice! I've marked this task as done:",
+                " Pawsome! Task completed:",
                 "   [T][X] read book"
               ]
             },
             {
               "input": "delete 2",
               "output": [
-                " Noted. I've removed this task:",
+                " Whisked away! I've removed this task:",
                 "   [D][ ] return book (by: 2 Dec 2019 18:00)",
-                " Now you have 2 tasks in the list."
+                " Tasks on your list: 2."
               ]
             },
             {
               "input": "list",
               "output": [
-                " Here are the tasks in your list:",
+                " Here's your task lineup:",
                 " 1.[T][X] read book",
                 " 2.[E][ ] project meeting (from: 2 Dec 2019 14:00 to: 4 Dec 2019 16:00)"
               ]
@@ -1207,7 +1208,7 @@ older cases without relying on obsolete date strings such as "Sunday".
             {
               "input": "bye",
               "output": [
-                "See you later. Complete your tasks on time!"
+                "Time for a catnap. See you soon!"
               ]
             }
           ]
@@ -1217,7 +1218,7 @@ older cases without relying on obsolete date strings such as "Sunday".
             {
               "input": "list",
               "output": [
-                " Here are the tasks in your list:",
+                " Here's your task lineup:",
                 " 1.[T][X] read book",
                 " 2.[E][ ] project meeting (from: 2 Dec 2019 14:00 to: 4 Dec 2019 16:00)"
               ]
@@ -1232,7 +1233,7 @@ older cases without relying on obsolete date strings such as "Sunday".
             {
               "input": "bye",
               "output": [
-                "See you later. Complete your tasks on time!"
+                "Time for a catnap. See you soon!"
               ]
             }
           ]
@@ -1255,7 +1256,7 @@ older cases without relying on obsolete date strings such as "Sunday".
             {
               "input": "blah",
               "output": [
-                " Error: I don't recognize that command; use todo, deadline, event, on, list, find, sort, mark, unmark, delete, or bye."
+                " Error: I can't get my paws around that command; use todo, deadline, event, on, list, find, sort, mark, unmark, delete, or bye."
               ]
             },
             {
@@ -1309,13 +1310,13 @@ older cases without relying on obsolete date strings such as "Sunday".
             {
               "input": "list",
               "output": [
-                " MARY has no saved tasks yet."
+                " Nothing to chase yet! Add a task with 'todo description'."
               ]
             },
             {
               "input": "bye",
               "output": [
-                "See you later. Complete your tasks on time!"
+                "Time for a catnap. See you soon!"
               ]
             }
           ]
@@ -1334,13 +1335,13 @@ older cases without relying on obsolete date strings such as "Sunday".
             {
               "input": "list",
               "output": [
-                " MARY has no saved tasks yet."
+                " Nothing to chase yet! Add a task with 'todo description'."
               ]
             },
             {
               "input": "bye",
               "output": [
-                "See you later. Complete your tasks on time!"
+                "Time for a catnap. See you soon!"
               ]
             }
           ]
@@ -1368,7 +1369,7 @@ older cases without relying on obsolete date strings such as "Sunday".
             {
               "input": "find book",
               "output": [
-                " Here are the matching tasks in your list:",
+                " Look what I sniffed out:",
                 " 1.[T][X] read book",
                 " 2.[D][X] return Book (by: 2 Dec 2019 18:00)",
                 " 3.[E][ ] BOOK club (from: 2 Dec 2019 14:00 to: 2 Dec 2019 16:00)"
@@ -1377,7 +1378,7 @@ older cases without relying on obsolete date strings such as "Sunday".
             {
               "input": "find   BOOK  ",
               "output": [
-                " Here are the matching tasks in your list:",
+                " Look what I sniffed out:",
                 " 1.[T][X] read book",
                 " 2.[D][X] return Book (by: 2 Dec 2019 18:00)",
                 " 3.[E][ ] BOOK club (from: 2 Dec 2019 14:00 to: 2 Dec 2019 16:00)"
@@ -1386,7 +1387,7 @@ older cases without relying on obsolete date strings such as "Sunday".
             {
               "input": "find ook",
               "output": [
-                " Here are the matching tasks in your list:",
+                " Look what I sniffed out:",
                 " 1.[T][X] read book",
                 " 2.[D][X] return Book (by: 2 Dec 2019 18:00)",
                 " 3.[E][ ] BOOK club (from: 2 Dec 2019 14:00 to: 2 Dec 2019 16:00)"
@@ -1395,26 +1396,26 @@ older cases without relying on obsolete date strings such as "Sunday".
             {
               "input": "find read book",
               "output": [
-                " Here are the matching tasks in your list:",
+                " Look what I sniffed out:",
                 " 1.[T][X] read book"
               ]
             },
             {
               "input": "find Dec",
               "output": [
-                " No matching tasks found."
+                " No matching tasks in sight. Try another keyword."
               ]
             },
             {
               "input": "find [X]",
               "output": [
-                " No matching tasks found."
+                " No matching tasks in sight. Try another keyword."
               ]
             },
             {
               "input": "find missing",
               "output": [
-                " No matching tasks found."
+                " No matching tasks in sight. Try another keyword."
               ]
             },
             {
@@ -1432,13 +1433,13 @@ older cases without relying on obsolete date strings such as "Sunday".
             {
               "input": "finder book",
               "output": [
-                " Error: I don't recognize that command; use todo, deadline, event, on, list, find, sort, mark, unmark, delete, or bye."
+                " Error: I can't get my paws around that command; use todo, deadline, event, on, list, find, sort, mark, unmark, delete, or bye."
               ]
             },
             {
               "input": "list",
               "output": [
-                " Here are the tasks in your list:",
+                " Here's your task lineup:",
                 " 1.[T][ ] buy bread",
                 " 2.[T][X] read book",
                 " 3.[D][X] return Book (by: 2 Dec 2019 18:00)",
@@ -1448,7 +1449,7 @@ older cases without relying on obsolete date strings such as "Sunday".
             {
               "input": "bye",
               "output": [
-                "See you later. Complete your tasks on time!"
+                "Time for a catnap. See you soon!"
               ]
             }
           ]
@@ -1465,13 +1466,13 @@ older cases without relying on obsolete date strings such as "Sunday".
             {
               "input": "find book",
               "output": [
-                " No matching tasks found."
+                " No matching tasks in sight. Try another keyword."
               ]
             },
             {
               "input": "bye",
               "output": [
-                "See you later. Complete your tasks on time!"
+                "Time for a catnap. See you soon!"
               ]
             }
           ]
@@ -1489,8 +1490,8 @@ older cases without relying on obsolete date strings such as "Sunday".
             {
               "input": "sort",
               "output": [
-                " Sorted chronologically (deadlines by due time, events by start time; todos last).",
-                " Here are the tasks in your list:",
+                " Tasks lined up chronologically (deadlines by due time, events by start time; todos last).",
+                " Here's your task lineup:",
                 " 1.[D][ ] early (by: 2 Dec 2026 13:00)",
                 " 2.[E][ ] meeting (from: 2 Dec 2026 14:00 to: 2 Dec 2026 16:00)",
                 " 3.[D][X] tie (by: 2 Dec 2026 14:00)",
@@ -1502,8 +1503,8 @@ older cases without relying on obsolete date strings such as "Sunday".
             {
               "input": "sort",
               "output": [
-                " Sorted chronologically (deadlines by due time, events by start time; todos last).",
-                " Here are the tasks in your list:",
+                " Tasks lined up chronologically (deadlines by due time, events by start time; todos last).",
+                " Here's your task lineup:",
                 " 1.[D][ ] early (by: 2 Dec 2026 13:00)",
                 " 2.[E][ ] meeting (from: 2 Dec 2026 14:00 to: 2 Dec 2026 16:00)",
                 " 3.[D][X] tie (by: 2 Dec 2026 14:00)",
@@ -1515,7 +1516,7 @@ older cases without relying on obsolete date strings such as "Sunday".
             {
               "input": "bye",
               "output": [
-                "See you later. Complete your tasks on time!"
+                "Time for a catnap. See you soon!"
               ]
             }
           ]
@@ -1525,7 +1526,7 @@ older cases without relying on obsolete date strings such as "Sunday".
             {
               "input": "list",
               "output": [
-                " Here are the tasks in your list:",
+                " Here's your task lineup:",
                 " 1.[D][ ] early (by: 2 Dec 2026 13:00)",
                 " 2.[E][ ] meeting (from: 2 Dec 2026 14:00 to: 2 Dec 2026 16:00)",
                 " 3.[D][X] tie (by: 2 Dec 2026 14:00)",
@@ -1537,22 +1538,22 @@ older cases without relying on obsolete date strings such as "Sunday".
             {
               "input": "mark 1",
               "output": [
-                " Nice! I've marked this task as done:",
+                " Pawsome! Task completed:",
                 "   [D][X] early (by: 2 Dec 2026 13:00)"
               ]
             },
             {
               "input": "delete 4",
               "output": [
-                " Noted. I've removed this task:",
+                " Whisked away! I've removed this task:",
                 "   [D][ ] late (by: 1 Jan 2027 00:00)",
-                " Now you have 5 tasks in the list."
+                " Tasks on your list: 5."
               ]
             },
             {
               "input": "list",
               "output": [
-                " Here are the tasks in your list:",
+                " Here's your task lineup:",
                 " 1.[D][X] early (by: 2 Dec 2026 13:00)",
                 " 2.[E][ ] meeting (from: 2 Dec 2026 14:00 to: 2 Dec 2026 16:00)",
                 " 3.[D][X] tie (by: 2 Dec 2026 14:00)",
@@ -1563,7 +1564,7 @@ older cases without relying on obsolete date strings such as "Sunday".
             {
               "input": "bye",
               "output": [
-                "See you later. Complete your tasks on time!"
+                "Time for a catnap. See you soon!"
               ]
             }
           ]
@@ -1580,7 +1581,7 @@ older cases without relying on obsolete date strings such as "Sunday".
             {
               "input": "sort",
               "output": [
-                " MARY has no saved tasks yet."
+                " Nothing to chase yet! Add a task with 'todo description'."
               ]
             },
             {
@@ -1592,13 +1593,13 @@ older cases without relying on obsolete date strings such as "Sunday".
             {
               "input": "sorter",
               "output": [
-                " Error: I don't recognize that command; use todo, deadline, event, on, list, find, sort, mark, unmark, delete, or bye."
+                " Error: I can't get my paws around that command; use todo, deadline, event, on, list, find, sort, mark, unmark, delete, or bye."
               ]
             },
             {
               "input": "bye",
               "output": [
-                "See you later. Complete your tasks on time!"
+                "Time for a catnap. See you soon!"
               ]
             }
           ]
@@ -1616,8 +1617,8 @@ older cases without relying on obsolete date strings such as "Sunday".
             {
               "input": "sort \t",
               "output": [
-                " Sorted chronologically (deadlines by due time, events by start time; todos last).",
-                " Here are the tasks in your list:",
+                " Tasks lined up chronologically (deadlines by due time, events by start time; todos last).",
+                " Here's your task lineup:",
                 " 1.[T][X] z task",
                 " 2.[T][ ] a task"
               ]
@@ -1625,7 +1626,7 @@ older cases without relying on obsolete date strings such as "Sunday".
             {
               "input": "bye",
               "output": [
-                "See you later. Complete your tasks on time!"
+                "Time for a catnap. See you soon!"
               ]
             }
           ]
@@ -8043,5 +8044,1292 @@ ____________________________________________________________
 ____________________________________________________________
 ____________________________________________________________
 See you later. Complete your tasks on time!
+____________________________________________________________
+```
+
+## Mosswick personality execution — 2026-10-04
+
+Aim: verify the new welcome and replies while preserving commands and saved data.
+Java 25 with assertions enabled: R1-R2, P1-P4, F1-F2, S1-S3 passed in 13 isolated
+sessions. Exact stdout, empty stderr, zero exit codes, and saved records matched
+the active JSON specification above. Personal task data was not used.
+
+### Mosswick R1, session 1 — PASS
+
+Console input:
+
+```json
+[
+  "todo read",
+  "mark",
+  "unmark",
+  "mark ",
+  "unmark ",
+  "on 29/2/2023",
+  "deadline invalid /by 31/4/2024 1800",
+  "event invalid /from 29/2/2023 1400 /to 1/3/2023 1600",
+  "list",
+  "bye"
+]
+```
+
+Console output:
+
+```text
+____________________________________________________________
+____________________________________________________________
+  .--. .--.
+ /    V    \   M O S S W I C K
+ '----^----'   Your woodland task librarian.
+
+What shall we note in your field journal?
+____________________________________________________________
+____________________________________________________________
+ Noted in your field journal:
+   [T][ ] read
+ Journal entries: 1.
+____________________________________________________________
+____________________________________________________________
+ Error: use 'mark N' or 'unmark N', where N is a task number.
+____________________________________________________________
+____________________________________________________________
+ Error: use 'mark N' or 'unmark N', where N is a task number.
+____________________________________________________________
+____________________________________________________________
+ Error: use 'mark N' or 'unmark N', where N is a task number.
+____________________________________________________________
+____________________________________________________________
+ Error: use 'mark N' or 'unmark N', where N is a task number.
+____________________________________________________________
+____________________________________________________________
+ Error: use date format d/M/yyyy, for example 2/12/2019.
+____________________________________________________________
+____________________________________________________________
+ Error: use date/time format d/M/yyyy HHmm, for example 2/12/2019 1800.
+____________________________________________________________
+____________________________________________________________
+ Error: use event date/time format d/M/yyyy HHmm for both /from and /to.
+____________________________________________________________
+____________________________________________________________
+ Your field journal:
+ 1.[T][ ] read
+____________________________________________________________
+____________________________________________________________
+Bookmark placed. Until our next little adventure!
+____________________________________________________________
+```
+
+### Mosswick R2, session 1 — PASS
+
+Console input:
+
+```json
+[
+  "list",
+  "bye"
+]
+```
+
+Console output:
+
+```text
+____________________________________________________________
+ Error: the saved task data is corrupted: invalid record on line 1.
+____________________________________________________________
+____________________________________________________________
+  .--. .--.
+ /    V    \   M O S S W I C K
+ '----^----'   Your woodland task librarian.
+
+What shall we note in your field journal?
+____________________________________________________________
+____________________________________________________________
+ A fresh page! Add a task with 'todo description'.
+____________________________________________________________
+____________________________________________________________
+Bookmark placed. Until our next little adventure!
+____________________________________________________________
+```
+
+### Mosswick P1, session 1 — PASS
+
+Console input:
+
+```json
+[
+  "list",
+  "todo read book",
+  "deadline return book /by 2/12/2019 1800",
+  "event project meeting /from 2/12/2019 1400 /to 4/12/2019 1600",
+  "list",
+  "mark 2",
+  "unmark 2",
+  "mark 1",
+  "delete 2",
+  "list",
+  "on 3/12/2019",
+  "on 1/12/2019",
+  "bye"
+]
+```
+
+Console output:
+
+```text
+____________________________________________________________
+____________________________________________________________
+  .--. .--.
+ /    V    \   M O S S W I C K
+ '----^----'   Your woodland task librarian.
+
+What shall we note in your field journal?
+____________________________________________________________
+____________________________________________________________
+ A fresh page! Add a task with 'todo description'.
+____________________________________________________________
+____________________________________________________________
+ Noted in your field journal:
+   [T][ ] read book
+ Journal entries: 1.
+____________________________________________________________
+____________________________________________________________
+ Noted in your field journal:
+   [D][ ] return book (by: 2 Dec 2019 18:00)
+ Journal entries: 2.
+____________________________________________________________
+____________________________________________________________
+ Noted in your field journal:
+   [E][ ] project meeting (from: 2 Dec 2019 14:00 to: 4 Dec 2019 16:00)
+ Journal entries: 3.
+____________________________________________________________
+____________________________________________________________
+ Your field journal:
+ 1.[T][ ] read book
+ 2.[D][ ] return book (by: 2 Dec 2019 18:00)
+ 3.[E][ ] project meeting (from: 2 Dec 2019 14:00 to: 4 Dec 2019 16:00)
+____________________________________________________________
+____________________________________________________________
+ A leaf turned! Task completed:
+   [D][X] return book (by: 2 Dec 2019 18:00)
+____________________________________________________________
+____________________________________________________________
+ Back on the page, ready when you are:
+   [D][ ] return book (by: 2 Dec 2019 18:00)
+____________________________________________________________
+____________________________________________________________
+ A leaf turned! Task completed:
+   [T][X] read book
+____________________________________________________________
+____________________________________________________________
+ I've taken this task off the page:
+   [D][ ] return book (by: 2 Dec 2019 18:00)
+ Journal entries: 2.
+____________________________________________________________
+____________________________________________________________
+ Your field journal:
+ 1.[T][X] read book
+ 2.[E][ ] project meeting (from: 2 Dec 2019 14:00 to: 4 Dec 2019 16:00)
+____________________________________________________________
+____________________________________________________________
+ Tasks occurring on 2019-12-03:
+ [E][ ] project meeting (from: 2 Dec 2019 14:00 to: 4 Dec 2019 16:00)
+____________________________________________________________
+____________________________________________________________
+ No deadlines or events occur on 2019-12-01.
+____________________________________________________________
+____________________________________________________________
+Bookmark placed. Until our next little adventure!
+____________________________________________________________
+```
+
+### Mosswick P1, session 2 — PASS
+
+Console input:
+
+```json
+[
+  "list",
+  "on 3/12/2019",
+  "bye"
+]
+```
+
+Console output:
+
+```text
+____________________________________________________________
+____________________________________________________________
+  .--. .--.
+ /    V    \   M O S S W I C K
+ '----^----'   Your woodland task librarian.
+
+What shall we note in your field journal?
+____________________________________________________________
+____________________________________________________________
+ Your field journal:
+ 1.[T][X] read book
+ 2.[E][ ] project meeting (from: 2 Dec 2019 14:00 to: 4 Dec 2019 16:00)
+____________________________________________________________
+____________________________________________________________
+ Tasks occurring on 2019-12-03:
+ [E][ ] project meeting (from: 2 Dec 2019 14:00 to: 4 Dec 2019 16:00)
+____________________________________________________________
+____________________________________________________________
+Bookmark placed. Until our next little adventure!
+____________________________________________________________
+```
+
+### Mosswick P2, session 1 — PASS
+
+Console input:
+
+```json
+[
+  "",
+  "blah",
+  "todo",
+  "deadline homework",
+  "event meeting /from 2pm",
+  "mark abc",
+  "delete 0",
+  "deadline return book /by tomorrow",
+  "event meeting /from 2/12/2019 /to 2/12/2019 1600",
+  "on tomorrow",
+  "list",
+  "bye"
+]
+```
+
+Console output:
+
+```text
+____________________________________________________________
+____________________________________________________________
+  .--. .--.
+ /    V    \   M O S S W I C K
+ '----^----'   Your woodland task librarian.
+
+What shall we note in your field journal?
+____________________________________________________________
+____________________________________________________________
+ Error: please enter a command or task.
+____________________________________________________________
+____________________________________________________________
+ Error: That command isn't in my field guide; use todo, deadline, event, on, list, find, sort, mark, unmark, delete, or bye.
+____________________________________________________________
+____________________________________________________________
+ Error: use 'todo description' to add a task without a date.
+____________________________________________________________
+____________________________________________________________
+ Error: use 'deadline description /by date or time'.
+____________________________________________________________
+____________________________________________________________
+ Error: use 'event description /from start /to end'.
+____________________________________________________________
+____________________________________________________________
+ Error: 'abc' is not a valid task number; use a positive whole number.
+____________________________________________________________
+____________________________________________________________
+ Error: task 0 does not exist; use 'list' to see valid task numbers.
+____________________________________________________________
+____________________________________________________________
+ Error: use date/time format d/M/yyyy HHmm, for example 2/12/2019 1800.
+____________________________________________________________
+____________________________________________________________
+ Error: use event date/time format d/M/yyyy HHmm for both /from and /to.
+____________________________________________________________
+____________________________________________________________
+ Error: use date format d/M/yyyy, for example 2/12/2019.
+____________________________________________________________
+____________________________________________________________
+ A fresh page! Add a task with 'todo description'.
+____________________________________________________________
+____________________________________________________________
+Bookmark placed. Until our next little adventure!
+____________________________________________________________
+```
+
+### Mosswick P3, session 1 — PASS
+
+Console input:
+
+```json
+[
+  "list",
+  "bye"
+]
+```
+
+Console output:
+
+```text
+____________________________________________________________
+ Error: the saved task data is corrupted: invalid record on line 1.
+____________________________________________________________
+____________________________________________________________
+  .--. .--.
+ /    V    \   M O S S W I C K
+ '----^----'   Your woodland task librarian.
+
+What shall we note in your field journal?
+____________________________________________________________
+____________________________________________________________
+ A fresh page! Add a task with 'todo description'.
+____________________________________________________________
+____________________________________________________________
+Bookmark placed. Until our next little adventure!
+____________________________________________________________
+```
+
+### Mosswick P4, session 1 — PASS
+
+Console input:
+
+```json
+[]
+```
+
+Console output:
+
+```text
+____________________________________________________________
+____________________________________________________________
+  .--. .--.
+ /    V    \   M O S S W I C K
+ '----^----'   Your woodland task librarian.
+
+What shall we note in your field journal?
+____________________________________________________________
+```
+
+### Mosswick F1, session 1 — PASS
+
+Console input:
+
+```json
+[
+  "find book",
+  "find   BOOK  ",
+  "find ook",
+  "find read book",
+  "find Dec",
+  "find [X]",
+  "find missing",
+  "find",
+  "find   ",
+  "finder book",
+  "list",
+  "bye"
+]
+```
+
+Console output:
+
+```text
+____________________________________________________________
+____________________________________________________________
+  .--. .--.
+ /    V    \   M O S S W I C K
+ '----^----'   Your woodland task librarian.
+
+What shall we note in your field journal?
+____________________________________________________________
+____________________________________________________________
+ Found these entries in your journal:
+ 1.[T][X] read book
+ 2.[D][X] return Book (by: 2 Dec 2019 18:00)
+ 3.[E][ ] BOOK club (from: 2 Dec 2019 14:00 to: 2 Dec 2019 16:00)
+____________________________________________________________
+____________________________________________________________
+ Found these entries in your journal:
+ 1.[T][X] read book
+ 2.[D][X] return Book (by: 2 Dec 2019 18:00)
+ 3.[E][ ] BOOK club (from: 2 Dec 2019 14:00 to: 2 Dec 2019 16:00)
+____________________________________________________________
+____________________________________________________________
+ Found these entries in your journal:
+ 1.[T][X] read book
+ 2.[D][X] return Book (by: 2 Dec 2019 18:00)
+ 3.[E][ ] BOOK club (from: 2 Dec 2019 14:00 to: 2 Dec 2019 16:00)
+____________________________________________________________
+____________________________________________________________
+ Found these entries in your journal:
+ 1.[T][X] read book
+____________________________________________________________
+____________________________________________________________
+ No entries match that trail. Try another keyword.
+____________________________________________________________
+____________________________________________________________
+ No entries match that trail. Try another keyword.
+____________________________________________________________
+____________________________________________________________
+ No entries match that trail. Try another keyword.
+____________________________________________________________
+____________________________________________________________
+ Error: use 'find keyword', for example 'find book'.
+____________________________________________________________
+____________________________________________________________
+ Error: use 'find keyword', for example 'find book'.
+____________________________________________________________
+____________________________________________________________
+ Error: That command isn't in my field guide; use todo, deadline, event, on, list, find, sort, mark, unmark, delete, or bye.
+____________________________________________________________
+____________________________________________________________
+ Your field journal:
+ 1.[T][ ] buy bread
+ 2.[T][X] read book
+ 3.[D][X] return Book (by: 2 Dec 2019 18:00)
+ 4.[E][ ] BOOK club (from: 2 Dec 2019 14:00 to: 2 Dec 2019 16:00)
+____________________________________________________________
+____________________________________________________________
+Bookmark placed. Until our next little adventure!
+____________________________________________________________
+```
+
+### Mosswick F2, session 1 — PASS
+
+Console input:
+
+```json
+[
+  "find book",
+  "bye"
+]
+```
+
+Console output:
+
+```text
+____________________________________________________________
+____________________________________________________________
+  .--. .--.
+ /    V    \   M O S S W I C K
+ '----^----'   Your woodland task librarian.
+
+What shall we note in your field journal?
+____________________________________________________________
+____________________________________________________________
+ No entries match that trail. Try another keyword.
+____________________________________________________________
+____________________________________________________________
+Bookmark placed. Until our next little adventure!
+____________________________________________________________
+```
+
+### Mosswick S1, session 1 — PASS
+
+Console input:
+
+```json
+[
+  "sort",
+  "sort",
+  "bye"
+]
+```
+
+Console output:
+
+```text
+____________________________________________________________
+____________________________________________________________
+  .--. .--.
+ /    V    \   M O S S W I C K
+ '----^----'   Your woodland task librarian.
+
+What shall we note in your field journal?
+____________________________________________________________
+____________________________________________________________
+ Journal ordered chronologically (deadlines by due time, events by start time; todos last).
+ Your field journal:
+ 1.[D][ ] early (by: 2 Dec 2026 13:00)
+ 2.[E][ ] meeting (from: 2 Dec 2026 14:00 to: 2 Dec 2026 16:00)
+ 3.[D][X] tie (by: 2 Dec 2026 14:00)
+ 4.[D][ ] late (by: 1 Jan 2027 00:00)
+ 5.[T][ ] read
+ 6.[T][ ] buy
+____________________________________________________________
+____________________________________________________________
+ Journal ordered chronologically (deadlines by due time, events by start time; todos last).
+ Your field journal:
+ 1.[D][ ] early (by: 2 Dec 2026 13:00)
+ 2.[E][ ] meeting (from: 2 Dec 2026 14:00 to: 2 Dec 2026 16:00)
+ 3.[D][X] tie (by: 2 Dec 2026 14:00)
+ 4.[D][ ] late (by: 1 Jan 2027 00:00)
+ 5.[T][ ] read
+ 6.[T][ ] buy
+____________________________________________________________
+____________________________________________________________
+Bookmark placed. Until our next little adventure!
+____________________________________________________________
+```
+
+### Mosswick S1, session 2 — PASS
+
+Console input:
+
+```json
+[
+  "list",
+  "mark 1",
+  "delete 4",
+  "list",
+  "bye"
+]
+```
+
+Console output:
+
+```text
+____________________________________________________________
+____________________________________________________________
+  .--. .--.
+ /    V    \   M O S S W I C K
+ '----^----'   Your woodland task librarian.
+
+What shall we note in your field journal?
+____________________________________________________________
+____________________________________________________________
+ Your field journal:
+ 1.[D][ ] early (by: 2 Dec 2026 13:00)
+ 2.[E][ ] meeting (from: 2 Dec 2026 14:00 to: 2 Dec 2026 16:00)
+ 3.[D][X] tie (by: 2 Dec 2026 14:00)
+ 4.[D][ ] late (by: 1 Jan 2027 00:00)
+ 5.[T][ ] read
+ 6.[T][ ] buy
+____________________________________________________________
+____________________________________________________________
+ A leaf turned! Task completed:
+   [D][X] early (by: 2 Dec 2026 13:00)
+____________________________________________________________
+____________________________________________________________
+ I've taken this task off the page:
+   [D][ ] late (by: 1 Jan 2027 00:00)
+ Journal entries: 5.
+____________________________________________________________
+____________________________________________________________
+ Your field journal:
+ 1.[D][X] early (by: 2 Dec 2026 13:00)
+ 2.[E][ ] meeting (from: 2 Dec 2026 14:00 to: 2 Dec 2026 16:00)
+ 3.[D][X] tie (by: 2 Dec 2026 14:00)
+ 4.[T][ ] read
+ 5.[T][ ] buy
+____________________________________________________________
+____________________________________________________________
+Bookmark placed. Until our next little adventure!
+____________________________________________________________
+```
+
+### Mosswick S2, session 1 — PASS
+
+Console input:
+
+```json
+[
+  "sort",
+  "sort descending",
+  "sorter",
+  "bye"
+]
+```
+
+Console output:
+
+```text
+____________________________________________________________
+____________________________________________________________
+  .--. .--.
+ /    V    \   M O S S W I C K
+ '----^----'   Your woodland task librarian.
+
+What shall we note in your field journal?
+____________________________________________________________
+____________________________________________________________
+ A fresh page! Add a task with 'todo description'.
+____________________________________________________________
+____________________________________________________________
+ Error: use 'sort' without arguments to order tasks chronologically.
+____________________________________________________________
+____________________________________________________________
+ Error: That command isn't in my field guide; use todo, deadline, event, on, list, find, sort, mark, unmark, delete, or bye.
+____________________________________________________________
+____________________________________________________________
+Bookmark placed. Until our next little adventure!
+____________________________________________________________
+```
+
+### Mosswick S3, session 1 — PASS
+
+Console input:
+
+```json
+[
+  "sort \t",
+  "bye"
+]
+```
+
+Console output:
+
+```text
+____________________________________________________________
+____________________________________________________________
+  .--. .--.
+ /    V    \   M O S S W I C K
+ '----^----'   Your woodland task librarian.
+
+What shall we note in your field journal?
+____________________________________________________________
+____________________________________________________________
+ Journal ordered chronologically (deadlines by due time, events by start time; todos last).
+ Your field journal:
+ 1.[T][X] z task
+ 2.[T][ ] a task
+____________________________________________________________
+____________________________________________________________
+Bookmark placed. Until our next little adventure!
+____________________________________________________________
+```
+
+## Cat-themed MARY execution — 2026-10-04
+
+Aim: verify restored MARY identity and cat-themed replies with unchanged commands
+and saved records. Java 25 with assertions enabled: all 11 cases passed in 13
+isolated sessions. Exact stdout, empty stderr, exit status and saved data matched.
+
+### Cat MARY R1, session 1 — PASS
+
+Console input:
+
+```json
+[
+  "todo read",
+  "mark",
+  "unmark",
+  "mark ",
+  "unmark ",
+  "on 29/2/2023",
+  "deadline invalid /by 31/4/2024 1800",
+  "event invalid /from 29/2/2023 1400 /to 1/3/2023 1600",
+  "list",
+  "bye"
+]
+```
+
+Console output:
+
+```text
+____________________________________________________________
+____________________________________________________________
+ /\_/\
+( o.o )   M A R Y
+ > ^ <    Your purr-sonal task assistant.
+
+What's on your list today?
+____________________________________________________________
+____________________________________________________________
+ Purr-fect! I've added this task:
+   [T][ ] read
+ Tasks on your list: 1.
+____________________________________________________________
+____________________________________________________________
+ Error: use 'mark N' or 'unmark N', where N is a task number.
+____________________________________________________________
+____________________________________________________________
+ Error: use 'mark N' or 'unmark N', where N is a task number.
+____________________________________________________________
+____________________________________________________________
+ Error: use 'mark N' or 'unmark N', where N is a task number.
+____________________________________________________________
+____________________________________________________________
+ Error: use 'mark N' or 'unmark N', where N is a task number.
+____________________________________________________________
+____________________________________________________________
+ Error: use date format d/M/yyyy, for example 2/12/2019.
+____________________________________________________________
+____________________________________________________________
+ Error: use date/time format d/M/yyyy HHmm, for example 2/12/2019 1800.
+____________________________________________________________
+____________________________________________________________
+ Error: use event date/time format d/M/yyyy HHmm for both /from and /to.
+____________________________________________________________
+____________________________________________________________
+ Here's your task lineup:
+ 1.[T][ ] read
+____________________________________________________________
+____________________________________________________________
+Time for a catnap. See you soon!
+____________________________________________________________
+```
+
+### Cat MARY R2, session 1 — PASS
+
+Console input:
+
+```json
+[
+  "list",
+  "bye"
+]
+```
+
+Console output:
+
+```text
+____________________________________________________________
+ Error: the saved task data is corrupted: invalid record on line 1.
+____________________________________________________________
+____________________________________________________________
+ /\_/\
+( o.o )   M A R Y
+ > ^ <    Your purr-sonal task assistant.
+
+What's on your list today?
+____________________________________________________________
+____________________________________________________________
+ Nothing to chase yet! Add a task with 'todo description'.
+____________________________________________________________
+____________________________________________________________
+Time for a catnap. See you soon!
+____________________________________________________________
+```
+
+### Cat MARY P1, session 1 — PASS
+
+Console input:
+
+```json
+[
+  "list",
+  "todo read book",
+  "deadline return book /by 2/12/2019 1800",
+  "event project meeting /from 2/12/2019 1400 /to 4/12/2019 1600",
+  "list",
+  "mark 2",
+  "unmark 2",
+  "mark 1",
+  "delete 2",
+  "list",
+  "on 3/12/2019",
+  "on 1/12/2019",
+  "bye"
+]
+```
+
+Console output:
+
+```text
+____________________________________________________________
+____________________________________________________________
+ /\_/\
+( o.o )   M A R Y
+ > ^ <    Your purr-sonal task assistant.
+
+What's on your list today?
+____________________________________________________________
+____________________________________________________________
+ Nothing to chase yet! Add a task with 'todo description'.
+____________________________________________________________
+____________________________________________________________
+ Purr-fect! I've added this task:
+   [T][ ] read book
+ Tasks on your list: 1.
+____________________________________________________________
+____________________________________________________________
+ Purr-fect! I've added this task:
+   [D][ ] return book (by: 2 Dec 2019 18:00)
+ Tasks on your list: 2.
+____________________________________________________________
+____________________________________________________________
+ Purr-fect! I've added this task:
+   [E][ ] project meeting (from: 2 Dec 2019 14:00 to: 4 Dec 2019 16:00)
+ Tasks on your list: 3.
+____________________________________________________________
+____________________________________________________________
+ Here's your task lineup:
+ 1.[T][ ] read book
+ 2.[D][ ] return book (by: 2 Dec 2019 18:00)
+ 3.[E][ ] project meeting (from: 2 Dec 2019 14:00 to: 4 Dec 2019 16:00)
+____________________________________________________________
+____________________________________________________________
+ Pawsome! Task completed:
+   [D][X] return book (by: 2 Dec 2019 18:00)
+____________________________________________________________
+____________________________________________________________
+ Back on your list, ready for another pounce:
+   [D][ ] return book (by: 2 Dec 2019 18:00)
+____________________________________________________________
+____________________________________________________________
+ Pawsome! Task completed:
+   [T][X] read book
+____________________________________________________________
+____________________________________________________________
+ Whisked away! I've removed this task:
+   [D][ ] return book (by: 2 Dec 2019 18:00)
+ Tasks on your list: 2.
+____________________________________________________________
+____________________________________________________________
+ Here's your task lineup:
+ 1.[T][X] read book
+ 2.[E][ ] project meeting (from: 2 Dec 2019 14:00 to: 4 Dec 2019 16:00)
+____________________________________________________________
+____________________________________________________________
+ Tasks occurring on 2019-12-03:
+ [E][ ] project meeting (from: 2 Dec 2019 14:00 to: 4 Dec 2019 16:00)
+____________________________________________________________
+____________________________________________________________
+ No deadlines or events occur on 2019-12-01.
+____________________________________________________________
+____________________________________________________________
+Time for a catnap. See you soon!
+____________________________________________________________
+```
+
+### Cat MARY P1, session 2 — PASS
+
+Console input:
+
+```json
+[
+  "list",
+  "on 3/12/2019",
+  "bye"
+]
+```
+
+Console output:
+
+```text
+____________________________________________________________
+____________________________________________________________
+ /\_/\
+( o.o )   M A R Y
+ > ^ <    Your purr-sonal task assistant.
+
+What's on your list today?
+____________________________________________________________
+____________________________________________________________
+ Here's your task lineup:
+ 1.[T][X] read book
+ 2.[E][ ] project meeting (from: 2 Dec 2019 14:00 to: 4 Dec 2019 16:00)
+____________________________________________________________
+____________________________________________________________
+ Tasks occurring on 2019-12-03:
+ [E][ ] project meeting (from: 2 Dec 2019 14:00 to: 4 Dec 2019 16:00)
+____________________________________________________________
+____________________________________________________________
+Time for a catnap. See you soon!
+____________________________________________________________
+```
+
+### Cat MARY P2, session 1 — PASS
+
+Console input:
+
+```json
+[
+  "",
+  "blah",
+  "todo",
+  "deadline homework",
+  "event meeting /from 2pm",
+  "mark abc",
+  "delete 0",
+  "deadline return book /by tomorrow",
+  "event meeting /from 2/12/2019 /to 2/12/2019 1600",
+  "on tomorrow",
+  "list",
+  "bye"
+]
+```
+
+Console output:
+
+```text
+____________________________________________________________
+____________________________________________________________
+ /\_/\
+( o.o )   M A R Y
+ > ^ <    Your purr-sonal task assistant.
+
+What's on your list today?
+____________________________________________________________
+____________________________________________________________
+ Error: please enter a command or task.
+____________________________________________________________
+____________________________________________________________
+ Error: I can't get my paws around that command; use todo, deadline, event, on, list, find, sort, mark, unmark, delete, or bye.
+____________________________________________________________
+____________________________________________________________
+ Error: use 'todo description' to add a task without a date.
+____________________________________________________________
+____________________________________________________________
+ Error: use 'deadline description /by date or time'.
+____________________________________________________________
+____________________________________________________________
+ Error: use 'event description /from start /to end'.
+____________________________________________________________
+____________________________________________________________
+ Error: 'abc' is not a valid task number; use a positive whole number.
+____________________________________________________________
+____________________________________________________________
+ Error: task 0 does not exist; use 'list' to see valid task numbers.
+____________________________________________________________
+____________________________________________________________
+ Error: use date/time format d/M/yyyy HHmm, for example 2/12/2019 1800.
+____________________________________________________________
+____________________________________________________________
+ Error: use event date/time format d/M/yyyy HHmm for both /from and /to.
+____________________________________________________________
+____________________________________________________________
+ Error: use date format d/M/yyyy, for example 2/12/2019.
+____________________________________________________________
+____________________________________________________________
+ Nothing to chase yet! Add a task with 'todo description'.
+____________________________________________________________
+____________________________________________________________
+Time for a catnap. See you soon!
+____________________________________________________________
+```
+
+### Cat MARY P3, session 1 — PASS
+
+Console input:
+
+```json
+[
+  "list",
+  "bye"
+]
+```
+
+Console output:
+
+```text
+____________________________________________________________
+ Error: the saved task data is corrupted: invalid record on line 1.
+____________________________________________________________
+____________________________________________________________
+ /\_/\
+( o.o )   M A R Y
+ > ^ <    Your purr-sonal task assistant.
+
+What's on your list today?
+____________________________________________________________
+____________________________________________________________
+ Nothing to chase yet! Add a task with 'todo description'.
+____________________________________________________________
+____________________________________________________________
+Time for a catnap. See you soon!
+____________________________________________________________
+```
+
+### Cat MARY P4, session 1 — PASS
+
+Console input:
+
+```json
+[]
+```
+
+Console output:
+
+```text
+____________________________________________________________
+____________________________________________________________
+ /\_/\
+( o.o )   M A R Y
+ > ^ <    Your purr-sonal task assistant.
+
+What's on your list today?
+____________________________________________________________
+```
+
+### Cat MARY F1, session 1 — PASS
+
+Console input:
+
+```json
+[
+  "find book",
+  "find   BOOK  ",
+  "find ook",
+  "find read book",
+  "find Dec",
+  "find [X]",
+  "find missing",
+  "find",
+  "find   ",
+  "finder book",
+  "list",
+  "bye"
+]
+```
+
+Console output:
+
+```text
+____________________________________________________________
+____________________________________________________________
+ /\_/\
+( o.o )   M A R Y
+ > ^ <    Your purr-sonal task assistant.
+
+What's on your list today?
+____________________________________________________________
+____________________________________________________________
+ Look what I sniffed out:
+ 1.[T][X] read book
+ 2.[D][X] return Book (by: 2 Dec 2019 18:00)
+ 3.[E][ ] BOOK club (from: 2 Dec 2019 14:00 to: 2 Dec 2019 16:00)
+____________________________________________________________
+____________________________________________________________
+ Look what I sniffed out:
+ 1.[T][X] read book
+ 2.[D][X] return Book (by: 2 Dec 2019 18:00)
+ 3.[E][ ] BOOK club (from: 2 Dec 2019 14:00 to: 2 Dec 2019 16:00)
+____________________________________________________________
+____________________________________________________________
+ Look what I sniffed out:
+ 1.[T][X] read book
+ 2.[D][X] return Book (by: 2 Dec 2019 18:00)
+ 3.[E][ ] BOOK club (from: 2 Dec 2019 14:00 to: 2 Dec 2019 16:00)
+____________________________________________________________
+____________________________________________________________
+ Look what I sniffed out:
+ 1.[T][X] read book
+____________________________________________________________
+____________________________________________________________
+ No matching tasks in sight. Try another keyword.
+____________________________________________________________
+____________________________________________________________
+ No matching tasks in sight. Try another keyword.
+____________________________________________________________
+____________________________________________________________
+ No matching tasks in sight. Try another keyword.
+____________________________________________________________
+____________________________________________________________
+ Error: use 'find keyword', for example 'find book'.
+____________________________________________________________
+____________________________________________________________
+ Error: use 'find keyword', for example 'find book'.
+____________________________________________________________
+____________________________________________________________
+ Error: I can't get my paws around that command; use todo, deadline, event, on, list, find, sort, mark, unmark, delete, or bye.
+____________________________________________________________
+____________________________________________________________
+ Here's your task lineup:
+ 1.[T][ ] buy bread
+ 2.[T][X] read book
+ 3.[D][X] return Book (by: 2 Dec 2019 18:00)
+ 4.[E][ ] BOOK club (from: 2 Dec 2019 14:00 to: 2 Dec 2019 16:00)
+____________________________________________________________
+____________________________________________________________
+Time for a catnap. See you soon!
+____________________________________________________________
+```
+
+### Cat MARY F2, session 1 — PASS
+
+Console input:
+
+```json
+[
+  "find book",
+  "bye"
+]
+```
+
+Console output:
+
+```text
+____________________________________________________________
+____________________________________________________________
+ /\_/\
+( o.o )   M A R Y
+ > ^ <    Your purr-sonal task assistant.
+
+What's on your list today?
+____________________________________________________________
+____________________________________________________________
+ No matching tasks in sight. Try another keyword.
+____________________________________________________________
+____________________________________________________________
+Time for a catnap. See you soon!
+____________________________________________________________
+```
+
+### Cat MARY S1, session 1 — PASS
+
+Console input:
+
+```json
+[
+  "sort",
+  "sort",
+  "bye"
+]
+```
+
+Console output:
+
+```text
+____________________________________________________________
+____________________________________________________________
+ /\_/\
+( o.o )   M A R Y
+ > ^ <    Your purr-sonal task assistant.
+
+What's on your list today?
+____________________________________________________________
+____________________________________________________________
+ Tasks lined up chronologically (deadlines by due time, events by start time; todos last).
+ Here's your task lineup:
+ 1.[D][ ] early (by: 2 Dec 2026 13:00)
+ 2.[E][ ] meeting (from: 2 Dec 2026 14:00 to: 2 Dec 2026 16:00)
+ 3.[D][X] tie (by: 2 Dec 2026 14:00)
+ 4.[D][ ] late (by: 1 Jan 2027 00:00)
+ 5.[T][ ] read
+ 6.[T][ ] buy
+____________________________________________________________
+____________________________________________________________
+ Tasks lined up chronologically (deadlines by due time, events by start time; todos last).
+ Here's your task lineup:
+ 1.[D][ ] early (by: 2 Dec 2026 13:00)
+ 2.[E][ ] meeting (from: 2 Dec 2026 14:00 to: 2 Dec 2026 16:00)
+ 3.[D][X] tie (by: 2 Dec 2026 14:00)
+ 4.[D][ ] late (by: 1 Jan 2027 00:00)
+ 5.[T][ ] read
+ 6.[T][ ] buy
+____________________________________________________________
+____________________________________________________________
+Time for a catnap. See you soon!
+____________________________________________________________
+```
+
+### Cat MARY S1, session 2 — PASS
+
+Console input:
+
+```json
+[
+  "list",
+  "mark 1",
+  "delete 4",
+  "list",
+  "bye"
+]
+```
+
+Console output:
+
+```text
+____________________________________________________________
+____________________________________________________________
+ /\_/\
+( o.o )   M A R Y
+ > ^ <    Your purr-sonal task assistant.
+
+What's on your list today?
+____________________________________________________________
+____________________________________________________________
+ Here's your task lineup:
+ 1.[D][ ] early (by: 2 Dec 2026 13:00)
+ 2.[E][ ] meeting (from: 2 Dec 2026 14:00 to: 2 Dec 2026 16:00)
+ 3.[D][X] tie (by: 2 Dec 2026 14:00)
+ 4.[D][ ] late (by: 1 Jan 2027 00:00)
+ 5.[T][ ] read
+ 6.[T][ ] buy
+____________________________________________________________
+____________________________________________________________
+ Pawsome! Task completed:
+   [D][X] early (by: 2 Dec 2026 13:00)
+____________________________________________________________
+____________________________________________________________
+ Whisked away! I've removed this task:
+   [D][ ] late (by: 1 Jan 2027 00:00)
+ Tasks on your list: 5.
+____________________________________________________________
+____________________________________________________________
+ Here's your task lineup:
+ 1.[D][X] early (by: 2 Dec 2026 13:00)
+ 2.[E][ ] meeting (from: 2 Dec 2026 14:00 to: 2 Dec 2026 16:00)
+ 3.[D][X] tie (by: 2 Dec 2026 14:00)
+ 4.[T][ ] read
+ 5.[T][ ] buy
+____________________________________________________________
+____________________________________________________________
+Time for a catnap. See you soon!
+____________________________________________________________
+```
+
+### Cat MARY S2, session 1 — PASS
+
+Console input:
+
+```json
+[
+  "sort",
+  "sort descending",
+  "sorter",
+  "bye"
+]
+```
+
+Console output:
+
+```text
+____________________________________________________________
+____________________________________________________________
+ /\_/\
+( o.o )   M A R Y
+ > ^ <    Your purr-sonal task assistant.
+
+What's on your list today?
+____________________________________________________________
+____________________________________________________________
+ Nothing to chase yet! Add a task with 'todo description'.
+____________________________________________________________
+____________________________________________________________
+ Error: use 'sort' without arguments to order tasks chronologically.
+____________________________________________________________
+____________________________________________________________
+ Error: I can't get my paws around that command; use todo, deadline, event, on, list, find, sort, mark, unmark, delete, or bye.
+____________________________________________________________
+____________________________________________________________
+Time for a catnap. See you soon!
+____________________________________________________________
+```
+
+### Cat MARY S3, session 1 — PASS
+
+Console input:
+
+```json
+[
+  "sort \t",
+  "bye"
+]
+```
+
+Console output:
+
+```text
+____________________________________________________________
+____________________________________________________________
+ /\_/\
+( o.o )   M A R Y
+ > ^ <    Your purr-sonal task assistant.
+
+What's on your list today?
+____________________________________________________________
+____________________________________________________________
+ Tasks lined up chronologically (deadlines by due time, events by start time; todos last).
+ Here's your task lineup:
+ 1.[T][X] z task
+ 2.[T][ ] a task
+____________________________________________________________
+____________________________________________________________
+Time for a catnap. See you soon!
 ____________________________________________________________
 ```

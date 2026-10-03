@@ -38,10 +38,10 @@ public class FindCommand extends Command {
             }
             List<Task> matches = tasks.find(keyword);
             if (matches.isEmpty()) {
-                ui.showMessage(" No matching tasks found.");
+                ui.showMessage(" No matching tasks in sight. Try another keyword.");
                 return;
             }
-            ui.showMessage(" Here are the matching tasks in your list:");
+            ui.showMessage(" Look what I sniffed out:");
             for (int i = 0; i < matches.size(); i++) {
                 ui.showMessage(" " + (i + 1) + "." + matches.get(i));
             }

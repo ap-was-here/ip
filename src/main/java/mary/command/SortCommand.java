@@ -35,13 +35,14 @@ public class SortCommand extends Command {
             return;
         }
         if (tasks.isEmpty()) {
-            ui.showMessage(" MARY has no saved tasks yet.");
+            ui.showMessage(" Nothing to chase yet! Add a task with 'todo description'.");
             return;
         }
         tasks.sortChronologically();
         try {
             storage.save(tasks.getTasks());
-            ui.showMessage(" Sorted chronologically (deadlines by due time, events by start time; todos last).");
+            ui.showMessage(" Tasks lined up chronologically "
+                    + "(deadlines by due time, events by start time; todos last).");
             new ListCommand().execute(tasks, ui, storage);
         } catch (MaryException exception) {
             ui.showError(exception.getMessage());

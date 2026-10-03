@@ -19,13 +19,13 @@ class MarkCommandTest extends CommandTestSupport {
     void execute_markAndUnmark_updatesOnlySelectedTaskAndSaves() throws Exception {
         tasks.add(new Todo("first"));
         tasks.add(new Todo("second"));
-        assertEquals(" Nice! I've marked this task as done:\n   [T][X] second\n",
+        assertEquals(" Pawsome! Task completed:\n   [T][X] second\n",
                 execute(new MarkCommand("mark 2")));
         assertEquals(" ", tasks.get(0).getStatusIcon());
         assertEquals("X", storage.load().get(1).getStatusIcon());
         execute(new MarkCommand("mark 2"));
         assertEquals("X", tasks.get(1).getStatusIcon());
-        assertEquals(" OK, I've marked this task as not done yet:\n   [T][ ] second\n",
+        assertEquals(" Back on your list, ready for another pounce:\n   [T][ ] second\n",
                 execute(new MarkCommand("unmark 2")));
         execute(new MarkCommand("unmark 2"));
         assertEquals(" ", storage.load().get(1).getStatusIcon());

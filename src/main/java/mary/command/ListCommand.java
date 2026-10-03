@@ -18,10 +18,10 @@ public class ListCommand extends Command {
     @Override
     public void execute(TaskList tasks, Ui ui, Storage storage) {
         if (tasks.isEmpty()) {
-            ui.showMessage(" MARY has no saved tasks yet.");
+            ui.showMessage(" Nothing to chase yet! Add a task with 'todo description'.");
             return;
         }
-        ui.showMessage(" Here are the tasks in your list:");
+        ui.showMessage(" Here's your task lineup:");
         for (int i = 0; i < tasks.size(); i++) {
             ui.showMessage(" " + (i + 1) + "." + tasks.get(i));
         }

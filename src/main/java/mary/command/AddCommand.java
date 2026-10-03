@@ -36,9 +36,9 @@ public class AddCommand extends Command {
             Task task = Parser.parseTask(fullCommand);
             tasks.add(task);
             storage.save(tasks.getTasks());
-            ui.showMessages(" Got it. I've added this task:",
+            ui.showMessages(" Purr-fect! I've added this task:",
                     "   " + task,
-                    " Now you have " + tasks.size() + " tasks in the list.");
+                    " Tasks on your list: " + tasks.size() + ".");
         } catch (MaryException exception) {
             ui.showError(exception.getMessage());
         }

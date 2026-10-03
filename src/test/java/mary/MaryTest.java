@@ -33,14 +33,14 @@ class MaryTest {
         assertNull(mary.getLoadingError());
         assertFalse(Files.exists(file));
         assertFalse(mary.execute("todo read café book"));
-        assertEquals(List.of(" Got it. I've added this task:", "   [T][ ] read café book",
-                " Now you have 1 tasks in the list."), replies);
+        assertEquals(List.of(" Purr-fect! I've added this task:", "   [T][ ] read café book",
+                " Tasks on your list: 1."), replies);
         mary.execute("deadline return book /by 2/12/2026 1800");
         mary.execute("event meeting /from 2/12/2026 1400 /to 3/12/2026 1600");
         mary.execute("mark 1");
         replies.clear();
         mary.execute("find book");
-        assertEquals(List.of(" Here are the matching tasks in your list:", " 1.[T][X] read café book",
+        assertEquals(List.of(" Look what I sniffed out:", " 1.[T][X] read café book",
                 " 2.[D][ ] return book (by: 2 Dec 2026 18:00)"), replies);
         replies.clear();
         mary.execute("on 3/12/2026");
@@ -50,7 +50,7 @@ class MaryTest {
         mary.execute("delete 2");
         replies.clear();
         new Mary(file.toString(), new Ui(replies::add, false)).execute("list");
-        assertEquals(List.of(" Here are the tasks in your list:", " 1.[T][ ] read café book",
+        assertEquals(List.of(" Here's your task lineup:", " 1.[T][ ] read café book",
                 " 2.[E][ ] meeting (from: 2 Dec 2026 14:00 to: 3 Dec 2026 16:00)"), replies);
     }
 
@@ -70,7 +70,7 @@ class MaryTest {
         }
         replies.clear();
         mary.execute("list");
-        assertEquals(List.of(" MARY has no saved tasks yet."), replies);
+        assertEquals(List.of(" Nothing to chase yet! Add a task with 'todo description'."), replies);
     }
 
     /**
@@ -84,7 +84,7 @@ class MaryTest {
         assertTrue(mary.execute("bye"));
         assertTrue(mary.execute("todo ignored"));
         assertTrue(mary.execute("bye"));
-        assertEquals(List.of("See you later. Complete your tasks on time!"), replies);
+        assertEquals(List.of("Time for a catnap. See you soon!"), replies);
         assertFalse(Files.exists(file));
     }
 
@@ -99,7 +99,7 @@ class MaryTest {
         Mary mary = new Mary(file.toString(), new Ui(replies::add, false));
         assertEquals("the saved task data is corrupted: invalid record on line 1.", mary.getLoadingError());
         mary.execute("list");
-        assertEquals(List.of(" MARY has no saved tasks yet."), replies);
+        assertEquals(List.of(" Nothing to chase yet! Add a task with 'todo description'."), replies);
         assertEquals("broken\n", Files.readString(file));
     }
 

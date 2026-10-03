@@ -55,8 +55,8 @@ public class MarkCommand extends Command {
                 task.markAsNotDone();
             }
             storage.save(tasks.getTasks());
-            ui.showMessages(isDone ? " Nice! I've marked this task as done:"
-                    : " OK, I've marked this task as not done yet:", "   " + task);
+            ui.showMessages(isDone ? " Pawsome! Task completed:"
+                    : " Back on your list, ready for another pounce:", "   " + task);
         } catch (NumberFormatException exception) {
             ui.showError("'" + numberText + "' is not a valid task number; use a positive whole number.");
         } catch (MaryException exception) {
